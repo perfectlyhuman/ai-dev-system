@@ -1,0 +1,39 @@
+{
+  "name": "MyApp",
+  "description": "A SaaS platform for widget management",
+
+  "linear": {
+    "team": "MyApp",
+    "teamId": "ace7077a-ec87-4bae-bb82-b9311dbd7a0a",
+    "currentInitiative": "Roadmap | Jan - Feb 2026",
+    "initiativeId": "ff2a5cce-d442-42cd-940e-bf6a149f11ed"
+  },
+
+  "drive": {
+    "roadmapDocId": "1LPblhdewDxm7BevLEcjRd2a6GqRHdyfc6WyC6IYOQlc",
+    "roadmapDocName": "MyApp Roadmap | Q1 2026",
+    "folderId": "1oiaUS4kaN1FBpLfUoPGyDAl_C6ocJEWs"
+  },
+
+  "documentation": {
+    "root": "docs",
+    "master": "docs/MASTER.md",
+    "chapters": "docs/chapters",
+    "workflows": "docs/workflows"
+  },
+
+  "testing": {
+    "full": "npm run test",
+    "typecheck": "npm run typecheck",
+    "lint": "npm run lint",
+    "format": "npm run format",
+    "e2e": "npm run test:e2e",
+    "quick": "npm run typecheck && npm run lint"
+  },
+
+  "git": {
+    "mainBranch": "main",
+    "branchPrefix": "dev/",
+    "remote": "origin"
+  }
+}
