@@ -4,8 +4,8 @@ A complete system for AI-assisted software development. Two modes:
 
 | Mode | Best For | External Tools | Setup |
 |------|----------|---------------|-------|
-| **[Solo](#solo-mode)** | Solopreneur + Claude | None (all in-repo) | Copy `solo/` into your project |
-| **[Team](#team-mode)** | Team with stakeholders | Linear + Google Drive | Run `init.js` setup |
+| **[Solo](#solo-mode)** | Solopreneur + Claude | None (all in-repo) | `npx degit ... && node ... --solo` |
+| **[Team](#team-mode)** | Team with stakeholders | Linear + Google Drive | `npx degit ... && node ... --team` |
 
 ## Solo Mode
 
@@ -22,12 +22,11 @@ See **[solo/README.md](solo/README.md)** for full setup and usage.
 ### Quick Start (Solo)
 
 ```bash
-# From your project root (empty dir, cloned template, whatever)
-cp -r /path/to/ai-dev-system/solo/.claude .
-cp -r /path/to/ai-dev-system/solo/documentation .
+# From your project root
+npx degit perfectlyhuman/ai-dev-system _ai-setup --force && node _ai-setup/setup.js --solo
 ```
 
-Then run `/kickoff` — a guided product discovery session that takes you from idea to populated documentation, ready to build.
+That's it. Then run `/kickoff` in Claude Code — a guided product discovery session that takes you from idea to populated documentation, ready to build.
 
 ---
 

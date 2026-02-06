@@ -39,13 +39,14 @@ Documentation IS the project management. Claude reads ROADMAP.md to know what to
 
 ## Getting Started
 
-### 1. Copy into your project
+### 1. Install into your project
 
 ```bash
 # From your project root (empty dir, cloned template, whatever you have):
-cp -r /path/to/ai-dev-system/solo/.claude .
-cp -r /path/to/ai-dev-system/solo/documentation .
+npx degit perfectlyhuman/ai-dev-system _ai-setup --force && node _ai-setup/setup.js --solo
 ```
+
+This pulls the system, copies `.claude/` and `documentation/` into your project, and cleans up after itself.
 
 ### 2. Run /kickoff
 
