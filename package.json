@@ -1,0 +1,34 @@
+{
+  "name": "create-ai-dev",
+  "version": "1.0.0",
+  "description": "AI Development System - Documentation-driven project management for solopreneur + Claude Code workflows",
+  "bin": {
+    "create-ai-dev": "./bin.js"
+  },
+  "files": [
+    "bin.js",
+    "setup.js",
+    "solo/",
+    "skills/",
+    "templates/",
+    "examples/",
+    "init.js",
+    "SYSTEM.md"
+  ],
+  "keywords": [
+    "claude",
+    "claude-code",
+    "ai-development",
+    "documentation",
+    "project-management",
+    "solopreneur",
+    "developer-tools"
+  ],
+  "author": "Perfectly Human",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/perfectlyhuman/ai-dev-system.git"
+  },
+  "homepage": "https://github.com/perfectlyhuman/ai-dev-system#readme"
+}

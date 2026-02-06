@@ -4,8 +4,8 @@ A complete system for AI-assisted software development. Two modes:
 
 | Mode | Best For | External Tools | Setup |
 |------|----------|---------------|-------|
-| **[Solo](#solo-mode)** | Solopreneur + Claude | None (all in-repo) | `npx degit ... && node ... --solo` |
-| **[Team](#team-mode)** | Team with stakeholders | Linear + Google Drive | `npx degit ... && node ... --team` |
+| **[Solo](#solo-mode)** | Solopreneur + Claude | None (all in-repo) | `npx create-ai-dev --solo` |
+| **[Team](#team-mode)** | Team with stakeholders | Linear + Google Drive | `npx create-ai-dev --team` |
 
 ## Solo Mode
 
@@ -23,10 +23,23 @@ See **[solo/README.md](solo/README.md)** for full setup and usage.
 
 ```bash
 # From your project root
-npx degit perfectlyhuman/ai-dev-system _ai-setup --force && node _ai-setup/setup.js --solo
+npx create-ai-dev --solo
+```
+
+Or with pnpm:
+```bash
+pnpm create ai-dev --solo
 ```
 
 That's it. Then run `/kickoff` in Claude Code — a guided product discovery session that takes you from idea to populated documentation, ready to build.
+
+<details>
+<summary>Alternative: install without npm</summary>
+
+```bash
+npx degit perfectlyhuman/ai-dev-system _ai-setup --force && node _ai-setup/setup.js --solo
+```
+</details>
 
 ---
 
@@ -64,7 +77,12 @@ Codebase + Docs (Implementation) → What actually exists
 
 ```bash
 # From your project root
-npx degit yourusername/ai-dev-system .claude --force
+npx create-ai-dev --team
+```
+
+Or with pnpm:
+```bash
+pnpm create ai-dev --team
 ```
 
 ### 2. Run setup

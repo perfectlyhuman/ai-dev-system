@@ -1,0 +1,13 @@
+# Git
+.git
+.gitignore
+
+# GitHub
+.github/
+
+# Docs (these are for the repo, not the package)
+README.md
+solo/README.md
+
+# Setup script (replaced by bin.js for npm usage)
+setup.js

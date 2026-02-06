@@ -43,10 +43,23 @@ Documentation IS the project management. Claude reads ROADMAP.md to know what to
 
 ```bash
 # From your project root (empty dir, cloned template, whatever you have):
-npx degit perfectlyhuman/ai-dev-system _ai-setup --force && node _ai-setup/setup.js --solo
+npx create-ai-dev --solo
 ```
 
-This pulls the system, copies `.claude/` and `documentation/` into your project, and cleans up after itself.
+Or with pnpm:
+```bash
+pnpm create ai-dev --solo
+```
+
+This copies `.claude/` (skills + config) and `documentation/` (templates) into your project.
+
+<details>
+<summary>Alternative: install without npm</summary>
+
+```bash
+npx degit perfectlyhuman/ai-dev-system _ai-setup --force && node _ai-setup/setup.js --solo
+```
+</details>
 
 ### 2. Run /kickoff
 
