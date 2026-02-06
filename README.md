@@ -1,18 +1,48 @@
 # AI Development System
 
-A complete system for AI-assisted software development that integrates strategic planning (Google Docs), project management (Linear), and code implementation (Claude Code) into a unified workflow.
+A complete system for AI-assisted software development. Two modes:
 
-## What This Is
+| Mode | Best For | External Tools | Setup |
+|------|----------|---------------|-------|
+| **[Solo](#solo-mode)** | Solopreneur + Claude | None (all in-repo) | Copy `solo/` into your project |
+| **[Team](#team-mode)** | Team with stakeholders | Linear + Google Drive | Run `init.js` setup |
 
-This system solves the fragmentation problem in development:
+## Solo Mode
+
+**Everything lives in your repo.** No Linear, no Google Drive, no external tools. Documentation IS the project management system. Optimized for one developer + Claude Code shipping fast.
+
+```
+Vision → Roadmap → Implement → Document Learnings → Reflect → Updated Vision
+```
+
+**8 skills**: `/kickoff`, `/sync`, `/dev`, `/vision`, `/test`, `/update-docs`, `/ship`, `/check-assumptions`
+
+See **[solo/README.md](solo/README.md)** for full setup and usage.
+
+### Quick Start (Solo)
+
+```bash
+# From your project root (empty dir, cloned template, whatever)
+cp -r /path/to/ai-dev-system/solo/.claude .
+cp -r /path/to/ai-dev-system/solo/documentation .
+```
+
+Then run `/kickoff` — a guided product discovery session that takes you from idea to populated documentation, ready to build.
+
+---
+
+## Team Mode
+
+Integrates strategic planning (Google Docs), project management (Linear), and code implementation (Claude Code) into a unified workflow with synchronized layers.
+
+### What This Solves
+
 - **Vision lives in docs** that get stale and disconnected from reality
 - **Project management** becomes a graveyard of outdated tickets
 - **Code knowledge** exists only in developers' heads
 - **AI assistants** start fresh every session, lacking project context
 
-This system creates a **single source of truth** across three synchronized layers, with AI as the orchestration layer.
-
-## The Three Pillars
+### The Three Pillars
 
 ```
 Roadmap Doc (Strategic)     → What we want to build and why
@@ -22,7 +52,7 @@ Linear (Tactical)           → What we're working on now
 Codebase + Docs (Implementation) → What actually exists
 ```
 
-## Prerequisites
+### Prerequisites
 
 - [Claude Code](https://claude.ai/code) CLI installed
 - [Linear](https://linear.app) account with API key
