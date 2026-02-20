@@ -6,6 +6,7 @@
  * Usage:
  *   npx create-ai-dev --solo       # Solo mode (all in-repo, no external tools)
  *   npx create-ai-dev --team       # Team mode (Linear + Google Drive integration)
+ *   npx create-ai-dev --makerkit   # Makerkit template setup (solo + port config + GitHub + Vercel)
  *   pnpm create ai-dev --solo      # Same thing via pnpm
  *
  * This installs the AI Development System into the current directory.
@@ -21,13 +22,15 @@ if (args.includes('--help') || args.includes('-h')) {
   create-ai-dev — AI Development System
 
   Usage:
-    npx create-ai-dev --solo     Solo mode (documentation-driven, no external tools)
-    npx create-ai-dev --team     Team mode (integrates Linear + Google Drive)
+    npx create-ai-dev --solo       Solo mode (documentation-driven, no external tools)
+    npx create-ai-dev --team       Team mode (integrates Linear + Google Drive)
+    npx create-ai-dev --makerkit   Makerkit template setup (full automation)
 
   Options:
-    --solo    Install solo mode (recommended for solopreneurs)
-    --team    Install team mode (requires Linear + Google Drive setup)
-    --help    Show this help message
+    --solo      Install solo mode (recommended for solopreneurs)
+    --team      Install team mode (requires Linear + Google Drive setup)
+    --makerkit  Full Makerkit project setup (rename, ports, GitHub, Vercel)
+    --help      Show this help message
 
   After installing:
     1. Open Claude Code in your project
@@ -39,16 +42,23 @@ if (args.includes('--help') || args.includes('-h')) {
   process.exit(0);
 }
 
-const mode = args.includes('--team') ? 'team' : 'solo';
+const mode = args.includes('--makerkit')
+  ? 'makerkit'
+  : args.includes('--team')
+    ? 'team'
+    : args.includes('--solo')
+      ? 'solo'
+      : null;
 
-if (!args.includes('--solo') && !args.includes('--team')) {
+if (!mode) {
   console.log(`
   create-ai-dev — AI Development System
 
   Please specify a mode:
 
-    npx create-ai-dev --solo     Solo mode (all in-repo, no external tools)
-    npx create-ai-dev --team     Team mode (Linear + Google Drive integration)
+    npx create-ai-dev --solo       Solo mode (all in-repo, no external tools)
+    npx create-ai-dev --team       Team mode (Linear + Google Drive integration)
+    npx create-ai-dev --makerkit   Makerkit template setup (full automation)
 
   Run with --help for more info.
 `);
@@ -180,9 +190,61 @@ function setupTeam() {
 `);
 }
 
+function setupMakerkit() {
+  console.log(`
+  AI Development System — Makerkit Mode
+
+  Installing ai-dev-system into: ${projectRoot}
+  ─────────────────────────────────────
+`);
+
+  // Install solo mode files (commands, skills, documentation)
+  const soloDir = path.join(packageDir, 'solo');
+
+  console.log('  Skills, commands & config:');
+  copyRecursive(
+    path.join(soloDir, '.claude'),
+    path.join(projectRoot, '.claude')
+  );
+
+  console.log('\n  Documentation:');
+  copyRecursive(
+    path.join(soloDir, 'documentation'),
+    path.join(projectRoot, 'documentation')
+  );
+
+  // Ensure archived/ exists
+  const archivedDir = path.join(projectRoot, 'documentation', 'archived');
+  if (!fs.existsSync(archivedDir)) {
+    fs.mkdirSync(archivedDir, { recursive: true });
+    console.log('  + documentation/archived/');
+  }
+
+  console.log(`
+  ─────────────────────────────────────
+  ai-dev-system installed!
+
+  Next step — open Claude Code in this directory and run:
+
+    /setup-makerkit
+
+  Claude will walk you through the full setup:
+    - Rename project across all config files
+    - Assign unique local dev ports (no conflicts with other projects)
+    - Create a private GitHub repo
+    - Create a production Supabase project + push migrations
+    - Deploy to Vercel with all required env vars
+    - Configure Cloudflare DNS for your custom domain
+
+  Everything is interactive — Claude will ask what it needs and handle the rest.
+`);
+}
+
 // Run
 if (mode === 'solo') {
   setupSolo();
+} else if (mode === 'makerkit') {
+  setupMakerkit();
 } else {
   setupTeam();
 }
