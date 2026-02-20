@@ -15,7 +15,7 @@ You are running a structured implementation session. Follow these phases in orde
 5. **Create branch** if not already on a feature branch:
    ```
    git checkout main && git pull origin main
-   git checkout -b riley/{descriptive-name}
+   git checkout -b {branch-prefix}{descriptive-name}
    ```
 
 If no task-id is provided, read ROADMAP.md and present the next available tasks for the user to choose from.
@@ -88,7 +88,7 @@ If this is a UI change, describe what should be manually verified.
 
 ## Phase 6: Ship Ready
 
-1. Push the branch: `git push -u origin riley/{branch-name}`
+1. Push the branch: `git push -u origin {branch-prefix}{branch-name}`
 2. Summarize what was accomplished
 3. Advise using `/ship` when ready to deploy
 

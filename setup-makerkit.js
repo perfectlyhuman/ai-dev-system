@@ -392,7 +392,7 @@ function installAiDevSystem(slug, description) {
     git: {
       mainBranch: 'main',
       previewBranch: 'preview',
-      branchPrefix: 'riley/',
+      branchPrefix: '',
       remote: 'origin',
     },
     paths: {

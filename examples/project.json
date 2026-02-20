@@ -4,15 +4,15 @@
 
   "linear": {
     "team": "MyApp",
-    "teamId": "ace7077a-ec87-4bae-bb82-b9311dbd7a0a",
+    "teamId": "your-linear-team-id",
     "currentInitiative": "Roadmap | Jan - Feb 2026",
-    "initiativeId": "ff2a5cce-d442-42cd-940e-bf6a149f11ed"
+    "initiativeId": "your-linear-initiative-id"
   },
 
   "drive": {
-    "roadmapDocId": "1LPblhdewDxm7BevLEcjRd2a6GqRHdyfc6WyC6IYOQlc",
+    "roadmapDocId": "your-google-doc-id",
     "roadmapDocName": "MyApp Roadmap | Q1 2026",
-    "folderId": "1oiaUS4kaN1FBpLfUoPGyDAl_C6ocJEWs"
+    "folderId": "your-google-drive-folder-id"
   },
 
   "documentation": {

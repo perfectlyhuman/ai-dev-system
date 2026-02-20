@@ -13,7 +13,7 @@ This project uses a three-tier branch strategy: feature branches → preview →
 ## Branch Strategy
 
 ```
-Feature branches (riley/*) → preview → main
+Feature branches ({branch-prefix}*) → preview → main
                                 ↓          ↓
                          Vercel Preview  Production
                            (staging)     (live)
@@ -23,7 +23,7 @@ Feature branches (riley/*) → preview → main
 |--------|---------|------------|-----------|
 | `main` | Production code | Vercel Production | Yes |
 | `preview` | Staging/testing | Vercel Preview | Yes |
-| `riley/*` | Feature development | None (local only) | No |
+| `{branch-prefix}*` | Feature development | None (local only) | No |
 
 ## Workflow Steps
 
@@ -34,7 +34,7 @@ Always create from an up-to-date `main`:
 ```bash
 git checkout main
 git pull origin main
-git checkout -b riley/feature-name
+git checkout -b {branch-prefix}feature-name
 ```
 
 ### 2. Develop & Test Locally
@@ -48,12 +48,12 @@ git commit -m "description of change"
 ### 3. Push & Deploy to Staging
 
 ```bash
-git push -u origin riley/feature-name
+git push -u origin {branch-prefix}feature-name
 git checkout preview
 git pull origin preview
-git merge riley/feature-name
+git merge {branch-prefix}feature-name
 git push origin preview
-git checkout riley/feature-name
+git checkout {branch-prefix}feature-name
 ```
 
 ### 4. Test on Staging
@@ -73,8 +73,8 @@ git push origin main
 
 ```bash
 git checkout main
-git branch -d riley/feature-name
-git push origin --delete riley/feature-name
+git branch -d {branch-prefix}feature-name
+git push origin --delete {branch-prefix}feature-name
 ```
 
 ## Anti-Patterns (NEVER DO)

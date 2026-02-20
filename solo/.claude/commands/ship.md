@@ -15,7 +15,7 @@ Default to **preview** if not specified.
 ## Option A: Ship to Preview (Staging)
 
 ### Prerequisites
-1. On a feature branch (`riley/*`)
+1. On a feature branch (`{branch-prefix}*`)
 2. All changes committed
 3. Tests passing
 
@@ -61,8 +61,8 @@ git merge preview
 git push origin main
 
 # Cleanup feature branch
-git branch -d riley/{feature-name}
-git push origin --delete riley/{feature-name}
+git branch -d {branch-prefix}{feature-name}
+git push origin --delete {branch-prefix}{feature-name}
 ```
 
 ### Post-Ship

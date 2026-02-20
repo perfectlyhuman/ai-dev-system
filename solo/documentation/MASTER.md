@@ -33,7 +33,7 @@ version: initial
 **Three-tier branch strategy. Never skip the preview step for non-trivial changes.**
 
 ```
-Feature branches (riley/*) → preview → main
+Feature branches ({branch-prefix}*) → preview → main
                                 ↓          ↓
                          Vercel Preview  Production
                            (staging)
@@ -41,7 +41,7 @@ Feature branches (riley/*) → preview → main
 
 | Step | Action | Result |
 |------|--------|--------|
-| 1. Create feature branch | `git checkout main && git pull && git checkout -b riley/feature-name` | Branch from up-to-date main |
+| 1. Create feature branch | `git checkout main && git pull && git checkout -b {branch-prefix}feature-name` | Branch from up-to-date main |
 | 2. Develop & test locally | `pnpm typecheck && pnpm lint:fix && pnpm format:fix` | Local validation |
 | 3. Push & deploy to staging | Push branch, merge to `preview` | Triggers Vercel preview build |
 | 4. Test on staging | Manual testing on preview URL | Verify in real environment |
