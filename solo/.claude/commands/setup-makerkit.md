@@ -159,6 +159,66 @@ Make these exact replacements:
 ### `documentation/MASTER.md` and `documentation/ROADMAP.md`
 - Replace all `next-supabase-saas-kit-turbo` with `{displayName}`
 
+## Step 5b: Configure shadcnblocks
+
+Wire in shadcnblocks.com as a UI component provider. If the user has an API key in `~/.config/ai-dev-system/secrets.json` (key: `shadcnblocks_api_key`), use the authenticated config. Otherwise, use the public registry URL.
+
+### `packages/ui/components.json`
+Add a `registries` key. **With API key** (pro blocks):
+```json
+{
+  "registries": {
+    "@shadcnblocks": {
+      "url": "https://shadcnblocks.com/r/{name}",
+      "headers": {
+        "Authorization": "Bearer ${SHADCNBLOCKS_API_KEY}"
+      }
+    }
+  }
+}
+```
+
+**Without API key** (free blocks only):
+```json
+{
+  "registries": {
+    "shadcnblocks": {
+      "url": "https://www.shadcnblocks.com/r"
+    }
+  }
+}
+```
+
+### `apps/web/.env` (only if API key exists)
+Append:
+```
+SHADCNBLOCKS_API_KEY={key from secrets.json}
+```
+
+### `.mcp.json`
+Add the shadcn MCP server (enables Claude to browse and install components):
+```json
+{
+  "mcpServers": {
+    "shadcn": {
+      "command": "npx",
+      "args": ["shadcn@latest", "mcp"]
+    }
+  }
+}
+```
+
+### Installing blocks
+Once configured, blocks can be installed via:
+```bash
+pnpm dlx shadcn add shadcnblocks/hero125    # free blocks (no @ prefix)
+pnpm dlx shadcn add @shadcnblocks/hero125   # pro blocks (@ prefix, requires API key)
+```
+
+The shadcn CLI reads the registry config from `components.json` and authenticates with the env var automatically.
+
+If the API key is not found in secrets.json, use the public registry config and inform the user that pro blocks require a key.
+
 ## Step 6: Install Dependencies
 
 ```bash
@@ -206,9 +266,18 @@ On success:
 # Link local to production
 cd apps/web
 supabase link --project-ref {projectRef}
+```
 
-# Push all migrations to production
-echo "y" | supabase db push
+**Important**: After linking, `supabase link` may warn about a Postgres version mismatch. New Supabase projects default to Postgres 17, but the Makerkit template `config.toml` may say `major_version = 15`. Update `apps/web/supabase/config.toml`:
+```
+[db]
+major_version = 17
+```
+
+Then push migrations and get keys:
+```bash
+# Push all migrations to production (needs the DB password from project creation)
+supabase db push -p "{dbPassword}"
 
 # Get API keys
 supabase projects api-keys --project-ref {projectRef}
@@ -216,9 +285,8 @@ supabase projects api-keys --project-ref {projectRef}
 
 Save these values:
 - **Supabase URL**: `https://{projectRef}.supabase.co`
-- **Publishable key**: the `default` key starting with `sb_publishable_`
-- **Service role key**: the `service_role` JWT (the `sb_secret` key is masked by CLI, use the JWT instead)
-- **Anon key**: the `anon` JWT
+- **Anon key**: the `anon` JWT — used as `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- **Service role key**: the `service_role` JWT — used as `SUPABASE_SERVICE_ROLE_KEY` (the `sb_secret` key is masked by CLI, use the JWT instead)
 
 ## Step 10: Deploy to Vercel
 
@@ -238,56 +306,80 @@ VERCEL_TOKEN=$(node -e "const fs=require('fs'); const p=process.env.HOME+'/AppDa
 PROJECT_ID=$(node -e "const d=JSON.parse(require('fs').readFileSync('.vercel/project.json','utf8')); console.log(d.projectId)")
 ORG_ID=$(node -e "const d=JSON.parse(require('fs').readFileSync('.vercel/project.json','utf8')); console.log(d.orgId)")
 
-# Update project settings: root directory, framework, and name
+# Update project settings: root directory, framework, build commands, and name
 curl -s -X PATCH "https://api.vercel.com/v9/projects/$PROJECT_ID?teamId=$ORG_ID" \
   -H "Authorization: Bearer $VERCEL_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"rootDirectory":"apps/web","framework":"nextjs","name":"{slug}"}'
+  -d '{"rootDirectory":"apps/web","framework":"nextjs","buildCommand":"cd ../.. && pnpm build","installCommand":"cd ../.. && pnpm install","name":"{slug}"}'
 ```
 
-**Note**: If the name update fails with a "conflict" error, the name is already taken on Vercel — just update rootDirectory and framework without the name.
+**Note**: The `buildCommand` and `installCommand` are required because this is a monorepo — Vercel needs to install and build from the root, not from `apps/web`.
 
-Also update `.vercel/project.json` locally to reflect the new project name.
+If the name update fails with a "conflict" error, the name is already taken on Vercel — just update rootDirectory, framework, and commands without the name.
 
 ### 10b: Set All Required Production Env Vars
 
-These are ALL the env vars needed for a successful Makerkit production build. Set each one:
+These are ALL the env vars needed for a successful Makerkit production build.
+
+**Important**: The `vercel env add` CLI command prompts interactively ("Mark as sensitive?") even with piped input, so use the Vercel REST API instead for non-interactive setup:
 
 ```bash
-# Core app vars (NEXT_PUBLIC_ vars from .env are inherited, but SITE_URL must be HTTPS for production)
-echo "https://{domain}" | vercel env add NEXT_PUBLIC_SITE_URL production --scope {vercelScope}
-
-# Supabase vars
-echo "https://{projectRef}.supabase.co" | vercel env add NEXT_PUBLIC_SUPABASE_URL production --scope {vercelScope}
-echo "{publishableKey}" | vercel env add NEXT_PUBLIC_SUPABASE_PUBLIC_KEY production --scope {vercelScope}
-echo "{serviceRoleJwt}" | vercel env add SUPABASE_SECRET_KEY production --scope {vercelScope}
-echo "{webhookSecret}" | vercel env add SUPABASE_DB_WEBHOOK_SECRET production --scope {vercelScope}  # generate with openssl rand -hex 32
-
-# Email vars
-echo "{displayName} <noreply@{domain}>" | vercel env add EMAIL_SENDER production --scope {vercelScope}
-echo "resend" | vercel env add MAILER_PROVIDER production --scope {vercelScope}
-echo "re_placeholder_setup_later" | vercel env add RESEND_API_KEY production --scope {vercelScope}
-
-# Stripe vars (placeholders — replace with /setup-stripe later)
-echo "sk_test_placeholder_setup_later" | vercel env add STRIPE_SECRET_KEY production --scope {vercelScope}
-echo "whsec_placeholder_setup_later" | vercel env add STRIPE_WEBHOOK_SECRET production --scope {vercelScope}
+curl -s -X POST "https://api.vercel.com/v10/projects/$PROJECT_ID/env?teamId=$ORG_ID" \
+  -H "Authorization: Bearer $VERCEL_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '[
+    {"key":"NEXT_PUBLIC_SITE_URL","value":"https://{domain}","type":"plain","target":["production"]},
+    {"key":"NEXT_PUBLIC_SUPABASE_URL","value":"https://{projectRef}.supabase.co","type":"plain","target":["production","preview"]},
+    {"key":"NEXT_PUBLIC_SUPABASE_ANON_KEY","value":"{anonJwt}","type":"plain","target":["production","preview"]},
+    {"key":"SUPABASE_SERVICE_ROLE_KEY","value":"{serviceRoleJwt}","type":"encrypted","target":["production","preview"]},
+    {"key":"EMAIL_SENDER","value":"{displayName} <noreply@{domain}>","type":"plain","target":["production","preview"]},
+    {"key":"MAILER_PROVIDER","value":"resend","type":"plain","target":["production","preview"]},
+    {"key":"RESEND_API_KEY","value":"PLACEHOLDER_REPLACE_LATER","type":"encrypted","target":["production"]},
+    {"key":"STRIPE_SECRET_KEY","value":"PLACEHOLDER_REPLACE_LATER","type":"encrypted","target":["production"]},
+    {"key":"STRIPE_WEBHOOK_SECRET","value":"PLACEHOLDER_REPLACE_LATER","type":"encrypted","target":["production"]}
+  ]'
 ```
 
-### 10c: Deploy
+**Env var naming** (must match what the Makerkit code expects):
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — NOT `NEXT_PUBLIC_SUPABASE_PUBLIC_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY` — NOT `SUPABASE_SECRET_KEY`
+- Use `type: "encrypted"` for secrets, `type: "plain"` for public values
+- Include `"preview"` target for Supabase/email vars so preview deployments work too
+
+### 10c: Add Custom Domains
+
+Add domains via Vercel API (the CLI `vercel domains add` can also prompt interactively):
 
 ```bash
-vercel --prod --scope {vercelScope} --yes
+# Root domain
+curl -s -X POST "https://api.vercel.com/v10/projects/$PROJECT_ID/domains?teamId=$ORG_ID" \
+  -H "Authorization: Bearer $VERCEL_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"{domain}"}'
+
+# www redirect to root
+curl -s -X POST "https://api.vercel.com/v10/projects/$PROJECT_ID/domains?teamId=$ORG_ID" \
+  -H "Authorization: Bearer $VERCEL_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"www.{domain}","redirect":"{domain}"}'
 ```
 
-This will take 2-3 minutes. Wait for it to complete and verify the build succeeds.
+### 10d: Trigger Production Deployment
 
-### 10d: Add Custom Domain
+Since the GitHub repo is connected via `vercel link`, pushing to main triggers automatic deployments. If the first push already happened, a deployment may already be in progress.
 
-After a successful deployment:
-
+To trigger manually via API:
 ```bash
-vercel domains add {domain} --scope {vercelScope}
-vercel domains add www.{domain} --scope {vercelScope}
+curl -s -X POST "https://api.vercel.com/v13/deployments?teamId=$ORG_ID" \
+  -H "Authorization: Bearer $VERCEL_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"{slug}","project":"'$PROJECT_ID'","target":"production","gitSource":{"type":"github","ref":"main","org":"{username}","repo":"{slug}"}}'
+```
+
+This will take 2-3 minutes. Check status with:
+```bash
+curl -s "https://api.vercel.com/v6/deployments?projectId=$PROJECT_ID&teamId=$ORG_ID&limit=1" \
+  -H "Authorization: Bearer $VERCEL_TOKEN"
 ```
 
 ### 10e: Configure Cloudflare DNS
@@ -312,17 +404,17 @@ Parse `result[0].id` from the response. If no zone is found, the domain isn't in
 **Step 2: Create DNS records:**
 
 ```bash
-# Root domain
+# Root domain — must be A record (CNAME not allowed at apex on most setups)
 curl -s -X POST "https://api.cloudflare.com/client/v4/zones/{zoneId}/dns_records" \
   -H "Authorization: Bearer $CF_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"type":"A","name":"{domain}","content":"76.76.21.21","proxied":false,"ttl":1}'
 
-# www subdomain
+# www subdomain — use CNAME pointing to Vercel DNS
 curl -s -X POST "https://api.cloudflare.com/client/v4/zones/{zoneId}/dns_records" \
   -H "Authorization: Bearer $CF_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"type":"A","name":"www.{domain}","content":"76.76.21.21","proxied":false,"ttl":1}'
+  -d '{"type":"CNAME","name":"www.{domain}","content":"cname.vercel-dns.com","proxied":false,"ttl":1}'
 ```
 
 Verify both return `"success":true`. If a record already exists, the API returns an error — that's fine, skip it.
@@ -370,7 +462,7 @@ Set:
 
 ### Cloudflare DNS
 - A @ → 76.76.21.21 (DNS only) ✓ configured automatically
-- A www → 76.76.21.21 (DNS only) ✓ configured automatically
+- CNAME www → cname.vercel-dns.com (DNS only) ✓ configured automatically
 
 ### Supabase Auth Setup Required
 
@@ -400,9 +492,22 @@ Set:
 - Use the Edit tool for config file modifications (not Write) to preserve file structure.
 - For config.toml port replacements, be careful to replace the right port in the right section (multiple sections have `port = XXXXX`).
 - Use the domain throughout: EMAIL_SENDER uses `noreply@{domain}`, NEXT_PUBLIC_SITE_URL uses `https://{domain}`.
-- For Vercel project configuration, the API is needed because `vercel link` doesn't detect the monorepo correctly — it sets framework to "Other" and root to ".". The correct settings are framework="nextjs" and rootDirectory="apps/web".
+
+### Vercel gotchas
+- `vercel link` doesn't detect the monorepo correctly — it sets framework to "Other" and root to ".". Must fix via the Vercel REST API.
+- The correct API settings are: `framework="nextjs"`, `rootDirectory="apps/web"`, `buildCommand="cd ../.. && pnpm build"`, `installCommand="cd ../.. && pnpm install"`.
+- `vercel env add` prompts interactively even with piped input — use the REST API `POST /v10/projects/{id}/env` to set env vars non-interactively.
+- `vercel domains add` can also prompt — use REST API `POST /v10/projects/{id}/domains`.
 - The Vercel auth token is stored at `~/AppData/Roaming/com.vercel.cli/Data/auth.json` on Windows.
-- The `sb_secret_*` key is always masked by the Supabase CLI. Use the `service_role` JWT for `SUPABASE_SECRET_KEY` instead.
-- Generate `SUPABASE_DB_WEBHOOK_SECRET` with `openssl rand -hex 32`.
+
+### Supabase gotchas
+- The `sb_secret_*` key is always masked by the Supabase CLI. Use the `service_role` JWT for `SUPABASE_SERVICE_ROLE_KEY`.
+- New Supabase projects use Postgres 17, but the Makerkit template config.toml may say `major_version = 15`. Always update after linking.
+- `supabase db push` needs the `-p` flag with the DB password. It does NOT accept `--project-ref`.
+- The Makerkit lite template does NOT use `SUPABASE_DB_WEBHOOK_SECRET` — don't set it.
+
+### Env var naming (must match Makerkit code)
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` (NOT `NEXT_PUBLIC_SUPABASE_PUBLIC_KEY`)
+- `SUPABASE_SERVICE_ROLE_KEY` (NOT `SUPABASE_SECRET_KEY`)
 - Set MAILER_PROVIDER to "resend" for production (simpler than nodemailer — single API key).
 - Stripe keys are placeholders until `/setup-stripe` is run.
