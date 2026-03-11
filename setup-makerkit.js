@@ -412,6 +412,97 @@ function installAiDevSystem(slug, description) {
 }
 
 // ---------------------------------------------------------------------------
+// shadcnblocks + shadcn MCP
+// ---------------------------------------------------------------------------
+
+function configureShadcnBlocks() {
+  // Read API key from secrets
+  const secretsPath = path.join(
+    process.env.HOME || process.env.USERPROFILE,
+    '.config',
+    'ai-dev-system',
+    'secrets.json',
+  );
+
+  let apiKey = '';
+  try {
+    const secrets = JSON.parse(fs.readFileSync(secretsPath, 'utf-8'));
+    apiKey = secrets.shadcnblocks_api_key || '';
+  } catch {
+    // secrets.json not found or doesn't have the key
+  }
+
+  if (!apiKey) {
+    console.log('  ⚠ shadcnblocks API key not found in secrets.json — skipping');
+    console.log('    Add "shadcnblocks_api_key" to ~/.config/ai-dev-system/secrets.json');
+    return;
+  }
+
+  // Add registry to packages/ui/components.json
+  const componentsPath = path.join(projectRoot, 'packages', 'ui', 'components.json');
+  if (fs.existsSync(componentsPath)) {
+    try {
+      const config = JSON.parse(fs.readFileSync(componentsPath, 'utf-8'));
+      config.registries = {
+        '@shadcnblocks': {
+          url: 'https://shadcnblocks.com/r/{name}',
+          headers: {
+            Authorization: 'Bearer ${SHADCNBLOCKS_API_KEY}',
+          },
+        },
+      };
+      fs.writeFileSync(
+        componentsPath,
+        JSON.stringify(config, null, 2) + '\n',
+        'utf-8',
+      );
+      console.log('  ✓ packages/ui/components.json (shadcnblocks registry)');
+    } catch (e) {
+      console.log(`  ⚠ Failed to update components.json: ${e.message}`);
+    }
+  }
+
+  // Add SHADCNBLOCKS_API_KEY to .env
+  const envPath = path.join(projectRoot, 'apps', 'web', '.env');
+  if (fs.existsSync(envPath)) {
+    appendToFile(
+      envPath,
+      `\n# SHADCNBLOCKS - UI component registry (https://shadcnblocks.com)\nSHADCNBLOCKS_API_KEY=${apiKey}`,
+    );
+    console.log('  ✓ apps/web/.env (SHADCNBLOCKS_API_KEY)');
+  }
+
+  // Write .mcp.json with shadcn MCP server
+  const mcpPath = path.join(projectRoot, '.mcp.json');
+  let mcpConfig = { mcpServers: {} };
+  if (fs.existsSync(mcpPath)) {
+    try {
+      mcpConfig = JSON.parse(fs.readFileSync(mcpPath, 'utf-8'));
+    } catch {}
+  }
+
+  // Add makerkit MCP if packages/mcp-server exists
+  const mkMcpDir = path.join(projectRoot, 'packages', 'mcp-server', 'build', 'index.cjs');
+  if (fs.existsSync(mkMcpDir)) {
+    mcpConfig.mcpServers.makerkit = {
+      type: 'stdio',
+      command: 'node',
+      args: ['packages/mcp-server/build/index.cjs'],
+    };
+  }
+
+  // Add shadcn MCP
+  mcpConfig.mcpServers.shadcn = {
+    type: 'stdio',
+    command: 'npx',
+    args: ['-y', 'shadcn@latest', 'mcp'],
+  };
+
+  fs.writeFileSync(mcpPath, JSON.stringify(mcpConfig, null, 2) + '\n', 'utf-8');
+  console.log('  ✓ .mcp.json (shadcn MCP server)');
+}
+
+// ---------------------------------------------------------------------------
 // Git, GitHub, Vercel
 // ---------------------------------------------------------------------------
 
@@ -573,14 +664,17 @@ async function main() {
   // Execute
   // ---------------------------------------------------------------------------
 
-  console.log('  [1/7] Updating config files...');
+  console.log('  [1/8] Updating config files...');
   updateConfigToml(slug, ports);
   updateEnvFiles(slug, displayName, description, ports);
 
-  console.log('\n  [2/7] Installing ai-dev-system...');
+  console.log('\n  [2/8] Installing ai-dev-system...');
   installAiDevSystem(slug, description);
 
-  console.log('\n  [3/7] Installing dependencies...');
+  console.log('\n  [3/8] Configuring shadcnblocks...');
+  configureShadcnBlocks();
+
+  console.log('\n  [4/8] Installing dependencies...');
   try {
     run('pnpm install', { silent: true });
     console.log('  ✓ pnpm install complete');
@@ -588,16 +682,16 @@ async function main() {
     console.log('  ⚠ pnpm install failed — run it manually later');
   }
 
-  console.log('\n  [4/7] Initializing git...');
+  console.log('\n  [5/8] Initializing git...');
   reinitGit(slug, displayName);
 
-  console.log('\n  [5/7] Creating GitHub repo...');
+  console.log('\n  [6/8] Creating GitHub repo...');
   const githubUrl = createGithubRepo(username, slug);
 
-  console.log('\n  [6/7] Deploying to Vercel...');
+  console.log('\n  [7/8] Deploying to Vercel...');
   const vercelUrl = deployVercel(slug);
 
-  console.log('\n  [7/7] Done!');
+  console.log('\n  [8/8] Done!');
 
   // ---------------------------------------------------------------------------
   // Final summary

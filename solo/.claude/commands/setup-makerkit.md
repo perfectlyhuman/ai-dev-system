@@ -6,6 +6,18 @@ description: "Set up a new Makerkit project: rename, configure ports, deploy to 
 
 You are setting up a freshly cloned Makerkit template as a new project. This is a guided, interactive process that automates everything the user would normally do manually.
 
+## Prerequisites
+
+Before running this command, clone a fresh copy of the Makerkit template:
+
+```bash
+cd C:/Users/riley/Cursor/perfectlyhuman
+git clone https://github.com/makerkit/next-supabase-saas-kit-turbo.git ProjectName
+cd ProjectName
+```
+
+Always clone fresh from `https://github.com/makerkit/next-supabase-saas-kit-turbo.git` — do NOT copy from local templates.
+
 ## What This Does
 
 1. Renames the project across all config files
@@ -159,7 +171,20 @@ Make these exact replacements:
 ### `documentation/MASTER.md` and `documentation/ROADMAP.md`
 - Replace all `next-supabase-saas-kit-turbo` with `{displayName}`
 
-## Step 5b: Configure shadcnblocks
+## Step 5b: Install ai-dev-system Commands
+
+Copy the ai-dev-system Claude commands into the new project. This is **mandatory** — every Makerkit project must have these commands available.
+
+```bash
+# Copy all ai-dev-system commands into the project
+cp C:/Users/riley/Cursor/perfectlyhuman/ai-dev-system/solo/.claude/commands/*.md {projectRoot}/.claude/commands/
+```
+
+This copies: `kickoff.md`, `sync.md`, `vision.md`, `test.md`, `update-docs.md`, `check-assumptions.md`, `dev.md`, `ship.md`, `setup-makerkit.md`. The project may already have a `feature-builder.md` from the Makerkit template — that's fine, these don't conflict.
+
+**Do NOT skip this step.** Without these commands, Claude Code loses access to the full development workflow (kickoff, sync, ship, dev, test, etc.).
+
+## Step 5c: Configure shadcnblocks
 
 Wire in shadcnblocks.com as a UI component provider. If the user has an API key in `~/.config/ai-dev-system/secrets.json` (key: `shadcnblocks_api_key`), use the authenticated config. Otherwise, use the public registry URL.
 
@@ -211,11 +236,10 @@ Add the shadcn MCP server (enables Claude to browse and install components):
 ### Installing blocks
 Once configured, blocks can be installed via:
 ```bash
-pnpm dlx shadcn add shadcnblocks/hero125    # free blocks (no @ prefix)
-pnpm dlx shadcn add @shadcnblocks/hero125   # pro blocks (@ prefix, requires API key)
+npx shadcn add @shadcnblocks/hero2   # pro blocks (@ prefix, requires API key)
 ```
 
-The shadcn CLI reads the registry config from `components.json` and authenticates with the env var automatically.
+The shadcn CLI (v3+) reads the registry config from `components.json` and authenticates using the `SHADCNBLOCKS_API_KEY` env var automatically.
 
 If the API key is not found in secrets.json, use the public registry config and inform the user that pro blocks require a key.
 
@@ -423,22 +447,45 @@ Verify both return `"success":true`. If a record already exists, the API returns
 
 ### 10f: Update Production Supabase Auth URLs
 
-The Supabase production project needs the correct redirect URLs for auth:
+The Supabase production project needs the correct redirect URLs for auth. Use the Supabase Management API:
 
 ```bash
-# This is done via Supabase dashboard or API — inform the user:
+# Read the Supabase access token from Windows Credential Manager using PowerShell + Win32 CredRead API.
+# Write a temp .ps1 script (avoids bash escaping issues), run it, then delete it.
+
+cat > "$TEMP/get-sb-token.ps1" << 'PSEOF'
+Add-Type -Namespace 'CM' -Name 'C' -MemberDefinition '
+[DllImport("advapi32.dll", SetLastError=true, CharSet=CharSet.Unicode)]
+public static extern bool CredRead(string target, int type, int reserved, out IntPtr credential);
+[DllImport("advapi32.dll")] public static extern void CredFree(IntPtr credential);
+[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
+public struct CRED { public int Flags; public int Type; public string TargetName; public string Comment; public long LastWritten; public int CredentialBlobSize; public IntPtr CredentialBlob; public int Persist; public int AttributeCount; public IntPtr Attributes; public string TargetAlias; public string UserName; }
+'
+$p = [IntPtr]::Zero
+[CM.C]::CredRead('Supabase CLI:supabase', 1, 0, [ref]$p) | Out-Null
+$c = [Runtime.InteropServices.Marshal]::PtrToStructure($p, [Type][CM.C+CRED])
+$bytes = New-Object byte[] $c.CredentialBlobSize
+[Runtime.InteropServices.Marshal]::Copy($c.CredentialBlob, $bytes, 0, $c.CredentialBlobSize)
+[CM.C]::CredFree($p)
+[System.Text.Encoding]::UTF8.GetString($bytes)
+PSEOF
+
+SB_TOKEN=$(powershell -NoProfile -ExecutionPolicy Bypass -File "$TEMP/get-sb-token.ps1")
+rm "$TEMP/get-sb-token.ps1"
+
+# Update auth config via Management API
+curl -s -X PATCH "https://api.supabase.com/v1/projects/{projectRef}/config/auth" \
+  -H "Authorization: Bearer $SB_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "site_url": "https://{domain}",
+    "uri_allow_list": "https://{domain},https://{domain}/auth/callback,https://{domain}/update-password"
+  }'
 ```
 
-Print instructions:
-```
-Go to https://supabase.com/dashboard/project/{projectRef}/auth/url-configuration
-Set:
-- Site URL: https://{domain}
-- Redirect URLs:
-  - https://{domain}
-  - https://{domain}/auth/callback
-  - https://{domain}/update-password
-```
+The API returns the full auth config on success. Verify `site_url` and `uri_allow_list` are set correctly in the response.
+
+**Fallback** (if keytar/token extraction fails): Direct the user to https://supabase.com/dashboard/project/{projectRef}/auth/url-configuration
 
 ## Step 11: Final Summary
 
@@ -464,12 +511,9 @@ Set:
 - A @ → 76.76.21.21 (DNS only) ✓ configured automatically
 - CNAME www → cname.vercel-dns.com (DNS only) ✓ configured automatically
 
-### Supabase Auth Setup Required
-
-Go to: https://supabase.com/dashboard/project/{projectRef}/auth/url-configuration
-Set:
-- Site URL: https://{domain}
-- Redirect URLs: https://{domain}, https://{domain}/auth/callback, https://{domain}/update-password
+### Supabase Auth
+- Site URL: https://{domain} ✓ configured automatically
+- Redirect URLs: https://{domain}, https://{domain}/auth/callback, https://{domain}/update-password ✓ configured automatically
 
 ### Env Vars with Placeholder Values (replace later)
 - STRIPE_SECRET_KEY → run /setup-stripe when ready
@@ -505,6 +549,13 @@ Set:
 - New Supabase projects use Postgres 17, but the Makerkit template config.toml may say `major_version = 15`. Always update after linking.
 - `supabase db push` needs the `-p` flag with the DB password. It does NOT accept `--project-ref`.
 - The Makerkit lite template does NOT use `SUPABASE_DB_WEBHOOK_SECRET` — don't set it.
+
+### Supabase Management API gotchas
+- The Supabase CLI stores its access token in the Windows Credential Manager under target `Supabase CLI:supabase`.
+- Read it via PowerShell using the Win32 `CredRead` API (see Step 10f). Do NOT use `keytar` — it has install issues on Windows.
+- Write a temp `.ps1` script file to avoid bash escaping problems with PowerShell inline commands.
+- The Management API base URL is `https://api.supabase.com/v1/`.
+- Auth config endpoint: `PATCH /v1/projects/{ref}/config/auth` with fields `site_url` and `uri_allow_list` (comma-separated string).
 
 ### Env var naming (must match Makerkit code)
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` (NOT `NEXT_PUBLIC_SUPABASE_PUBLIC_KEY`)

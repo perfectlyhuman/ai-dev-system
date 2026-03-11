@@ -8,6 +8,8 @@
   "files": [
     "bin.js",
     "setup.js",
+    "setup-makerkit.js",
+    "setup-nativeexpress.js",
     "solo/",
     "skills/",
     "templates/",

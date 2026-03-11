@@ -4,10 +4,11 @@
  * create-ai-dev
  *
  * Usage:
- *   npx create-ai-dev --solo       # Solo mode (all in-repo, no external tools)
- *   npx create-ai-dev --team       # Team mode (Linear + Google Drive integration)
- *   npx create-ai-dev --makerkit   # Makerkit template setup (solo + port config + GitHub + Vercel)
- *   pnpm create ai-dev --solo      # Same thing via pnpm
+ *   npx create-ai-dev --solo           # Solo mode (all in-repo, no external tools)
+ *   npx create-ai-dev --team           # Team mode (Linear + Google Drive integration)
+ *   npx create-ai-dev --makerkit       # Makerkit template setup (solo + port config + GitHub + Vercel)
+ *   npx create-ai-dev --nativeexpress  # NativeExpress mobile app + Magic UI landing page
+ *   pnpm create ai-dev --solo          # Same thing via pnpm
  *
  * This installs the AI Development System into the current directory.
  */
@@ -22,15 +23,17 @@ if (args.includes('--help') || args.includes('-h')) {
   create-ai-dev — AI Development System
 
   Usage:
-    npx create-ai-dev --solo       Solo mode (documentation-driven, no external tools)
-    npx create-ai-dev --team       Team mode (integrates Linear + Google Drive)
-    npx create-ai-dev --makerkit   Makerkit template setup (full automation)
+    npx create-ai-dev --solo           Solo mode (documentation-driven, no external tools)
+    npx create-ai-dev --team           Team mode (integrates Linear + Google Drive)
+    npx create-ai-dev --makerkit       Makerkit template setup (full automation)
+    npx create-ai-dev --nativeexpress  NativeExpress mobile app + Magic UI landing page
 
   Options:
-    --solo      Install solo mode (recommended for solopreneurs)
-    --team      Install team mode (requires Linear + Google Drive setup)
-    --makerkit  Full Makerkit project setup (rename, ports, GitHub, Vercel)
-    --help      Show this help message
+    --solo           Install solo mode (recommended for solopreneurs)
+    --team           Install team mode (requires Linear + Google Drive setup)
+    --makerkit       Full Makerkit project setup (rename, ports, GitHub, Vercel)
+    --nativeexpress  Mobile app project setup (Expo + Supabase + landing page)
+    --help           Show this help message
 
   After installing:
     1. Open Claude Code in your project
@@ -42,13 +45,15 @@ if (args.includes('--help') || args.includes('-h')) {
   process.exit(0);
 }
 
-const mode = args.includes('--makerkit')
-  ? 'makerkit'
-  : args.includes('--team')
-    ? 'team'
-    : args.includes('--solo')
-      ? 'solo'
-      : null;
+const mode = args.includes('--nativeexpress')
+  ? 'nativeexpress'
+  : args.includes('--makerkit')
+    ? 'makerkit'
+    : args.includes('--team')
+      ? 'team'
+      : args.includes('--solo')
+        ? 'solo'
+        : null;
 
 if (!mode) {
   console.log(`
@@ -56,9 +61,10 @@ if (!mode) {
 
   Please specify a mode:
 
-    npx create-ai-dev --solo       Solo mode (all in-repo, no external tools)
-    npx create-ai-dev --team       Team mode (Linear + Google Drive integration)
-    npx create-ai-dev --makerkit   Makerkit template setup (full automation)
+    npx create-ai-dev --solo           Solo mode (all in-repo, no external tools)
+    npx create-ai-dev --team           Team mode (Linear + Google Drive integration)
+    npx create-ai-dev --makerkit       Makerkit template setup (full automation)
+    npx create-ai-dev --nativeexpress  Mobile app + landing page setup
 
   Run with --help for more info.
 `);
@@ -240,11 +246,62 @@ function setupMakerkit() {
 `);
 }
 
+function setupNativeExpress() {
+  console.log(`
+  AI Development System — NativeExpress Mode
+
+  Installing ai-dev-system into: ${projectRoot}
+  ─────────────────────────────────────
+`);
+
+  // Install solo mode files (commands, skills, documentation)
+  const soloDir = path.join(packageDir, 'solo');
+
+  console.log('  Skills, commands & config:');
+  copyRecursive(
+    path.join(soloDir, '.claude'),
+    path.join(projectRoot, '.claude')
+  );
+
+  console.log('\n  Documentation:');
+  copyRecursive(
+    path.join(soloDir, 'documentation'),
+    path.join(projectRoot, 'documentation')
+  );
+
+  // Ensure archived/ exists
+  const archivedDir = path.join(projectRoot, 'documentation', 'archived');
+  if (!fs.existsSync(archivedDir)) {
+    fs.mkdirSync(archivedDir, { recursive: true });
+    console.log('  + documentation/archived/');
+  }
+
+  console.log(`
+  ─────────────────────────────────────
+  ai-dev-system installed!
+
+  Next step — open Claude Code in this directory and run:
+
+    /setup-nativeexpress
+
+  Claude will walk you through the full setup:
+    - Clone NativeExpress (Expo + React Native) into apps/
+    - Copy Magic UI mobile template into landing/
+    - Configure bundle IDs, Supabase, OpenRouter
+    - Create GitHub repo, Supabase project, EAS project
+    - Deploy landing page to Vercel with custom domain
+
+  Everything is interactive — Claude will ask what it needs and handle the rest.
+`);
+}
+
 // Run
 if (mode === 'solo') {
   setupSolo();
 } else if (mode === 'makerkit') {
   setupMakerkit();
+} else if (mode === 'nativeexpress') {
+  setupNativeExpress();
 } else {
   setupTeam();
 }
