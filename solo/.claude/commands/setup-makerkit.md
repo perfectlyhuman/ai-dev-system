@@ -327,6 +327,16 @@ supabase link --project-ref {projectRef}
 major_version = 17
 ```
 
+**Wait for the project to finish provisioning** before pushing migrations. If you push too early, the storage schema isn't ready and you'll get `relation "storage.buckets" does not exist`. Poll the link command until it no longer prints "COMING_UP":
+
+```bash
+# Wait until no COMING_UP warning
+until ! (supabase link --project-ref {projectRef} 2>&1 | grep -q "COMING_UP"); do sleep 20; done
+
+# Re-link once more to force IPv4 (avoids IPv6 timeout on db push)
+supabase link --project-ref {projectRef}
+```
+
 Then push migrations and get keys:
 ```bash
 # Push all migrations to production (needs the DB password from project creation)
@@ -338,8 +348,8 @@ supabase projects api-keys --project-ref {projectRef}
 
 Save these values:
 - **Supabase URL**: `https://{projectRef}.supabase.co`
-- **Anon key**: the `anon` JWT — used as `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- **Service role key**: the `service_role` JWT — used as `SUPABASE_SERVICE_ROLE_KEY` (the `sb_secret` key is masked by CLI, use the JWT instead)
+- **Anon key**: the `anon` JWT — used as `NEXT_PUBLIC_SUPABASE_PUBLIC_KEY`
+- **Service role key**: the `service_role` JWT — used as `SUPABASE_SECRET_KEY` (the `sb_secret` key is masked by CLI, use the JWT instead)
 
 ## Step 10: Deploy to Vercel
 
@@ -383,8 +393,8 @@ curl -s -X POST "https://api.vercel.com/v10/projects/$PROJECT_ID/env?teamId=$ORG
   -d '[
     {"key":"NEXT_PUBLIC_SITE_URL","value":"https://{domain}","type":"plain","target":["production"]},
     {"key":"NEXT_PUBLIC_SUPABASE_URL","value":"https://{projectRef}.supabase.co","type":"plain","target":["production","preview"]},
-    {"key":"NEXT_PUBLIC_SUPABASE_ANON_KEY","value":"{anonJwt}","type":"plain","target":["production","preview"]},
-    {"key":"SUPABASE_SERVICE_ROLE_KEY","value":"{serviceRoleJwt}","type":"encrypted","target":["production","preview"]},
+    {"key":"NEXT_PUBLIC_SUPABASE_PUBLIC_KEY","value":"{anonJwt}","type":"plain","target":["production","preview"]},
+    {"key":"SUPABASE_SECRET_KEY","value":"{serviceRoleJwt}","type":"encrypted","target":["production","preview"]},
     {"key":"EMAIL_SENDER","value":"{displayName} <noreply@{domain}>","type":"plain","target":["production","preview"]},
     {"key":"MAILER_PROVIDER","value":"resend","type":"plain","target":["production","preview"]},
     {"key":"RESEND_API_KEY","value":"PLACEHOLDER_REPLACE_LATER","type":"encrypted","target":["production"]},
@@ -394,8 +404,8 @@ curl -s -X POST "https://api.vercel.com/v10/projects/$PROJECT_ID/env?teamId=$ORG
 ```
 
 **Env var naming** (must match what the Makerkit code expects):
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — NOT `NEXT_PUBLIC_SUPABASE_PUBLIC_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY` — NOT `SUPABASE_SECRET_KEY`
+- `NEXT_PUBLIC_SUPABASE_PUBLIC_KEY` — NOT `NEXT_PUBLIC_SUPABASE_PUBLIC_KEY`
+- `SUPABASE_SECRET_KEY` — NOT `SUPABASE_SECRET_KEY`
 - Use `type: "encrypted"` for secrets, `type: "plain"` for public values
 - Include `"preview"` target for Supabase/email vars so preview deployments work too
 
@@ -416,6 +426,19 @@ curl -s -X POST "https://api.vercel.com/v10/projects/$PROJECT_ID/domains?teamId=
   -H "Content-Type: application/json" \
   -d '{"name":"www.{domain}","redirect":"{domain}"}'
 ```
+
+### 10c.1: Disable SSO Protection (if testing via `*.vercel.app`)
+
+New Vercel projects in team scopes default to SSO-protected `*.vercel.app` URLs — requests return HTTP 401 unless you're signed in to the team. If the user has no custom domain yet and wants to test the Vercel-provided URL publicly:
+
+```bash
+curl -s -X PATCH "https://api.vercel.com/v9/projects/$PROJECT_ID?teamId=$ORG_ID" \
+  -H "Authorization: Bearer $VERCEL_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"ssoProtection":null}'
+```
+
+**Ask the user first** whether to disable SSO protection. If they have a custom domain already, leave it enabled — SSO only gates non-custom-domain URLs.
 
 ### 10d: Trigger Production Deployment
 
@@ -583,7 +606,7 @@ The API returns the full auth config on success. Verify `site_url` and `uri_allo
 - Vercel's apex IP for A records is `76.76.21.21`. If this stops working, check the Vercel dashboard for the current value.
 
 ### Supabase gotchas
-- The `sb_secret_*` key is always masked by the Supabase CLI. Use the `service_role` JWT for `SUPABASE_SERVICE_ROLE_KEY`.
+- The `sb_secret_*` key is always masked by the Supabase CLI. Use the `service_role` JWT for `SUPABASE_SECRET_KEY`.
 - New Supabase projects use Postgres 17, but the Makerkit template config.toml may say `major_version = 15`. Always update after linking.
 - `supabase db push` needs the `-p` flag with the DB password. It does NOT accept `--project-ref`.
 - The Makerkit lite template does NOT use `SUPABASE_DB_WEBHOOK_SECRET` — don't set it.
@@ -595,8 +618,31 @@ The API returns the full auth config on success. Verify `site_url` and `uri_allo
 - The Management API base URL is `https://api.supabase.com/v1/`.
 - Auth config endpoint: `PATCH /v1/projects/{ref}/config/auth` with fields `site_url` and `uri_allow_list` (comma-separated string).
 
-### Env var naming (must match Makerkit code)
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` (NOT `NEXT_PUBLIC_SUPABASE_PUBLIC_KEY`)
-- `SUPABASE_SERVICE_ROLE_KEY` (NOT `SUPABASE_SECRET_KEY`)
+### Env var naming (must match current Makerkit code)
+- `NEXT_PUBLIC_SUPABASE_PUBLIC_KEY` — **new name** (Makerkit migrated from the legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY`). Code reads it from `packages/supabase/src/get-supabase-client-keys.ts`.
+- `SUPABASE_SECRET_KEY` — **new name** (Makerkit migrated from the legacy `SUPABASE_SERVICE_ROLE_KEY`). Code reads it from `packages/supabase/src/get-secret-key.ts`.
+- The JWT format works for both (Supabase SDK accepts both JWT `eyJ...` and new `sb_publishable_*` / `sb_secret_*` formats). Using JWTs is simpler since the `sb_secret_*` key is always masked by the CLI.
 - Set MAILER_PROVIDER to "resend" for production (simpler than nodemailer — single API key).
 - Stripe keys are placeholders until `/setup-stripe` is run.
+
+### Vercel team SSO protection
+- New Vercel projects in team scopes (IntentPost, Perfectly Human, etc.) default to `ssoProtection: { deploymentType: 'all_except_custom_domains' }`. This blocks public access to `*.vercel.app` URLs and returns HTTP 401.
+- If testing via the Vercel-assigned URL (no custom domain yet), disable SSO protection: `PATCH /v9/projects/{id}` with body `{"ssoProtection": null}`.
+- If using a custom domain, leave SSO protection on — it only gates non-custom-domain URLs.
+
+### Supabase project readiness race
+- `supabase projects create` returns quickly but the project takes 60-120s to become `ACTIVE_HEALTHY`. During this window, `supabase link` prints `WARNING: Project status is COMING_UP`.
+- `supabase db push` during this window fails with `relation "storage.buckets" does not exist` because the storage schema is provisioned asynchronously.
+- Wait until `supabase link` no longer prints "COMING_UP" before running `supabase db push`. Then re-link once more to force IPv4 (see below).
+
+### Supabase IPv6 db push issue
+- Default Supabase project URLs resolve to both IPv6 and IPv4. On networks without IPv6 (or misconfigured IPv6), `supabase db push` fails with `dial tcp [...]:5432: i/o timeout`.
+- Fix: re-run `supabase link --project-ref {ref}` — the CLI detects the IPv6 timeout on subsequent connections and falls back to IPv4.
+
+### Vercel monorepo project naming
+- `vercel link` creates the project with the name of the directory it's run from. For Makerkit, that's `web` (the `apps/web` dir).
+- Rename via the REST API in step 10a (the `name` field in the PATCH). If the desired name is already taken in the scope, the rename fails with a conflict error — just drop the `name` field and retry.
+
+### Node path on Windows
+- Node.js on Windows does NOT resolve `/tmp/` — it translates to `C:\tmp\` which usually doesn't exist, causing `ENOENT` errors.
+- When passing values between steps, use `$TEMP/` (Windows) or inline the value directly in the next command. Do not use `/tmp/`.
