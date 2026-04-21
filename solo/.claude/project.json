@@ -1,0 +1,36 @@
+{
+  "name": "{{PROJECT_NAME}}",
+  "description": "{{PROJECT_DESCRIPTION}}",
+  "launch": {
+    "status": "pre-launch",
+    "activeUsers": false,
+    "wentLiveAt": null
+  },
+  "intake": {
+    "provider": "none",
+    "repo": ""
+  },
+  "documentation": {
+    "root": "documentation",
+    "master": "documentation/MASTER.md",
+    "roadmap": "documentation/ROADMAP.md",
+    "chapters": "documentation/chapters",
+    "workflows": "documentation/workflows"
+  },
+  "testing": {
+    "typecheck": "pnpm typecheck",
+    "lint": "pnpm lint:fix",
+    "format": "pnpm format:fix",
+    "quick": "pnpm typecheck && pnpm lint:fix && pnpm format:fix"
+  },
+  "git": {
+    "mainBranch": "main",
+    "previewBranch": "preview",
+    "branchPrefix": "",
+    "remote": "origin"
+  },
+  "paths": {
+    "app": "apps/web",
+    "database": "apps/web/supabase"
+  }
+}

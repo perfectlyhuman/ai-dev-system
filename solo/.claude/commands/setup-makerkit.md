@@ -1,5 +1,5 @@
 ---
-description: "Set up a new Makerkit project: rename, configure ports, deploy to Supabase + Vercel + custom domain"
+description: "Use when setting up a freshly cloned Makerkit template as a new project — renames everything, configures ports, deploys to Supabase + Vercel + custom domain"
 ---
 
 # /setup-makerkit - New Project Setup
@@ -22,12 +22,21 @@ Always clone fresh from `https://github.com/makerkit/next-supabase-saas-kit-turb
 
 1. Renames the project across all config files
 2. Assigns unique local dev ports (so multiple Makerkit projects can run simultaneously)
-3. Installs the ai-dev-system (skills, commands, documentation)
+3. Installs the ai-dev-system (skills, commands, documentation, hook)
 4. Reinitializes git with a clean history
 5. Creates a private GitHub repo and pushes
 6. Creates a production Supabase project, links it, and pushes migrations
 7. Deploys to Vercel with all required env vars
-8. Adds custom domain to Vercel and configures Cloudflare DNS automatically
+8. Configures Cloudflare DNS: `{domain}` → Vercel
+9. Configures Supabase auth redirect URLs
+
+### Domain Architecture
+
+```
+{domain}    → Vercel    (Makerkit serves both marketing pages and the app)
+```
+
+Makerkit's built-in route groups handle both marketing (`/`, `/pricing`, etc.) and app (`/home`, `/account`, etc.) under one domain. We keep Makerkit's foundation and build on top of it — no separate landing page service.
 
 ---
 
@@ -41,7 +50,7 @@ Ask the user these questions using AskUserQuestion (or conversationally):
    - Default: title-case of slug
 3. **Domain** — production domain (e.g., "intentpost.com")
    - Default: `{slug}.com`
-   - This drives: EMAIL_SENDER, NEXT_PUBLIC_SITE_URL (production), Vercel custom domain, Supabase auth redirect URLs
+   - This drives: EMAIL_SENDER, NEXT_PUBLIC_SITE_URL, Vercel custom domain, Supabase auth redirect URLs
 4. **Short description** — one sentence (optional, can be added later)
 5. **GitHub username** — for repo creation
    - Auto-detect: run `gh api user -q .login`
@@ -64,85 +73,86 @@ gh api user -q .login
 vercel teams ls  # Parse output to get team names and IDs
 
 # Detect Supabase orgs
-supabase orgs list  # Parse to get org names and IDs
+supabase orgs list
 ```
 
-If Vercel has multiple scopes, ask the user which one to use.
-If Supabase has multiple orgs, ask the user which one to use.
-Also ask which Supabase region (default: us-east-1).
+If a CLI is missing, note it but continue — those steps will be skipped or done manually later.
 
-## Step 3: Detect Port Range
+## Step 3: Choose Vercel Scope and Supabase Org
 
-Scan sibling directories for other Makerkit projects to avoid port conflicts.
+If multiple Vercel scopes / Supabase orgs are detected, present them to the user and let them choose. If only one of each, use it as the default.
 
-```bash
-# For each sibling directory, check if it has a Supabase config
-# Read the API port from apps/web/supabase/config.toml
-# Calculate which "project numbers" are already taken
-```
+## Step 4: Assign Ports
 
-**Port formula:** Each project gets a number (0, 1, 2, 3...). Ports shift by `number * 10`:
+Look at the user's other Makerkit projects (likely in `C:/Users/riley/Cursor/perfectlyhuman/`) to find ports already in use. Pick the next free port group.
 
-| Service | Formula | Default (0) | Example (1) |
-|---------|---------|-------------|-------------|
-| Supabase API | 54321 + N*10 | 54321 | 54331 |
-| Supabase DB | 54322 + N*10 | 54322 | 54332 |
-| Supabase Studio | 54323 + N*10 | 54323 | 54333 |
-| Inbucket Web | 54324 + N*10 | 54324 | 54334 |
-| Inbucket SMTP | 54325 + N*10 | 54325 | 54335 |
-| Inbucket POP3 | 54326 + N*10 | 54326 | 54336 |
-| Analytics | 54327 + N*10 | 54327 | 54337 |
-| Next.js | 3000 + N | 3000 | 3001 |
+A "port group" is `{groupNumber}` where:
+- `apiPort` = 54321 + (groupNumber * 10)
+- `dbPort` = 54322 + (groupNumber * 10)
+- `studioPort` = 54323 + (groupNumber * 10)
+- `inbucketPort` = 54324 + (groupNumber * 10)
+- `smtpPort` = 54325 + (groupNumber * 10)
+- `pop3Port` = 54326 + (groupNumber * 10)
+- `analyticsPort` = 54327 + (groupNumber * 10)
+- `nextPort` = 3000 + groupNumber
 
-Present the suggested port group number and let the user confirm or override.
+For example, group 1 → API 54331, DB 54332, ..., Next.js 3001.
 
-## Step 4: Present Summary
+## Step 5: Present Setup Plan
 
-Before making any changes, show the user exactly what will be modified:
+Show the user the full plan and wait for approval:
 
 ```
-## Setup Summary
+## Setup Plan
 
 **Project**: {slug} ({displayName})
-**Domain**: {domain}
 **Description**: {description}
-**GitHub**: {username}/{slug}
-**Port group**: {N} (Supabase {apiPort}-{analyticsPort}, Next.js {nextPort})
-**Vercel scope**: {vercelScope}
-**Supabase org**: {supabaseOrg} ({supabaseRegion})
+**Domain**: {domain}
 
-### Files to modify:
-- apps/web/supabase/config.toml — project_id + 7 ports + auth URLs
-- apps/web/.env — site URL, product name, title, description
-- apps/web/.env.development — Supabase URL, email port, sender
-- apps/web/.env.test — Supabase URL, email port
-- package.json — name field
+**Local Ports** (group {N}):
+- Supabase API:    {apiPort}
+- Supabase DB:     {dbPort}
+- Supabase Studio: {studioPort}
+- Inbucket (mail): {inbucketPort}
+- Next.js:         {nextPort}
 
-### Files to create/update:
-- .claude/project.json
-- documentation/MASTER.md, ROADMAP.md
+**Remote**:
+- GitHub:    {username}/{slug} (private repo)
+- Supabase:  {supabaseOrg} ({region}, Postgres 17)
+- Vercel:    {vercelScope}
+- Cloudflare: {domain} → Vercel
 
-### Remote services:
-- GitHub: private repo {username}/{slug}
-- Supabase: production project in {supabaseOrg} ({supabaseRegion})
-- Vercel: deploy under {vercelScope}, custom domain {domain}
+**Local files I'll modify**:
+- `apps/web/supabase/config.toml`     — port assignments
+- `apps/web/.env`, `.env.development` — local URLs, project name
+- `apps/web/.env.test`                — local URLs
+- `package.json` (root)               — project name
+- `.claude/project.json`              — name, description
+- `documentation/MASTER.md, ROADMAP.md` — replace template name
+
+OK to proceed?
 ```
 
-**Wait for user confirmation before proceeding.**
+Wait for approval before continuing.
 
-## Step 5: Modify Config Files
+## Step 5a: Update Local Config Files
 
-Make these exact replacements:
+For each file below, make the listed changes:
 
 ### `apps/web/supabase/config.toml`
-- `project_id = "next-supabase-saas-kit-turbo"` → `project_id = "{slug}"`
-- `[api]` section: `port = 54321` → `port = {apiPort}`
-- `[db]` section: `port = 54322` → `port = {dbPort}`
-- `[studio]` section: `port = 54323` → `port = {studioPort}`
-- `[inbucket]` section: `port = 54324` → `port = {inbucketPort}`
-- `smtp_port = 54325` → `smtp_port = {smtpPort}`
-- `pop3_port = 54326` → `pop3_port = {pop3Port}`
-- `[analytics]` section: `port = 54327` → `port = {analyticsPort}`
+
+The Supabase config has multiple sections (`[api]`, `[db]`, `[studio]`, `[inbucket]`, `[analytics]`) each with their own `port =`. Replace each section's port to use the assigned value:
+
+- `[api] port = 54321` → `port = {apiPort}`
+- `[db] port = 54322` → `port = {dbPort}`
+- `[db.shadow] port = 54320` → `port = {apiPort - 1}` (or +0 if pattern differs — verify)
+- `[studio] port = 54323` → `port = {studioPort}`
+- `[inbucket] port = 54324` → `port = {inbucketPort}`
+- `[inbucket] smtp_port = 54325` → `smtp_port = {smtpPort}`
+- `[inbucket] pop3_port = 54326` → `pop3_port = {pop3Port}`
+- `[analytics] port = 54327` → `port = {analyticsPort}`
+
+Also update site_url and any redirect URLs:
 - Replace ALL `localhost:3000` with `localhost:{nextPort}` (catches site_url + redirect URLs)
 - Replace ALL `Makerkit` with `{displayName}` (catches email template subjects)
 
@@ -166,23 +176,42 @@ Make these exact replacements:
 - `"name": "next-supabase-saas-kit-turbo"` → `"name": "{slug}"`
 
 ### `.claude/project.json`
-- Update `name` and `description` fields
+- Update `name` and `description` fields. Other fields (`launch`, `intake`, `git`, `paths`, etc.) keep the ai-dev-system defaults.
 
 ### `documentation/MASTER.md` and `documentation/ROADMAP.md`
 - Replace all `next-supabase-saas-kit-turbo` with `{displayName}`
 
-## Step 5b: Install ai-dev-system Commands
+## Step 5b: Install ai-dev-system
 
-Copy the ai-dev-system Claude commands into the new project. This is **mandatory** — every Makerkit project must have these commands available.
+Copy the ai-dev-system Claude commands, skills, hooks, and settings into the new project. This is **mandatory** — every Makerkit project must have ai-dev-system installed.
 
 ```bash
-# Copy all ai-dev-system commands into the project
+# Copy commands and skills (NOT cp -r on the .claude dir — that nests .claude/.claude/)
 cp C:/Users/riley/Cursor/perfectlyhuman/ai-dev-system/solo/.claude/commands/*.md {projectRoot}/.claude/commands/
+cp C:/Users/riley/Cursor/perfectlyhuman/ai-dev-system/solo/.claude/skills/*.md {projectRoot}/.claude/skills/
+
+# Copy hooks (preserves session-start hook)
+mkdir -p {projectRoot}/.claude/hooks
+cp C:/Users/riley/Cursor/perfectlyhuman/ai-dev-system/solo/.claude/hooks/* {projectRoot}/.claude/hooks/
+chmod +x {projectRoot}/.claude/hooks/session-start
+
+# Copy settings.json (wires up the SessionStart hook)
+# Only copy if the project doesn't already have one — Makerkit's template may include settings
+if [ ! -f {projectRoot}/.claude/settings.json ]; then
+  cp C:/Users/riley/Cursor/perfectlyhuman/ai-dev-system/solo/.claude/settings.json {projectRoot}/.claude/settings.json
+fi
+
+# Copy documentation templates (only if not present)
+if [ ! -d {projectRoot}/documentation ]; then
+  cp -r C:/Users/riley/Cursor/perfectlyhuman/ai-dev-system/solo/documentation {projectRoot}/documentation
+fi
 ```
 
-This copies: `kickoff.md`, `sync.md`, `vision.md`, `test.md`, `update-docs.md`, `check-assumptions.md`, `dev.md`, `ship.md`, `setup-makerkit.md`. The project may already have a `feature-builder.md` from the Makerkit template — that's fine, these don't conflict.
+**IMPORTANT**: Do NOT use `cp -r solo/.claude/ project/.claude/` — if `.claude/` already exists (Makerkit template has one), `cp -r` will nest it as `.claude/.claude/` and commands won't be found. Always copy the *contents* of each subdirectory.
 
-**Do NOT skip this step.** Without these commands, Claude Code loses access to the full development workflow (kickoff, sync, ship, dev, test, etc.).
+This installs the ai-dev-system slash commands (`/sync`, `/update-docs`, `/vision`, `/ship`, `/kickoff`, `/go-live`, `/setup-makerkit`, `/setup-nativeexpress`), the SessionStart hook, and the documentation system.
+
+**Do NOT skip this step.** Without it, Claude Code loses access to the project lifecycle workflow.
 
 ## Step 5c: Configure shadcnblocks
 
@@ -370,18 +399,18 @@ curl -s -X POST "https://api.vercel.com/v10/projects/$PROJECT_ID/env?teamId=$ORG
 - Use `type: "encrypted"` for secrets, `type: "plain"` for public values
 - Include `"preview"` target for Supabase/email vars so preview deployments work too
 
-### 10c: Add Custom Domains
+### 10c: Add Custom Domain
 
-Add domains via Vercel API (the CLI `vercel domains add` can also prompt interactively):
+The whole Makerkit app (marketing pages + app routes) lives on `{domain}`. Add the root domain via Vercel API:
 
 ```bash
-# Root domain
+# Root domain — Makerkit serves marketing at / and the app at /home, /account, etc.
 curl -s -X POST "https://api.vercel.com/v10/projects/$PROJECT_ID/domains?teamId=$ORG_ID" \
   -H "Authorization: Bearer $VERCEL_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"name":"{domain}"}'
 
-# www redirect to root
+# Optional: also add www.{domain} if the user wants a www variant
 curl -s -X POST "https://api.vercel.com/v10/projects/$PROJECT_ID/domains?teamId=$ORG_ID" \
   -H "Authorization: Bearer $VERCEL_TOKEN" \
   -H "Content-Type: application/json" \
@@ -425,25 +454,27 @@ curl -s "https://api.cloudflare.com/client/v4/zones?name={domain}" \
 
 Parse `result[0].id` from the response. If no zone is found, the domain isn't in their Cloudflare account yet — inform the user and skip.
 
-**Step 2: Create DNS records:**
+**Step 2: Create DNS records pointing to Vercel:**
 
 ```bash
-# Root domain — must be A record (CNAME not allowed at apex on most setups)
+# Root domain (apex) — A record pointing to Vercel's anycast IP
 curl -s -X POST "https://api.cloudflare.com/client/v4/zones/{zoneId}/dns_records" \
   -H "Authorization: Bearer $CF_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"type":"A","name":"{domain}","content":"76.76.21.21","proxied":false,"ttl":1}'
 
-# www subdomain — use CNAME pointing to Vercel DNS
+# www subdomain — CNAME to Vercel (optional but standard)
 curl -s -X POST "https://api.cloudflare.com/client/v4/zones/{zoneId}/dns_records" \
   -H "Authorization: Bearer $CF_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"type":"CNAME","name":"www.{domain}","content":"cname.vercel-dns.com","proxied":false,"ttl":1}'
 ```
 
-Verify both return `"success":true`. If a record already exists, the API returns an error — that's fine, skip it.
+Verify each returns `"success":true`. If a record already exists, the API returns an error — that's fine, skip it.
 
 **Important**: `proxied` must be `false` (DNS only / grey cloud). Vercel handles SSL — Cloudflare proxy causes conflicts.
+
+**Note on Vercel's apex IP**: Vercel uses `76.76.21.21` for apex domains. If Vercel changes this, the user can check their custom domain dashboard for the current value.
 
 ### 10f: Update Production Supabase Auth URLs
 
@@ -496,6 +527,10 @@ The API returns the full auth config on success. Verify `site_url` and `uri_allo
 **Domain**: {domain}
 **Ports**: Supabase {apiPort}-{analyticsPort} | Next.js {nextPort}
 
+### Domain Architecture
+- {domain}     → Vercel (Makerkit serves marketing + app)
+- www.{domain} → redirects to {domain}
+
 ### Local Dev URLs
 - App:          http://localhost:{nextPort}
 - Supabase API: http://localhost:{apiPort}
@@ -505,11 +540,11 @@ The API returns the full auth config on success. Verify `site_url` and `uri_allo
 ### Remote
 - GitHub:   https://github.com/{username}/{slug}
 - Supabase: https://supabase.com/dashboard/project/{projectRef}
-- Vercel:   https://{domain} (pending DNS)
+- Vercel:   https://{domain}
 
 ### Cloudflare DNS
-- A @ → 76.76.21.21 (DNS only) ✓ configured automatically
-- CNAME www → cname.vercel-dns.com (DNS only) ✓ configured automatically
+- A record:    {domain} → 76.76.21.21 (Vercel apex)        ✓ configured automatically
+- CNAME:       www.{domain} → cname.vercel-dns.com         ✓ configured automatically
 
 ### Supabase Auth
 - Site URL: https://{domain} ✓ configured automatically
@@ -523,7 +558,8 @@ The API returns the full auth config on success. Verify `site_url` and `uri_allo
 ### Quick Start
 1. `pnpm supabase:web:start`  — Start local Supabase
 2. `pnpm dev`                 — Start dev server
-3. Run `/kickoff` for product discovery, or `/vision` to plan
+3. Run `/kickoff` for product discovery, or `/sync` to orient
+4. Customize Makerkit's marketing pages in `apps/web/app/(marketing)/` (or wherever the route group lives)
 ```
 
 ---
@@ -531,11 +567,12 @@ The API returns the full auth config on success. Verify `site_url` and `uri_allo
 ## Rules
 
 - Always present the full summary before making changes.
-- All remote steps (GitHub, Supabase, Vercel) are best-effort — skip gracefully if CLIs aren't installed or steps fail.
+- All remote steps (GitHub, Supabase, Vercel, Cloudflare) are best-effort — skip gracefully if CLIs aren't installed or steps fail.
 - Don't modify any files the user didn't approve.
 - Use the Edit tool for config file modifications (not Write) to preserve file structure.
 - For config.toml port replacements, be careful to replace the right port in the right section (multiple sections have `port = XXXXX`).
-- Use the domain throughout: EMAIL_SENDER uses `noreply@{domain}`, NEXT_PUBLIC_SITE_URL uses `https://{domain}`.
+- The whole app (marketing + app routes) lives at `{domain}` (Vercel). Single domain, no subdomain split.
+- EMAIL_SENDER uses `noreply@{domain}`, NEXT_PUBLIC_SITE_URL uses `https://{domain}`.
 
 ### Vercel gotchas
 - `vercel link` doesn't detect the monorepo correctly — it sets framework to "Other" and root to ".". Must fix via the Vercel REST API.
@@ -543,6 +580,7 @@ The API returns the full auth config on success. Verify `site_url` and `uri_allo
 - `vercel env add` prompts interactively even with piped input — use the REST API `POST /v10/projects/{id}/env` to set env vars non-interactively.
 - `vercel domains add` can also prompt — use REST API `POST /v10/projects/{id}/domains`.
 - The Vercel auth token is stored at `~/AppData/Roaming/com.vercel.cli/Data/auth.json` on Windows.
+- Vercel's apex IP for A records is `76.76.21.21`. If this stops working, check the Vercel dashboard for the current value.
 
 ### Supabase gotchas
 - The `sb_secret_*` key is always masked by the Supabase CLI. Use the `service_role` JWT for `SUPABASE_SERVICE_ROLE_KEY`.

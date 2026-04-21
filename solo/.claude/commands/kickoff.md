@@ -1,8 +1,18 @@
 ---
-description: "Day 1 project bootstrap: guided product discovery from idea to implementation-ready documentation"
+description: "Use on Day 1 of a new project, when starting product discovery from scratch, or when an existing project's docs are empty/stub placeholders and need to be populated from first principles"
 ---
 
 # /kickoff - Project Bootstrap
+
+**Announce at start:** "I'm using the /kickoff skill to guide product discovery and bootstrap your documentation."
+
+## The Iron Laws
+
+- **NO DOCUMENTATION FILES WRITTEN WITHOUT USER APPROVAL OF EACH PHASE FIRST.**
+- **NO ROADMAP TASK WRITTEN WITH PLACEHOLDERS** ("TBD", "figure out later", "similar to above"). Every task has exact enough detail that `/dev` can pick it up.
+- **NO MARKET-RESEARCH PHASE WITHOUT REAL WEB SEARCHES.** Fabricated competitor names or pricing data is disqualifying.
+
+Violating the letter of these laws is violating the spirit of them.
 
 You are guiding a solopreneur through a structured product discovery and project setup process. This takes them from "I have an idea" to a fully populated documentation system ready for `/dev`.
 
@@ -282,7 +292,19 @@ Things we can't decide yet but need to resolve:
    - Only create chapters for domains that are well-defined enough
    - Use the chapter TEMPLATE.md structure
 
-6. **.claude/project.json** — Fill in project name, description, paths
+6. **.claude/project.json** — Fill in project name, description, paths. Set `launch.status: "pre-launch"` and `launch.activeUsers: false` by default — new projects start pre-launch. The user can run `/go-live` later to flip this.
+
+### Self-Review After Writing
+
+Once all files are drafted (but before reporting "done"), re-read each with fresh eyes and fix inline:
+
+- **Placeholder scan.** Any "TBD", "TODO", "figure out later", "similar to above" in ROADMAP task descriptions? Replace with real content or mark explicitly as an Open Question.
+- **Internal consistency.** Do MASTER.md, ROADMAP.md, and chapters agree on what's being built? Does the architecture match the feature descriptions?
+- **Scope check.** Is this focused enough for a single project? If the idea covers multiple independent subsystems (chat + billing + analytics + file storage), flag to the user that this should be decomposed into separate projects, each with its own kickoff.
+- **Ambiguity check.** Could any requirement be read two different ways? Pick one and make it explicit.
+- **WHY capture.** Each chapter's Key Decisions has Rationale AND Alternatives. Each major decision has a Revisit-if condition.
+
+Fix issues inline. No need to re-review — just fix and move on.
 
 ### Present the generated docs:
 
