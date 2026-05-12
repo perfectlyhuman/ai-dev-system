@@ -40,7 +40,7 @@ This system creates a **single source of truth** across three synchronized layer
 
 4. **Documentation is Living** - Updated continuously as code changes, not written once and forgotten
 
-5. **Single Session Context** - `/sync` gives AI complete project state in seconds, eliminating "let me understand your codebase" delays
+5. **Session Bookends** - `/start` opens every session by reading the prior HANDOFF + diffing git state. `/finish` closes by writing the next HANDOFF. The bridge is never dependent on user memory — durable context survives across context-clears.
 
 ---
 
@@ -229,18 +229,36 @@ Claude Code needs these MCP servers:
 
 ## Skills Reference
 
-### /sync - Morning Check-In
+### /start - Session Open (replaces the older /sync)
 
-**When:** Start of each work session
+**When:** Start of every work session.
 
 **What it does:**
-1. Reads project.json
-2. Verifies all connections (Linear, Drive, Codebase, Git)
-3. Fetches all Linear issues, categorizes by status
-4. Checks for inconsistencies
-5. Presents unified status report
+1. Reads `documentation/HANDOFF.md` (the bridge from last session).
+2. `git log --since=<handoff date>` — surfaces commits that landed without making it into the handoff (auto-deploys, crons, your pushes from another machine).
+3. Runs any verifications the handoff queued (SQL probes, `gh` checks, log scans).
+4. Surfaces in-progress tasks from TaskList.
+5. Orients on roadmap state (current phase, ready-to-pick-up tasks, blocked items).
+6. Brief report → recommends next action → awaits direction.
 
-**Why:** Eliminates "where were we?" - AI has full context in 30 seconds.
+**Why:** The HANDOFF is only useful if it gets read. `/start` makes that automatic, and it self-heals when handoffs get skipped (stale-handoff detection + git-gap surfacing).
+
+---
+
+### /finish - Session Close (paired with /start)
+
+**When:** End of every work session.
+
+**What it does:**
+1. Computes session richness (commits since last handoff, completed tasks, diff size).
+2. **HIGH signal** (commits + tasks + meaningful diff) → writes a full handoff.
+3. **MEDIUM signal** (one of the above) → writes a focused handoff.
+4. **LOW signal** (mostly Q&A) → ASKS before writing. Never silently skips.
+5. Archives the prior `HANDOFF.md` to `documentation/handoffs/YYYY-MM-DD.md`.
+6. Writes fresh `HANDOFF.md` as the bridge to the next session.
+7. Reminds about uncommitted work or staleness in ROADMAP, but does NOT auto-trigger `/update-docs` (different concern).
+
+**Why:** The HANDOFF bridge only works if it gets written. `/finish` makes the ceremony cheap and protects against both "trivial-skip loses context" and "noise from empty sessions."
 
 ---
 
@@ -362,19 +380,20 @@ Claude Code needs these MCP servers:
 ### Daily Development
 
 ```
-/sync                    # Get oriented (30 seconds)
+/start                   # Open session — read HANDOFF, diff git, run verifications
 /dev INT-XX              # Work on issue
   [implement]
   /test                  # Verify
-  /update-docs           # Capture learnings
+  /update-docs           # Capture learnings (persistent project record)
   /ship                  # Push and close
 /dev INT-YY              # Next issue
+/finish                  # Close session — write fresh HANDOFF, archive prior
 ```
 
 ### Weekly Planning
 
 ```
-/sync                    # Current state
+/start                   # Current state + handoff context
 /vision                  # Strategic discussion
   [discuss priorities]
   [update roadmap]

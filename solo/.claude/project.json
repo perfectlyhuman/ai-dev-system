@@ -15,7 +15,9 @@
     "master": "documentation/MASTER.md",
     "roadmap": "documentation/ROADMAP.md",
     "chapters": "documentation/chapters",
-    "workflows": "documentation/workflows"
+    "workflows": "documentation/workflows",
+    "handoff": "documentation/HANDOFF.md",
+    "handoffs": "documentation/handoffs"
   },
   "testing": {
     "typecheck": "pnpm typecheck",
