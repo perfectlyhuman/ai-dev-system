@@ -79,7 +79,7 @@ grep -E "sk-|sk_live_|xai-|eyJ|Bearer |BEGIN PRIVATE KEY|SERVICE_KEY=|SB_KEY=|GO
 ```
 Expected: no matches. Any match = a secret escaped redaction. Stop, redact further, re-verify.
 
-- [ ] **Step 3: Snapshot ai-dev-system tree**
+- [ ] **Step 2: Snapshot ai-dev-system tree**
 
 Use `git -C` with absolute paths instead of `cd` so commands are self-contained:
 ```bash
@@ -88,7 +88,7 @@ git -C "c:/Users/riley/Cursor/perfectlyhuman/ai-dev-system" log -10 --oneline > 
 ```
 Expected: status captured (may be non-empty due to pre-existing unrelated dirty state — that's fine; this baseline records reality at integration start, not a hypothetically-clean tree). Recent commits captured.
 
-- [ ] **Step 4: Snapshot seek tree (testbed target)**
+- [ ] **Step 3: Snapshot seek tree (testbed target)**
 
 ```bash
 git -C "c:/Users/riley/Cursor/perfectlyhuman/seek" status --short > "c:/Users/riley/Cursor/perfectlyhuman/ai-dev-system/docs/omc-integration-baseline-2026-05-18/seek-status.txt"
@@ -97,7 +97,7 @@ git -C "c:/Users/riley/Cursor/perfectlyhuman/seek" rev-parse HEAD > "c:/Users/ri
 ```
 Expected: seek-status.txt may be empty (seek is clean), HEAD SHA captured for rollback reference.
 
-- [ ] **Step 5: Commit the baseline**
+- [ ] **Step 4: Commit the baseline**
 
 ai-dev-system's default branch is `master` (not `main`). Branch explicitly off master so the base is unambiguous:
 ```bash
@@ -133,12 +133,15 @@ Expected: marketplace registered. Verify with `/plugin marketplace list`.
 ```
 Expected: plugin installed. Verify with `/plugin list` — should now show `oh-my-claudecode@<version>` alongside `superpowers@5.1.0`.
 
-- [ ] **Step 3: Diff global settings against the baseline**
+- [ ] **Step 3: Confirm OMC was added to the plugin list**
 
-```powershell
-Compare-Object (Get-Content "$env:USERPROFILE\.claude\settings.json") (Get-Content "c:\Users\riley\Cursor\perfectlyhuman\ai-dev-system\docs\omc-integration-baseline-2026-05-18\global-settings.json")
+There is no full settings snapshot to diff against (baseline is a redacted manifest, not a raw copy). Instead, verify the `enabledPlugins` block in `~/.claude/settings.json` now contains an entry for `oh-my-claudecode`, and confirm the plugin install dropped files under `~/.claude/plugins/`:
+
+```bash
+grep -i "oh-my-claudecode" "$HOME/.claude/settings.json"
+find "$HOME/.claude/plugins" -type d -iname "*oh-my-claudecode*" 2>/dev/null | head
 ```
-Expected: diff shows OMC plugin entry added. Note exact path of OMC plugin install on disk (likely `~/.claude/plugins/cache/.../oh-my-claudecode/<version>/`).
+Expected: grep returns at least one match in the `enabledPlugins` array. The `find` returns at least one path like `~/.claude/plugins/cache/.../oh-my-claudecode/<version>/`. Record that path — we need it in Step 4.
 
 - [ ] **Step 4: Locate OMC's hooks.json**
 
@@ -775,12 +778,20 @@ git revert <merge-sha>
 
 **Note:** This removes `/grind-phase` and the wiki-ingest step in `/update-docs`. Existing chapter entries (including any promoted from OMC wiki) remain — they're indistinguishable from regular chapter content.
 
-### 5. Restore global settings (if anything snuck in)
+### 5. Verify settings rolled back cleanly
 
-```powershell
-Compare-Object (Get-Content "$env:USERPROFILE\.claude\settings.json") (Get-Content "c:\Users\riley\Cursor\perfectlyhuman\ai-dev-system\docs\omc-integration-baseline-2026-05-18\global-settings.json")
+There is no full settings snapshot to diff against — baseline is the redacted `plugins-manifest.txt`. Check structurally:
+
+```bash
+grep -i "oh-my-claudecode" "$HOME/.claude/settings.json"
 ```
-If diffs remain, manually revert to baseline.
+Expected: no matches. If any remain, the uninstall didn't fully clean the `enabledPlugins` block — edit `~/.claude/settings.json` by hand to remove the orphan entry.
+
+Compare the live plugin list against the baseline manifest:
+```bash
+diff <(grep -A 20 "enabledPlugins" "$HOME/.claude/settings.json" | head -30) <(grep -A 20 "Enabled" "c:/Users/riley/Cursor/perfectlyhuman/ai-dev-system/docs/omc-integration-baseline-2026-05-18/plugins-manifest.txt")
+```
+Trivial diff in formatting is fine. The plugin entries should match what's in the baseline manifest.
 
 ### 6. Verify baseline behavior
 
