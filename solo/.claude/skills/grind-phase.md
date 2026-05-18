@@ -72,7 +72,9 @@ If any check fails, STOP and report which one.
 
 ### 4. Hand off to OMC's team mode
 
-Invoke OMC's `team` skill with the phase plan as input. The orchestration pattern:
+**OMC `team` mode is the default orchestration path.** Invoke `oh-my-claudecode:team` with the phase plan as input. This is the load-bearing integration point that `/grind-phase` exists to exercise — without it, we lose the multi-agent fan-out, the verify-fix ralph loop, and the team-pipeline state machine.
+
+The orchestration pattern:
 
 ```
 team-plan (consumes the existing phase plan, doesn't re-plan)
@@ -88,6 +90,13 @@ team-plan (consumes the existing phase plan, doesn't re-plan)
 ```
 
 **Critical:** the per-task review must use superpowers' agents (spec-reviewer, quality-reviewer) and NOT OMC's `code-reviewer` agent. They look similar; they're not the same. Superpowers' agents enforce TDD + verification-before-completion, which is the discipline we're preserving.
+
+**Do NOT silently fall through to `superpowers:executing-plans` because "tasks are tiny."** That's the pragmatic-judgment trap. If you genuinely believe team-mode overhead isn't worth it for the phase at hand, that's a **plan-deviation surface condition** per `documentation/workflows/autonomy-surface-conditions.md` — STOP, surface your reasoning to Riley, and let him pick. Reasons this matters:
+- The whole point of `/grind-phase` is exercising the OMC-team-mode + superpowers-subagent-driven-dev integration. Routing around it means the integration stays untested.
+- The plan header may say "subagent-driven-development OR executing-plans" — that flexibility is for the plan-writer to choose at planning time, not for the executor to override at runtime.
+- If team-mode overhead really is too much for a particular phase, the right answer is *replanning* the phase to be larger, not bypassing the orchestrator.
+
+The only auto-permitted fall-through is when OMC is genuinely unavailable in the project (no `oh-my-claudecode:team` skill loaded) — in which case surface "OMC not active in this project, falling back to per-task superpowers execution" and proceed with executing-plans.
 
 ### 5. Monitor surface conditions throughout
 
