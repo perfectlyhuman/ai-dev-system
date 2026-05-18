@@ -183,46 +183,42 @@ git -C "c:/Users/riley/Cursor/perfectlyhuman/ai-dev-system" commit -m "chore(omc
 
 - [ ] **Step 1: Verify the settings override syntax**
 
-Read the Claude Code docs section on plugin hooks settings. The expected syntax is:
+**Verified outcome (2026-05-18, commit `319bbf5` in Seek):** Claude Code does NOT support `{ "hooks": { "<EventName>": { "disable": [...] } } }`. Plugin hooks merge additively. The only platform-level kill-switches are `disableAllHooks: true` (too broad — kills superpowers' hooks too) and `enabledPlugins: { "oh-my-claudecode@omc": false }` (too broad — kills OMC slash commands we want available on explicit invocation).
+
+**Actual mechanism used:** OMC's own `OMC_SKIP_HOOKS` env var, exposed via Claude Code's `env` settings key.
 
 ```json
 {
-  "hooks": {
-    "UserPromptSubmit": {
-      "disable": ["oh-my-claudecode:keyword-detector", "oh-my-claudecode:skill-injector"]
-    }
+  "env": {
+    "OMC_SKIP_HOOKS": "keyword-detector,skill-injector,wiki-session-end"
   }
 }
 ```
 
-If that exact key shape isn't documented, use the documented Claude Code mechanism for selectively disabling plugin hooks. Worst case (no per-hook disable supported): disable the plugin entirely in Seek and re-enable per-skill via slash commands. Note which path was taken.
+**Coverage caveat (OMC 4.14.0):** Only `keyword-detector.mjs` honors `OMC_SKIP_HOOKS` at the script-level (verified at `scripts/keyword-detector.mjs:950-955`). `skill-injector.mjs` and `wiki-session-end.mjs` do not check the env var, but are dormant when their respective state dirs (`.omc/skills/`, `.omc/wiki/`) don't exist — declared in the env var anyway so a future OMC version that honors them picks the surgery up automatically. `persistent-mode.mjs` is intentionally left active because we want it when ralph/autopilot is explicitly invoked.
+
+See `seek/.claude/settings.local.json.example` for the full file with `_notes` block documenting the trap.
 
 - [ ] **Step 2: Write `seek/.claude/settings.local.json`**
 
-Create the file with these surgeries:
-1. Disable OMC's UserPromptSubmit hooks (`keyword-detector`, `skill-injector`) — these are the magic-keyword auto-escalators. Without these, "build me a settings page" never silently bypasses brainstorming.
-2. Disable OMC's Stop hook `persistent-mode` for non-explicit invocations. (If granular disable isn't available, this hook stays — but we'll override its behavior by never invoking ralph/autopilot/ultrawork outside of `/grind-phase`.)
-3. Keep OMC's PostToolUse / SubagentStop verification hooks — they reinforce superpowers' verification gate.
-4. Disable OMC's `wiki-session-end.mjs` — we don't want OMC auto-writing decisions to wiki. Wiki is still allowed (Task 7 uses it), but only `/update-docs` writes to chapters.
-
-Skeleton file (refine syntax to match Step 1's verified shape):
+See `seek/.claude/settings.local.json.example` for the actual committed template. Key shape:
 
 ```json
 {
-  "hooks": {
-    "UserPromptSubmit": {
-      "disable": ["oh-my-claudecode:keyword-detector", "oh-my-claudecode:skill-injector"]
-    },
-    "Stop": {
-      "disable": ["oh-my-claudecode:persistent-mode"]
-    },
-    "SessionEnd": {
-      "disable": ["oh-my-claudecode:wiki-session-end"]
-    }
-  },
-  "_notes": "OMC hook surgery for ai-dev-system + superpowers compatibility. See ai-dev-system/docs/omc-integration-plan-2026-05-18.md Task 3."
+  "_notes": ["OMC hook surgery — see ai-dev-system/docs/omc-integration-plan-2026-05-18.md Task 3", "..."],
+  "env": {
+    "OMC_SKIP_HOOKS": "keyword-detector,skill-injector,wiki-session-end"
+  }
 }
 ```
+
+**Status of each surgery target (OMC 4.14.0):**
+1. `keyword-detector` — **fully neutralized** via env var (the highest-priority target — the magic-keyword auto-escalator).
+2. `skill-injector` — declared in env var; OMC 4.14.0's standalone script doesn't honor it, but dormant in fresh Seek (no learned skills dir). Trap documented.
+3. `persistent-mode` — **intentionally left active.** Required for explicit `/ralph` and `/autopilot`. Dormant when no `.omc/state/` files exist.
+4. `wiki-session-end` — declared in env var; OMC 4.14.0's standalone script doesn't honor it, but dormant when no `.omc/wiki/` exists. Trap documented.
+
+PostToolUse / SubagentStop verification hooks stay active — they reinforce superpowers' verification gate.
 
 - [ ] **Step 3: Confirm `settings.local.json` is gitignored**
 
