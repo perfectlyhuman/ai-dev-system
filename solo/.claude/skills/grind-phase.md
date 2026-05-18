@@ -40,11 +40,21 @@ Read `.claude/project.json`. Confirm:
 
 ### 2. Resolve the Phase
 
-The first argument to `/grind-phase` is the Phase identifier. Find it in:
-1. `documentation/ROADMAP.md` (look for `## Phase {{name}}` or matching heading).
-2. The most recent plan document in `docs/superpowers/plans/` or `docs/` matching the phase name.
+The first argument to `/grind-phase` is the Phase identifier (e.g. `p1.5`, `content-pipeline`, `P2-003`). Find the plan document by searching in this order:
 
-If the Phase has no plan document, STOP. Surface: "No plan found for Phase X. Write one via `superpowers:writing-plans` first."
+1. `documentation/specs/*.md` (ai-dev-system spec convention — most likely location)
+2. `documentation/plans/*.md` (alternate spec dir)
+3. `docs/superpowers/plans/*.md` (superpowers default)
+4. `docs/*.md` (top-level docs fallback)
+
+**Matching rules** (apply across all dirs):
+- Frontmatter `id:` field exact match (case-insensitive)
+- Filename substring match (e.g. `p1.5` matches `2026-05-18-p1.5-cleanup-design.md`)
+- For multiple matches, pick the one with the most recent `date:` frontmatter field
+
+Also check `documentation/ROADMAP.md` for a matching `## Phase {{name}}` heading — confirms the phase exists in the roadmap even if the plan lives elsewhere.
+
+If no plan document is found, STOP. Surface: "No plan found for Phase X. Searched `documentation/specs/`, `documentation/plans/`, `docs/superpowers/plans/`, `docs/`. Write one via `superpowers:writing-plans` first."
 
 ### 3. Pre-flight checks
 
