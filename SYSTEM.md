@@ -44,6 +44,65 @@ This system creates a **single source of truth** across three synchronized layer
 
 ---
 
+## Three-Layer Architecture (with OMC + superpowers)
+
+ai-dev-system is the **top layer** of a three-layer stack when OMC and superpowers are also installed. Each layer owns a distinct concern and operates at a distinct altitude:
+
+```
+┌──────────────────────────────────────────────────────────┐
+│ TOP — ai-dev-system                                      │
+│   Session frame: /start, /finish                         │
+│   Canonical memory: documentation/chapters/              │
+│   Promotion ceremony: /update-docs                       │
+│   Project lifecycle: project.json (launch.status, intake)│
+│   Phase orchestration: /grind-phase                      │
+├──────────────────────────────────────────────────────────┤
+│ MIDDLE — superpowers (per-task discipline)               │
+│   Planning: brainstorming → writing-plans                │
+│   Execution: subagent-driven-development                 │
+│   Testing: test-driven-development                       │
+│   Debugging: systematic-debugging                        │
+│   Quality: verification-before-completion                │
+├──────────────────────────────────────────────────────────┤
+│ BASE — OMC (autonomy engine, opt-in per project)         │
+│   Orchestration: team, ralph                             │
+│   Working memory: wiki (feeds /update-docs)              │
+│   Optional: HUD, cost tracking, multi-provider routing   │
+└──────────────────────────────────────────────────────────┘
+```
+
+### Which layer owns what
+
+| Concern | Layer | Mechanism |
+|---------|-------|-----------|
+| Session open / close | ai-dev-system | `/start`, `/finish` |
+| Decision capture | ai-dev-system | chapters' micro-ADR |
+| Learning capture | ai-dev-system | chapters' Learnings & Gotchas |
+| Approach surveying | ai-dev-system | Iron Law: check chapters first |
+| Intent exploration | superpowers | `brainstorming` |
+| Plan writing | superpowers | `writing-plans` |
+| Per-task TDD | superpowers | `test-driven-development` |
+| Subagent dispatch | superpowers | `subagent-driven-development` |
+| Verification gate | superpowers | `verification-before-completion` |
+| Phase orchestration | ai-dev-system + OMC | `/grind-phase` invokes OMC's `team` |
+| Verify-fix loops | OMC | `ralph` (capped by surface conditions) |
+| Working memory (ephemeral) | OMC | `wiki` |
+| Surface-condition policy | ai-dev-system | `documentation/workflows/autonomy-surface-conditions.md` |
+
+### What's installed where
+
+- **ai-dev-system** — copy of `solo/` per project, customized for that project's `project.json`.
+- **superpowers** — installed at user level (`~/.claude/plugins/`), available in every project.
+- **OMC** — installed at user level, but **active only in projects whose `.claude/settings.local.json` enables it**. Default state: dormant. See `docs/omc-integration-plan-2026-05-18.md`.
+
+### When OMC is NOT installed
+
+ai-dev-system + superpowers function exactly as they did before. `/update-docs` skips its wiki-pre-scan step silently. `/grind-phase` reports "OMC not active in this project, falling back to per-task superpowers execution" (or is simply not available, depending on project config).
+
+This is the rollback guarantee: removing OMC reverts behavior to pre-integration.
+
+---
+
 ## The Three Pillars
 
 ### 1. Google Drive Roadmap Document
