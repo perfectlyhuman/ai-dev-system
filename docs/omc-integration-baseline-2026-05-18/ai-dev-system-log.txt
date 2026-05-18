@@ -1,0 +1,10 @@
+﻿3d5aa93 feat: session bookends — /start + /finish replace /sync
+589bd82 Fix setup-makerkit: Makerkit env var names + 4 new gotchas
+3cf00ca Upgrade solo mode: two-system architecture with superpowers
+7f825f1 3/11 7:25AM
+06ceae7 Fix setup-makerkit docs: env vars, Vercel API, Supabase gotchas
+b1f900c Remove personal identifiers from public repo
+71f415f Add Makerkit setup automation and Claude Code commands
+2202a37 Add create-ai-dev npm package for easy installation
+63a5a50 Add one-line install command with setup.js
+31b14fe Add solo dev system for solopreneur + Claude workflows
