@@ -15,3 +15,11 @@ project.json
 # Keep examples and the solo-mode template
 !examples/project.json
 !solo/.claude/project.json
+
+# Never commit raw Claude Code settings snapshots — they typically contain
+# embedded credentials (Bash permission patterns with secret values,
+# MCP server env blocks with API keys, GCP service-account private keys).
+# Use a redacted manifest instead. See docs/omc-integration-plan-2026-05-18.md
+# Task 1 for the redaction approach.
+docs/**/global-settings.json
+docs/**/settings-snapshot*.json

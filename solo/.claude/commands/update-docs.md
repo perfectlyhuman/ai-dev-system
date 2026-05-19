@@ -20,6 +20,7 @@ When a fresh Claude session reads a chapter, it should come away knowing not jus
 - **NO CHAPTER UPDATE MARKED COMPLETE WITHOUT A WHY SENTENCE BEHIND EVERY WHAT.**
 - **NO DECISION RECORDED WITHOUT RATIONALE AND ALTERNATIVES CONSIDERED.**
 - **NO DEBUGGING SESSION CLOSED WITHOUT A LEARNINGS & GOTCHAS ENTRY** (Problem / Wrong Assumption / Reality / Solution / Prevention).
+- **NO WIKI ENTRY IS LEFT UNCLASSIFIED.** If `.omc/wiki/` is scanned, every new entry is promoted, archived, or surfaced to Riley. No silent skips.
 
 Violating the letter of these laws is violating the spirit of them.
 
@@ -32,18 +33,35 @@ Violating the letter of these laws is violating the spirit of them.
 
 ## Execution Steps
 
-### 1. Identify Scope
+### 1. Wiki Pre-Scan (only if OMC is active)
+
+If `.omc/wiki/` exists in the project root:
+
+- [ ] List wiki entries created or modified since the last `/update-docs` run. Compare wiki file `mtime` against the `last_updated` of the most recently touched chapter.
+- [ ] For each new wiki entry, classify it into one of:
+  - **Promote to chapter (Key Decision)** — a decision with rationale and a recognizable *Why*. Convert to micro-ADR format (Context / Options / Decision / Why / Consequences / Revisit if) and append to the relevant chapter's Key Decisions section.
+  - **Promote to chapter (Learning)** — a bug, wrong assumption, or gotcha. Convert to the Learning format (Problem / Wrong Assumption / Reality / Solution / Prevention) and append to the relevant chapter's Learnings & Gotchas section.
+  - **Promote to skill** — a recurring pattern worth becoming a reusable skill. Propose a skill file under `solo/.claude/skills/` and surface to Riley before writing.
+  - **Archive** — session-log noise, dead ends not worth keeping. Move to `.omc/wiki/archive/`.
+
+The wiki schema is lighter than chapters' — most wiki entries will need fields invented at promotion time (Riley's input may be needed to fill *Why*, *Consequences*, *Revisit if* if the wiki entry didn't capture them).
+
+If a wiki entry can't confidently be classified, surface it to Riley.
+
+If `.omc/wiki/` does not exist, skip this step entirely. No warning, no error.
+
+### 2. Identify Scope
 
 Which documents are affected?
 - Which **chapters** relate to the work?
 - Any **major decisions** for MASTER.md?
 - Did the **roadmap** change?
 
-### 2. Read Current Documentation
+### 3. Read Current Documentation
 
 Read affected files before editing. Don't duplicate existing content — add, replace, or refine.
 
-### 3. Identify Gaps
+### 4. Identify Gaps
 
 For each chapter, run through this grid:
 
@@ -56,7 +74,7 @@ For each chapter, run through this grid:
 | Learnings & Gotchas | Problems hit? Wrong assumptions found? |
 | Open Questions | Questions answered? New ones surfaced? |
 
-### 4. Draft Updates
+### 5. Draft Updates
 
 #### Write for Future Sessions
 
@@ -97,17 +115,17 @@ Every bug fixed or wrong assumption found becomes a future gift:
 **Prevention:** {How to catch this earlier — a check, pattern, docs change.}
 ```
 
-### 5. Present Changes
+### 6. Present Changes
 
 Show what you plan to update before editing. Wait for approval on non-obvious changes.
 
-### 6. Apply Updates
+### 7. Apply Updates
 
 - Update the `last_updated` frontmatter on every modified file.
 - Add major decisions to MASTER.md's "Recent Major Decisions" table.
 - Update ROADMAP.md if scope or dependencies changed.
 
-### 7. Completion Self-Check
+### 8. Completion Self-Check
 
 <VERIFICATION-GATE>
 Before claiming "done," run through this checklist out loud:
@@ -119,7 +137,7 @@ Before claiming "done," run through this checklist out loud:
 - [ ] The `last_updated` frontmatter is bumped on every modified file.
 - [ ] Cross-references to other chapters are added where decisions in this domain affect others.
 
-If any box can't be ticked honestly, return to step 4 and fix it.
+If any box can't be ticked honestly, return to step 5 and fix it.
 </VERIFICATION-GATE>
 
 ## Red Flags — STOP
@@ -130,8 +148,9 @@ If any box can't be ticked honestly, return to step 4 and fix it.
 - "Only captured what changed, didn't explain why"
 - "Chapter is getting long, I'll skip this addition"
 - About to commit with only the `last_updated` date bumped and no substance added
+- About to run `/update-docs` while `.omc/wiki/` has unprocessed entries — ALWAYS scan wiki first.
 
-All of these mean: return to step 4.
+All of these mean: return to step 5.
 
 ## Rationalizations
 
