@@ -6,7 +6,7 @@ version: initial
 
 # {{Chapter Title}}
 
-> **Purpose of this chapter.** Every chapter serves two goals. First, it's an **index** — what was built in this domain and where to find it. Second, and more importantly, it's the **WHY** — the decisions made, the alternatives ruled out, the problems hit along the way, and the learnings that should keep us from making the same mistakes twice. When a fresh Claude session reads this chapter, it should come away understanding not just *what* exists but *why* it exists this way. If you find yourself writing only *what*, stop and add the *why*.
+> **Purpose of this chapter.** A chapter is the durable **domain knowledge** for one area: what was built, where it lives, and how the architecture works — written for a fresh agent (human or Gilfoyle) with zero context. **Decisions and lessons are NOT stored here.** They live in `../decisions/` and `../lessons/` (the single sources both you and the cloud agent read and write). This chapter carries a **"Decisions & lessons affecting this domain"** pointer list linking to those files. When you find yourself about to write a decision body or a gotcha inline, stop — write it to the right dir and add a link here instead.
 
 ## Overview
 
@@ -26,44 +26,15 @@ version: initial
 
 {{Current implementation details. Code patterns, API usage, configuration.}}
 
-## Key Decisions
+## Decisions & lessons affecting this domain
 
-Each non-trivial decision gets its own entry below. For small or obvious decisions, a single line in the summary table at the top is fine. For anything with real trade-offs, use the full micro-ADR format — the **Revisit if** line is especially important because it tells future sessions when the decision is still load-bearing vs. when it can be reopened.
+Decisions and lessons live in their own single-source dirs, not inline here — link the relevant ones so a reader of this chapter can find them (and so there's exactly one copy, the same one the cloud agent reads).
 
-### Summary
+**Decisions:** (`../decisions/`)
+<!-- - [YYYY-MM-DD-<slug>](../decisions/YYYY-MM-DD-<slug>.md) — one-line what + why -->
 
-| Date | Decision | Rationale (one line) |
-|------|----------|----------------------|
-<!-- Quick lookup only. Each entry with real nuance gets its own section below. -->
-
-<!-- Full micro-ADR template — copy for each non-trivial decision:
-
-### YYYY-MM {{Decision title}}
-
-**Context:** {What constraints forced this decision? What were we trying to achieve?}
-**Options considered:** {A, B, C — list them all, even the ones we rejected quickly.}
-**Decision:** {What we chose.}
-**Why:** {The actual reasoning. What did the alternatives cost? What does this one buy us?}
-**Consequences:** {What does this foreclose? What pain does it introduce? What does it make easy that wasn't before?}
-**Revisit if:** {The specific conditions that should make us reopen this decision — growth, scale, a new constraint, etc.}
-
--->
-
-## Learnings & Gotchas
-
-Problems we hit, the wrong assumptions we made, and the solutions we found. **Document these liberally** — the whole point is to prevent the same bug from recurring in a different guise six weeks later.
-
-Each entry should follow this format:
-
-<!--
-### {Problem Title} ({YYYY-MM})
-
-**Problem:** {What we were trying to do.}
-**Wrong assumption:** {What we believed that turned out to be false.}
-**Reality:** {What was actually true.}
-**Solution:** {What fixed it.}
-**Prevention:** {How to catch this earlier next time — a check, a pattern, a docs update.}
--->
+**Lessons:** (`../lessons/`)
+<!-- - [YYYY-MM-DD-<slug>](../lessons/YYYY-MM-DD-<slug>.md) — one-line trap -->
 
 ## Open Questions
 
