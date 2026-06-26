@@ -209,7 +209,7 @@ fi
 
 **IMPORTANT**: Do NOT use `cp -r solo/.claude/ project/.claude/` — if `.claude/` already exists (Makerkit template has one), `cp -r` will nest it as `.claude/.claude/` and commands won't be found. Always copy the *contents* of each subdirectory.
 
-This installs the ai-dev-system slash commands (`/sync`, `/update-docs`, `/vision`, `/ship`, `/kickoff`, `/go-live`, `/setup-makerkit`, `/setup-nativeexpress`), the SessionStart hook, and the documentation system.
+This installs the ai-dev-system v2 slash commands (`/start`, `/reflect`, `/update-docs`, `/closeout`, `/vision`, `/kickoff`, `/ship`, `/go-live`, `/finish`, `/setup-makerkit`, `/setup-nativeexpress`), the SessionStart hook, and the documentation system. (`/grind-phase` is retired — batch autonomy is the cloud agent's job.)
 
 **Do NOT skip this step.** Without it, Claude Code loses access to the project lifecycle workflow.
 
@@ -271,6 +271,26 @@ npx shadcn add @shadcnblocks/hero2   # pro blocks (@ prefix, requires API key)
 The shadcn CLI (v3+) reads the registry config from `components.json` and authenticates using the `SHADCNBLOCKS_API_KEY` env var automatically.
 
 If the API key is not found in secrets.json, use the public registry config and inform the user that pro blocks require a key.
+
+## Step 5d: Wire v2 autonomy scaffolding
+
+The copied `documentation/` already includes the v2 templates (`ROADMAP.md` with
+`Owner`/`Gate` columns, `workflows/rulebook.md`, `AUTONOMY-INBOX.md`). Now finalize config:
+
+1. **Confirm the gate command.** In `.claude/project.json`, the `autonomy.gateCommand`
+   defaults to `pnpm typecheck && pnpm build && pnpm lint`. Verify those scripts exist in
+   the project's `package.json`; adjust the command to match what the project actually has.
+   This single command is the shared quality bar for both you and the cloud agent.
+
+2. **Set the base branch.** Confirm `git.mainBranch` in `project.json` matches the repo's
+   default branch (`main`).
+
+3. **Engine registration (STUB — completed by Plan 2).** Leave `autonomy.registered: false`.
+   Registering the repo into the shared engine (`perfectlyhuman/agents` REPOS) is done by
+   the Plan 2 engine integration — it opens a PR to the engine repo with this project's
+   `RepoConfig`. Until that lands, the project runs local-only (you work it in Claude Code;
+   no background agent yet). Tell the user: "Autonomy scaffolding is in place; the cloud
+   agent will be wired when the engine-integration step runs."
 
 ## Step 6: Install Dependencies
 
@@ -581,7 +601,7 @@ The API returns the full auth config on success. Verify `site_url` and `uri_allo
 ### Quick Start
 1. `pnpm supabase:web:start`  — Start local Supabase
 2. `pnpm dev`                 — Start dev server
-3. Run `/kickoff` for product discovery, or `/sync` to orient
+3. Run `/kickoff` for product discovery, or `/start` to orient
 4. Customize Makerkit's marketing pages in `apps/web/app/(marketing)/` (or wherever the route group lives)
 ```
 
