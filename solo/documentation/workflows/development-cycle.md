@@ -32,11 +32,12 @@ Strategic decisions about what the product is, who it's for, and where it's goin
 
 ### 2. Roadmap (what to build next)
 Prioritized tasks organized by phase. Claude reads this to know what to work on.
-**Skill**: `/sync` (read), `/vision` (update) | **Doc**: `ROADMAP.md`
+**Skill**: `/start` (read), `/vision` (update) | **Doc**: `ROADMAP.md`
 
 ### 3. Implement (build it)
 Pick a task, code it, test it, commit it.
-**Skill**: `/dev [task-id]` | **Git**: Feature branch → preview → main
+**How**: describe the work in natural language (superpowers inner loop) locally, OR let the
+cloud agent drain it if it's `Owner: agent`, `Gate: —`. | **Git**: feature branch → (preview if live) → main
 
 ### 4. Document Learnings (capture what we learned)
 Key decisions, gotchas, patterns, open questions. This prevents repeating mistakes.
@@ -50,12 +51,17 @@ Review learnings, reassess priorities, update direction.
 
 | When | Skill | Purpose |
 |------|-------|---------|
-| Start of session | `/sync` | Orient, see current state, pick next task |
-| Working | `/dev [task-id]` | Implement → test → document |
-| Stuck | `/check-assumptions` | Systematic debugging |
+| Start of session | `/start` | Orient, see current state + parked cloud-agent items, pick next task |
+| Working | natural language | Describe what to build; the superpowers inner loop (brainstorm → plan → TDD → review) fires |
+| Stuck | `systematic-debugging` | 4-phase root-cause process |
+| Reflecting | `/reflect` | Reflect on learnings mid-session; recommend what to keep |
 | Done building | `/update-docs` | Capture learnings in chapters |
-| Deploying | `/ship` | Push to preview or main |
+| Deploying | `/ship` | Push to preview or main (per `launch.status`) |
 | Planning | `/vision` | Discuss direction, update roadmap |
+| Wrapping up | `/closeout` → `/finish` | Report + decide; then write the handoff |
+
+**The cloud agent** drains `Owner: agent`, `Gate: —` tasks from the same ROADMAP in the
+background — same discipline, same gate. You don't invoke it; it runs on the engine.
 
 ## What Goes Where
 
