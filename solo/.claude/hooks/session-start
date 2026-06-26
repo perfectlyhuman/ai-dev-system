@@ -33,7 +33,7 @@ escape_for_json() {
 escaped=$(escape_for_json "$preamble_content")
 
 # Build the context wrapper
-session_context="<ai-dev-system-preamble>\nThis project uses ai-dev-system. Below is the auto-loaded preamble. For all other skills, use the Skill tool or invoke slash commands like /sync, /dev, /update-docs, etc.\n\n${escaped}\n</ai-dev-system-preamble>"
+session_context="<ai-dev-system-preamble>\nThis project uses ai-dev-system. Below is the auto-loaded preamble. For all other skills, use the Skill tool or invoke slash commands like /start, /update-docs, /closeout, etc.\n\n${escaped}\n</ai-dev-system-preamble>"
 
 # Output the JSON Claude Code expects for SessionStart hooks.
 # Uses printf to avoid bash 5.3+ heredoc-hang issues.

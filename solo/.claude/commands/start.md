@@ -6,7 +6,7 @@ description: "Open a work session. Read the latest HANDOFF, diff git since then,
 
 **Announce at start:** "I'm using the /start skill to open this session."
 
-This is the canonical session-open ritual. Pair with `/finish` at session close. Replaces the older `/sync` morning check-in — `/start` is a strict superset (handoff + git diff + verifications + roadmap orient).
+This is the canonical session-open ritual. Pair with `/finish` at session close.
 
 ## Why this skill exists
 

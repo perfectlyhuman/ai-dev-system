@@ -320,7 +320,7 @@ Show a summary of what was created:
 - {any other chapters}
 
 ### Ready to Go
-Run /sync to see your first tasks, then /dev to start building.
+Run /start to orient, then describe what to build in natural language.
 ```
 
 ---
@@ -369,5 +369,5 @@ This session typically runs through all 6 phases in one sitting. If the user nee
 - Do real web research. Don't make up competitor names or market data.
 - Present research findings honestly, even if they challenge the idea.
 - Always confirm before generating documentation files.
-- Generate REAL content, not templates with placeholders. The user should be able to /sync immediately after.
+- Generate REAL content, not templates with placeholders. The user should be able to /start immediately after.
 - If the idea has serious viability concerns, say so — respectfully but directly.

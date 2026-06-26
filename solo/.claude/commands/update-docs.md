@@ -26,8 +26,8 @@ Violating the letter of these laws is violating the spirit of them.
 
 ## When to Use
 
-- After completing an implementation task (from `/dev`).
-- After a debugging session (especially if `/check-assumptions` was involved).
+- After completing an implementation task (yours locally, or surfaced from a cloud-agent PR).
+- After a debugging session (especially if `systematic-debugging` was involved).
 - After making architectural decisions in-flight that weren't in the original task spec.
 - After discovering stale or incomplete documentation.
 

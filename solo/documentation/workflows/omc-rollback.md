@@ -16,7 +16,7 @@ version: initial
 | Per-project `.omc/` directory | Trivial — delete |
 | HUD / statusline | Trivial — settings.json revert |
 | `.claude/settings.local.json` overrides | Trivial — delete file |
-| `/grind-phase` skill | Trivial — git revert in ai-dev-system |
+| cloud agent autonomy | Retired in v2 — `/grind-phase` was removed; batch work is now the cloud agent's job |
 | `/update-docs` wiki-ingest extension | Trivial — git revert; gracefully no-ops without `.omc/wiki/` |
 | Chapter entries promoted from wiki | Permanent — these are now part of the institutional memory regardless of OMC's state |
 | Code OMC autonomously wrote during a phase run | Permanent unless `git revert` — normal commit history applies |
@@ -25,7 +25,7 @@ version: initial
 
 ### 1. Stop any in-progress autonomous run
 
-If `/grind-phase` is currently running, interrupt the session. Wait for the agent to checkpoint (commit any completed task) before killing.
+If a cloud agent run is currently in progress, interrupt the session. Wait for the agent to checkpoint (commit any completed task) before killing.
 
 ### 2. Uninstall OMC
 
@@ -63,7 +63,7 @@ git -C "c:/Users/riley/Cursor/perfectlyhuman/ai-dev-system" log --oneline --grep
 git -C "c:/Users/riley/Cursor/perfectlyhuman/ai-dev-system" revert <merge-sha>
 ```
 
-**Note:** This removes `/grind-phase` and the wiki-ingest step in `/update-docs`. Existing chapter entries (including any promoted from OMC wiki) remain — they're indistinguishable from regular chapter content.
+**Note:** This removes the cloud agent batch step and the wiki-ingest step in `/update-docs`. Existing chapter entries (including any promoted from OMC wiki) remain — they're indistinguishable from regular chapter content.
 
 ### 5. Verify settings rolled back cleanly
 
@@ -89,9 +89,9 @@ Open a fresh Claude Code session in any project. Confirm:
 
 ## Partial rollbacks
 
-### Keep `/grind-phase` but disable OMC
+### Keep cloud agent but disable OMC
 
-Possible — `/grind-phase` should detect OMC's absence and fall back to per-task superpowers execution (essentially behaving like `subagent-driven-development` invoked directly). Verify this fallback works during smoke testing (Task 9 in the integration plan).
+Note: `/grind-phase` was retired in v2 — batch autonomous work is now handled by the cloud agent, not a local skill. If you want the cloud agent without OMC plugin features (wiki, HUD), simply leave `autonomy.registered: true` in `project.json` and uninstall the OMC plugin.
 
 ### Keep OMC but disable autonomy
 

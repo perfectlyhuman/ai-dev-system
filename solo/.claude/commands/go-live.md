@@ -139,7 +139,7 @@ From here forward:
 - /ship uses the 3-tier pipeline (feature → preview → main).
 - Breaking main affects real users — the pipeline catches issues at preview.
 
-Recommended next step: announce the launch, then run /sync for next tasks.
+Recommended next step: announce the launch, then run /start for next tasks.
 ```
 
 ## Red Flags — STOP

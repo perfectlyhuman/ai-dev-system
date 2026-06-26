@@ -25,14 +25,14 @@ You don't think about which system is running. Use slash commands for discrete o
 - **ROADMAP.md** — Living project tracker (replaces Linear): phases, tasks, statuses, open questions.
 - **Chapters** — Domain documentation that captures what you built, how, and most importantly **WHY** — decisions, alternatives ruled out, learnings from past mistakes. The point is to prevent re-discovering the same answers in a different guise six weeks later.
 - **Pre-launch vs live modes** — ship fast with no ceremony pre-launch; graduate to feature branches + preview pipeline when real users depend on production.
-- **GitHub Issues intake** — capture bugs/features from Slack via the GitHub app; `/sync` surfaces them, `/ship` closes them.
+- **GitHub Issues intake** — capture bugs/features from Slack via the GitHub app; `/start` surfaces them, `/ship` closes them.
 - **SessionStart hook** — every new session auto-loads the ai-dev-system preamble so Claude knows the skill set and the project-wide Iron Laws without you telling it.
 
 ## Slash Commands (the outer shell)
 
 | Command | When |
 |---|---|
-| `/sync` | Start of a work session. Orient on state, surface tasks, learnings, intake. |
+| `/start` | Start of a work session. Orient on state, surface tasks, learnings, intake. |
 | `/vision` | Periodic strategic planning. |
 | `/update-docs` | After completing work, before declaring it done. Captures decisions and learnings into chapters. |
 | `/ship` | When ready to deploy. Pipeline depends on `launch.status` in `project.json`. |
@@ -51,7 +51,7 @@ Day 1:     /kickoff         → Idea → Research → Define → Architecture �
            ┌──────────────────────────────────────────────────────────────────────────┐
            │                                                                          │
            ▼                                                                          │
-Daily:     /sync  →  natural-language work  →  /update-docs  →  /ship                │
+Daily:     /start  →  natural-language work  →  /update-docs  →  /ship                │
            │         (superpowers handles the build)                                  │
            │                                                                          │
            └──── /vision (reflect, reprioritize, course correct) ────────────────────┘
@@ -109,14 +109,14 @@ By the end, you have a fully populated documentation system. No templates, no pl
 ### 4. Start building
 
 ```
-/sync
+/start
 ```
 Then describe what you want to work on in natural language. Superpowers takes the wheel for the implementation; Claude will surface ROADMAP tasks and propose what to tackle.
 
 ## Daily Workflow
 
 ```
-Start of session:   /sync                          → orient, pick next task, check intake
+Start of session:   /start                         → orient, pick next task, check intake
 Working:            "let's build X" / "fix Y"      → superpowers chain handles it
 Stuck:              "I'm stuck on Z"               → systematic-debugging fires
 Done building:      /update-docs                    → capture learnings/decisions in chapters
@@ -205,10 +205,10 @@ If your cofounder or teammates want to drop bugs/features from Slack:
 1. Set `intake.provider: "github"` and `intake.repo: "owner/name"` in `.claude/project.json`.
 2. Add the GitHub Slack app to your workspace (<https://slack.github.com/>) and run `/github subscribe owner/repo issues` in your product channel.
 3. Any `/github open owner/repo <title>` from Slack creates an issue.
-4. `/sync` surfaces new issues and asks whether to promote to ROADMAP.md.
+4. `/start` surfaces new issues and asks whether to promote to ROADMAP.md.
 5. `/ship` closes corresponding issues when their task ships.
 
-See [documentation/workflows/intake.md](documentation/workflows/intake.md) for full details. If you don't configure intake, `/sync` and `/ship` simply skip the external step.
+See [documentation/workflows/intake.md](documentation/workflows/intake.md) for full details. If you don't configure intake, `/start` and `/ship` simply skip the external step.
 
 ## Compared to Team Mode
 

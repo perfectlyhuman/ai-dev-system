@@ -13,7 +13,7 @@ How bugs and feature requests get from a Slack conversation into the project's w
 - **GitHub Issues = inbox.** Where new bugs and requests land. Cheap, git-adjacent, shared with anyone on the repo.
 - **ROADMAP.md = prioritized tracker.** The actual working queue, organized into phases, with task IDs and status markers.
 - **One-way flows:**
-  - Intake → roadmap during `/sync` (Claude surfaces new issues; you decide what to promote).
+  - Intake → roadmap during `/start` (Claude surfaces new issues; you decide what to promote).
   - Roadmap → issue-close during `/ship` (Claude closes the corresponding issue when its task ships).
 
 No bidirectional sync. GitHub Issues is never the source of truth for priority or status — that lives in ROADMAP.md.
@@ -45,7 +45,7 @@ Your cofounder can now:
 
 ### 3. Done
 
-Run `/sync` on your next work session. Claude will pull the new issues, cross-reference with ROADMAP.md, and ask whether to promote any into the active work queue.
+Run `/start` on your next work session. Claude will pull the new issues, cross-reference with ROADMAP.md, and ask whether to promote any into the active work queue.
 
 ## Day-to-Day Flow
 
@@ -58,7 +58,7 @@ Cofounder (in #product):
 
 GitHub app creates issue #42 with title and assigns it to the default.
 
-### You run /sync at the start of your work session
+### You run /start at the start of your work session
 
 Claude detects issue #42 is open and not referenced in ROADMAP.md:
 
@@ -71,7 +71,7 @@ You decide:
 - Add it to the active sprint as a task (Claude writes the task with a reference to `#42`).
 - Add it to a later phase's backlog (same, but in a later phase).
 - Close the issue as won't-fix, with a comment.
-- Defer — leave it in Issues, revisit next `/sync`.
+- Defer — leave it in Issues, revisit next `/start`.
 
 ### You ship a task that fixes the issue
 
@@ -104,7 +104,7 @@ Not every issue needs a task:
 - Feature requests that need `/vision` discussion before committing.
 - Duplicates of existing issues or tasks.
 
-Leave those in Issues with appropriate labels (`backlog`, `needs-discussion`). They'll surface again next `/sync` if still open.
+Leave those in Issues with appropriate labels (`backlog`, `needs-discussion`). They'll surface again next `/start` if still open.
 
 ## Why GitHub Issues (and not Linear)
 
