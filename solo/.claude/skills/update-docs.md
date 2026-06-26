@@ -16,6 +16,8 @@ Chapters are how we avoid paying for the same lesson twice. They serve two goals
 
 When a fresh Claude session reads a chapter, it should come away knowing not just *what* exists but *why*. If you only capture *what*, the chapter is half-built.
 
+> `/update-docs` is the **writing half**. The **thinking half** is `/reflect` — it looks over a conversation and recommends what to keep, then hands project-local items here. You can also invoke `/update-docs` directly after finishing work.
+
 ## The Iron Laws
 
 - **NO CHAPTER UPDATE MARKED COMPLETE WITHOUT A WHY SENTENCE BEHIND EVERY WHAT.**
@@ -27,10 +29,11 @@ Violating the letter of these laws is violating the spirit of them.
 
 ## When to Use
 
-- After completing an implementation task (from `/dev`).
-- After a debugging session (especially if `/check-assumptions` was involved).
+- After completing an implementation task (yours locally, or surfaced from a cloud-agent PR).
+- After a debugging session (especially if `systematic-debugging` was involved).
 - After making architectural decisions in-flight that weren't in the original task spec.
 - After discovering stale or incomplete documentation.
+- When `/reflect` recommends a project-local learning and you approve it — `/reflect` hands it here to be written properly.
 
 ## Execution Steps
 
