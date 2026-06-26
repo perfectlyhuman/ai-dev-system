@@ -329,6 +329,17 @@ git commit -m "Initial commit: {displayName} from Makerkit template"
 git branch -M main
 ```
 
+## Step 7a: Create the `preview` branch (drain target)
+
+The cloud agent always opens PRs into `preview` (never `main`, even pre-launch — `main` is your gate). Create it from `main`:
+
+```bash
+git branch preview main
+git push -u origin preview   # after the GitHub repo exists (Step 8)
+```
+
+Matches `RepoConfig.baseBranch: "preview"` set at registration (Step 12). Pre-launch you promote `preview → main` yourself (fast-merge fine — zero blast radius with no users).
+
 ## Step 8: Create GitHub Repo
 
 ```bash
