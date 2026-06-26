@@ -14,6 +14,8 @@ The `ROADMAP` `Owner` column routes each task: `Owner: riley` = you (design/judg
 `Owner: agent` + `Gate: —` = the cloud agent, autonomously. Both write the same chapters and
 pass the same gate. The full policy is the [rulebook](../../documentation/workflows/rulebook.md).
 
+New project? The full install→register→arm flow is in [onboarding.md](../../documentation/workflows/onboarding.md).
+
 ## Slash Commands (ai-dev-system, invoked explicitly)
 
 | Command | When |
