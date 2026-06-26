@@ -4,6 +4,8 @@ updated_by: agent
 version: initial
 ---
 
+> **Optional — active only when `intake.provider` ≠ none.** If `.claude/project.json` `intake.provider` is `"none"` or missing, all intake steps are skipped automatically.
+
 # Intake Workflow
 
 How bugs and feature requests get from a Slack conversation into the project's work queue without turning into yet another tab to manage.

@@ -102,5 +102,5 @@ If you want OMC's wiki / skillify / HUD without the autonomy modes, write a targ
 ## Related
 
 - [omc-integration-plan-2026-05-18.md](../../../docs/omc-integration-plan-2026-05-18.md) — the original integration plan
-- [autonomy-surface-conditions.md](./autonomy-surface-conditions.md)
+- [rulebook.md](./rulebook.md) — surface conditions now live here
 - [SYSTEM.md](../../../SYSTEM.md)
