@@ -37,7 +37,7 @@ You don't think about which system is running. Use slash commands for discrete o
 | `/update-docs` | After completing work, before declaring it done. Captures decisions and learnings into chapters. |
 | `/promote` | Ship to production: gate the preview build, merge `preview → main`, watch deploy. |
 | `/kickoff` | Day 1 of a new project. Guided product discovery → populated docs. |
-| `/setup-makerkit`, `/setup-nativeexpress` | Set up a fresh project from a template. |
+| `/setup`, `/setup-nativeexpress` | Set up a fresh project (web / mobile) from a template. |
 
 For *building* features, fixing bugs, or refactoring — describe what you want in natural language. Superpowers' chain takes over: brainstorming → writing-plans → subagent-driven-development → TDD → review.
 

@@ -1,22 +1,27 @@
 ---
-description: "Use when setting up a freshly cloned Makerkit template as a new project — renames everything, configures ports, deploys to Supabase + Vercel + custom domain"
+description: "Scaffold a new Perfectly Human web app: clone Makerkit, rename, provision Supabase + Vercel + Cloudflare, install ai-dev-system v2, register with the cloud engine. (Mobile apps: use /setup-nativeexpress.)"
 ---
 
-# /setup-makerkit - New Project Setup
+# /setup - New Project Setup
 
-You are setting up a freshly cloned Makerkit template as a new project. This is a guided, interactive process that automates everything the user would normally do manually.
+You are setting up a new Perfectly Human web app from the Makerkit template. This is a guided, interactive process that automates everything the user would normally do manually — including cloning the template (Step 0). The user is running you from inside a fresh, (near-)empty project folder named after the app (e.g. `empower`).
 
-## Prerequisites
+## Step 0: Clone the Makerkit template (you do this — don't ask the user)
 
-Before running this command, clone a fresh copy of the Makerkit template:
+You are running inside the new project's folder (e.g. `.../perfectlyhuman/empower`), which should be empty or nearly empty. Clone the Makerkit template into it yourself:
 
 ```bash
-cd C:/Users/riley/Cursor/perfectlyhuman
-git clone https://github.com/makerkit/next-supabase-saas-kit-turbo.git ProjectName
-cd ProjectName
+# Sanity check: if this already looks like a project, stop and confirm with the user.
+if [ -f package.json ]; then echo "package.json already exists — is this really a fresh project folder? Confirm before proceeding."; fi
+
+# git clone refuses a non-empty target, so clone into a temp dir and move contents up.
+git clone --depth 1 https://github.com/makerkit/next-supabase-saas-kit-turbo.git .mk-template
+rm -rf .mk-template/.git          # drop template history (Step 7 re-inits fresh)
+shopt -s dotglob; mv .mk-template/* .; shopt -u dotglob
+rmdir .mk-template
 ```
 
-Always clone fresh from `https://github.com/makerkit/next-supabase-saas-kit-turbo.git` — do NOT copy from local templates.
+If the clone fails (network/auth), STOP and report — nothing else can proceed. Always clone fresh from the canonical URL above; never copy from local template folders. The project slug defaults to the current folder name (`empower`).
 
 ## What This Does
 
@@ -209,7 +214,7 @@ fi
 
 **IMPORTANT**: Do NOT use `cp -r solo/.claude/ project/.claude/` — if `.claude/` already exists (Makerkit template has one), `cp -r` will nest it as `.claude/.claude/` and commands won't be found. Always copy the *contents* of each subdirectory.
 
-This installs the ai-dev-system v2 slash commands (`/start`, `/reflect`, `/update-docs`, `/closeout`, `/vision`, `/kickoff`, `/promote`, `/finish`, `/setup-makerkit`, `/setup-nativeexpress`), the SessionStart hook, and the documentation system. (`/grind-phase`, `/ship`, and `/go-live` are retired — `/promote` is the production-promotion ritual; batch autonomy is the cloud agent's job.)
+This installs the ai-dev-system v2 slash commands (`/start`, `/reflect`, `/update-docs`, `/closeout`, `/vision`, `/kickoff`, `/promote`, `/finish`, `/setup`, `/setup-nativeexpress`), the SessionStart hook, and the documentation system. (`/grind-phase`, `/ship`, and `/go-live` are retired — `/promote` is the production-promotion ritual; batch autonomy is the cloud agent's job.)
 
 **Do NOT skip this step.** Without it, Claude Code loses access to the project lifecycle workflow.
 

@@ -28,7 +28,7 @@ New project? The full install→register→arm flow is in [onboarding.md](../../
 | `/closeout` | When tempted to finish — report state + recommend finish-or-keep-going. |
 | `/finish` | Session close. Write the handoff bridge to the next session. |
 | `/promote` | Production promotion: gate preview, merge preview→main, watch deploy. |
-| `/setup-makerkit`, `/setup-nativeexpress` | Set up a fresh project from a template. |
+| `/setup`, `/setup-nativeexpress` | Set up a fresh project (web / mobile) from a template. |
 
 ## Natural Language → superpowers
 
