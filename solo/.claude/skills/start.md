@@ -63,7 +63,17 @@ If a verification can't be automated (visual smoke test of a UI page, a manual c
 
 Run `TaskList`. Note any task marked `in_progress` from a prior session. Anything stale (in-progress > 1 day with no movement) gets flagged.
 
-### 6. Roadmap Orient
+### 6. Cloud-Agent Status
+
+Read `<documentation.root>/AUTONOMY-INBOX.md`. Surface every entry with `Status: open` —
+each is something the cloud agent (Gilfoyle) parked for Riley (a gate or a surface
+condition). These are the highest-priority "waiting on you" items.
+
+Then read `.claude/project.json` `autonomy`:
+- If `registered: false` — the project isn't on the engine yet (run `/setup`'s registration step, or it's intentionally local-only).
+- If `registered: true` — report the readiness bar from `autonomy.readiness`: is the gate green, is there an agent-eligible ROADMAP task (`Owner: agent`, `Gate: —`), is the base branch set? If all true, the agent should be armed and draining; if not, name the missing condition.
+
+### 7. Roadmap Orient
 
 Read `<documentation.roadmap>`. Identify:
 - Current phase + focus.
@@ -71,7 +81,7 @@ Read `<documentation.roadmap>`. Identify:
 - Top 1-2 ⬜ ready-to-pick-up tasks with no unresolved dependencies.
 - Blocked tasks (🚧) — what's blocking?
 
-### 7. Report
+### 8. Report
 
 Brief, actionable. Template:
 
@@ -87,6 +97,7 @@ Brief, actionable. Template:
 - <verification> → <result>
 
 **In-progress tasks:** <list or "none">
+**Cloud agent:** <N parked items needing you | "armed, draining" | "dormant — missing: <condition>" | "not registered">
 
 **Recommended next:** <pick from handoff's "Where to start" OR top ready task OR open question>
 
