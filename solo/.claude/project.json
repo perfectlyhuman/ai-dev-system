@@ -25,6 +25,17 @@
     "format": "pnpm format:fix",
     "quick": "pnpm typecheck && pnpm lint:fix && pnpm format:fix"
   },
+  "autonomy": {
+    "engineRepo": "perfectlyhuman/agents",
+    "registered": false,
+    "gateCommand": "pnpm typecheck && pnpm build && pnpm lint",
+    "readiness": {
+      "requireGreenGate": true,
+      "requireAgentEligibleTask": true,
+      "requireBaseBranch": true
+    },
+    "telegramOnPark": true
+  },
   "git": {
     "mainBranch": "main",
     "previewBranch": "preview",
