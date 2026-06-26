@@ -656,6 +656,14 @@ Steps: (1) update local engine clone; (2) on a branch, insert the entry; (3) run
 2. After 5+ clean shadow merges → `autoMergeEnabled: true` → fully autonomous into `preview`.
 3. `main` always stays your gate.
 
+## Step 13: Wire secrets (Infisical)
+
+The engine reads each repo's secrets from its Infisical path (`infisicalPath` in the RepoConfig).
+
+1. Create Infisical path `/{slug}` (project `perfectly-human`); add runtime secrets (Supabase keys, etc.) — mirror `/{cooking-coach}` or `/{banks}`.
+2. **Riley pre-flight (one-time per engine):** confirm the Railway `agents` service's Infisical **machine identity** has read scope covering `/{slug}`. Without it, secret-dependent gate steps fail → tasks park `needs-permission: secret-access`.
+3. Local dev: `infisical run --env=dev --path=/{slug} -- pnpm dev`.
+
 ---
 
 ## Rules
