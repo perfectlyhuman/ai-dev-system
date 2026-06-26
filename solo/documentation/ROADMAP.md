@@ -17,12 +17,13 @@ focus: "{{PHASE_1_NAME}}"
 
 Tasks currently in flight or next up. Pull from here when starting work.
 
-| ID | Task | Status | Chapter | Notes |
-|----|------|--------|---------|-------|
-| P1-001 | Documentation system setup | ✅ done | [MASTER.md](MASTER.md) | |
+| ID | Task | Owner | Gate | Status | Chapter | Notes |
+|----|------|-------|------|--------|---------|-------|
+| P1-001 | Documentation system setup | riley | — | ✅ done | [MASTER.md](MASTER.md) | |
 <!-- Add tasks during /vision session -->
 
 **Status legend:** ⬜ not-started | 🔄 in-progress | 🚧 blocked | ✅ done
+**Owner:** `agent` (autonomous-eligible) | `riley` (needs you) · **Gate:** `—` none | `prod-promotion` | `destructive` | `decision` | `reserved` — see [rulebook](workflows/rulebook.md)
 
 ## Open Questions
 
@@ -40,25 +41,25 @@ Decisions we need to make. These block or inform upcoming work.
 
 **Goal**: {{What this phase achieves}}
 
-| ID | Task | Status | Depends On | Chapter |
-|----|------|--------|------------|---------|
-| P1-001 | Documentation system setup | ✅ done | -- | [MASTER.md](MASTER.md) |
+| ID | Task | Owner | Gate | Status | Depends On | Chapter |
+|----|------|-------|------|--------|------------|---------|
+| P1-001 | Documentation system setup | riley | — | ✅ done | -- | [MASTER.md](MASTER.md) |
 <!-- Add phase 1 tasks -->
 
 ### Phase 2: {{PHASE_2_NAME}}
 
 **Goal**: {{What this phase achieves}}
 
-| ID | Task | Status | Depends On | Chapter |
-|----|------|--------|------------|---------|
+| ID | Task | Owner | Gate | Status | Depends On | Chapter |
+|----|------|-------|------|--------|------------|---------|
 <!-- Add phase 2 tasks -->
 
 ### Phase 3: {{PHASE_3_NAME}}
 
 **Goal**: {{What this phase achieves}}
 
-| ID | Task | Status | Depends On | Chapter |
-|----|------|--------|------------|---------|
+| ID | Task | Owner | Gate | Status | Depends On | Chapter |
+|----|------|-------|------|--------|------------|---------|
 <!-- Add phase 3 tasks -->
 
 <!-- Add more phases as needed -->
