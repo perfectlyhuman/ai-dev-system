@@ -4,22 +4,28 @@ description: "Auto-loaded at session start. Establishes the two-system architect
 
 # Using ai-dev-system + superpowers
 
-This project uses **two complementary systems**:
+This project uses the **ai-dev-system (v2, autonomous)**: one documentation-driven dev
+system where **two executors pull from the same `ROADMAP` and obey the same rulebook** —
 
-- **ai-dev-system** is the **outer shell** — project lifecycle, orientation, documentation memory, deployment, scaffolding. You invoke it via slash commands at discrete moments.
-- **superpowers** is the **inner loop** — per-feature build quality (brainstorming, written plans, fresh-subagent-per-task with two-stage review, TDD, root-cause debugging). It fires automatically based on natural-language requests.
+- **You**, working locally in Claude Code (with the superpowers inner loop for build quality).
+- **The cloud agent** (Gilfoyle), draining agent-eligible ROADMAP tasks in the background.
 
-You don't think about which system is running. Use slash commands for discrete operations; describe what you want to build in natural language for everything else.
+The `ROADMAP` `Owner` column routes each task: `Owner: riley` = you (design/judgment);
+`Owner: agent` + `Gate: —` = the cloud agent, autonomously. Both write the same chapters and
+pass the same gate. The full policy is the [rulebook](../../documentation/workflows/rulebook.md).
 
 ## Slash Commands (ai-dev-system, invoked explicitly)
 
 | Command | When |
 |---|---|
-| `/sync` | Start of a work session. Orient on state, surface tasks, learnings, intake. |
+| `/start` | Start of a work session. Orient on state, parked cloud-agent items, tasks. |
+| `/reflect` | Anytime. Reflect on what the session taught us; recommend what to keep. |
 | `/vision` | Periodic strategic planning. |
-| `/update-docs` | After completing work, before declaring it done. Capture decisions and learnings into chapters. |
-| `/ship` | When ready to deploy. Pipeline depends on `launch.status` in `project.json`. |
-| `/kickoff` | Day 1 of a brand-new project. Guided product discovery → populated docs. |
+| `/kickoff` | Day 1 of a brand-new project. Guided discovery → populated docs. |
+| `/update-docs` | After completing work, before declaring it done. Capture decisions + learnings. |
+| `/closeout` | When tempted to finish — report state + recommend finish-or-keep-going. |
+| `/finish` | Session close. Write the handoff bridge to the next session. |
+| `/ship` | When ready to deploy. Pipeline depends on `launch.status`. |
 | `/go-live` | One-time cutover from pre-launch to live mode. |
 | `/setup-makerkit`, `/setup-nativeexpress` | Set up a fresh project from a template. |
 
@@ -40,7 +46,8 @@ Do not re-implement these flows in shell logic. Trust superpowers — it's been 
 
 ## Project-Wide Iron Laws
 
-These apply to **every** skill and **every** natural-language interaction in this project, regardless of which system is running. They are how ai-dev-system's documentation discipline survives the handoff to superpowers.
+These Iron Laws (and the full Owner/Gate + surface-condition policy) are canonical in the
+[rulebook](../../documentation/workflows/rulebook.md). They apply to **both** executors.
 
 - **NO APPROACH PROPOSAL WITHOUT FIRST CHECKING `documentation/chapters/` FOR PRIOR DECISIONS AND LEARNINGS.** Grep for terms relevant to the task. Read matching Key Decisions and Learnings & Gotchas in full. If the proposed approach contradicts a documented decision, flag it explicitly — never silently override.
 
@@ -81,4 +88,4 @@ When `/update-docs` runs after work, this is what it's writing. When the survey-
 - `.claude/project.json` — config (launch status, intake, paths, testing commands).
 - `.claude/skills/*.md` — slash command definitions.
 
-If you haven't oriented on this project yet this session, start with `/sync`.
+If you haven't oriented on this project yet this session, start with `/start`.
