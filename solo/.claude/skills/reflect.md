@@ -19,7 +19,7 @@ The highest-value learnings — a correction, a confirmed approach, a gotcha tha
 
 Read back over THIS session: what was done, decided, corrected, discovered, or course-corrected. Distinguish durable insight from incidental chatter. You are looking for two kinds:
 
-- **Project-local learnings** — technical gotchas, decisions with real trade-offs, patterns, answered/opened questions. These belong in this repo's `chapters/`, `decisions/`, or `lessons/`.
+- **Project-local learnings** — technical gotchas, decisions with real trade-offs, patterns, answered/opened questions. Route precisely: decisions → `documentation/decisions/`, lessons/gotchas → `documentation/lessons/`, domain narrative updates → `documentation/chapters/`.
 - **Cross-project behavioral learnings** — how Riley wants the work done (corrections, confirmed approaches, preferences, principles). These apply to *every* project, so they belong in `~/.claude/CLAUDE.md` and/or user-memory, NOT this repo.
 
 ### 2. Present the recommendation

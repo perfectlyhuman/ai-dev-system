@@ -22,7 +22,7 @@ When a fresh Claude session reads a chapter, it should come away knowing not jus
 
 - **NO CHAPTER UPDATE MARKED COMPLETE WITHOUT A WHY SENTENCE BEHIND EVERY WHAT.**
 - **NO DECISION RECORDED WITHOUT RATIONALE AND ALTERNATIVES CONSIDERED.**
-- **NO DEBUGGING SESSION CLOSED WITHOUT A LEARNINGS & GOTCHAS ENTRY** (Problem / Wrong Assumption / Reality / Solution / Prevention).
+- **NO DEBUGGING SESSION CLOSED WITHOUT A LESSON ENTRY** written to `documentation/lessons/YYYY-MM-DD-<slug>.md` (severity+area frontmatter; What happened / What we learned / How to apply).
 - **NO WIKI ENTRY IS LEFT UNCLASSIFIED.** If `.omc/wiki/` is scanned, every new entry is promoted, archived, or surfaced to Riley. No silent skips.
 
 Violating the letter of these laws is violating the spirit of them.
@@ -43,8 +43,8 @@ If `.omc/wiki/` exists in the project root:
 
 - [ ] List wiki entries created or modified since the last `/update-docs` run. Compare wiki file `mtime` against the `last_updated` of the most recently touched chapter.
 - [ ] For each new wiki entry, classify it into one of:
-  - **Promote to chapter (Key Decision)** — a decision with rationale and a recognizable *Why*. Convert to micro-ADR format (Context / Options / Decision / Why / Consequences / Revisit if) and append to the relevant chapter's Key Decisions section.
-  - **Promote to chapter (Learning)** — a bug, wrong assumption, or gotcha. Convert to the Learning format (Problem / Wrong Assumption / Reality / Solution / Prevention) and append to the relevant chapter's Learnings & Gotchas section.
+  - **Promote to decisions dir** — a decision with rationale and a recognizable *Why*. Convert to micro-ADR format (Context / Options / Decision / Why / Consequences / Revisit if) and write to `documentation/decisions/YYYY-MM-DD-<slug>.md`. Add a pointer in the relevant chapter's "Decisions & lessons affecting this domain" list.
+  - **Promote to lessons dir** — a bug, wrong assumption, or gotcha. Convert to the lesson format (severity+area frontmatter; What happened / What we learned / How to apply) and write to `documentation/lessons/YYYY-MM-DD-<slug>.md`. Add a pointer in the relevant chapter's "Decisions & lessons affecting this domain" list.
   - **Promote to skill** — a recurring pattern worth becoming a reusable skill. Propose a skill file under `solo/.claude/skills/` and surface to Riley before writing.
   - **Archive** — session-log noise, dead ends not worth keeping. Move to `.omc/wiki/archive/`.
 
@@ -56,9 +56,21 @@ If `.omc/wiki/` does not exist, skip this step entirely. No warning, no error.
 
 ### 2. Identify Scope
 
+### Where each kind of update goes (single source of truth)
+
+| Kind | Home | Format |
+|---|---|---|
+| A significant decision (real trade-offs, constrains future work) | **`documentation/decisions/YYYY-MM-DD-<slug>.md`** (one file) | micro-ADR: Context / Options / Decision / Why / Consequences / Revisit if |
+| A trap / wrong assumption / gotcha | **`documentation/lessons/YYYY-MM-DD-<slug>.md`** (one file) | severity+area frontmatter; What happened / What we learned / How to apply |
+| Domain "what & where" + architecture | the relevant `documentation/chapters/<domain>.md` | Overview / Key Files / Architecture / Implementation |
+| Pointer so the chapter references its decisions/lessons | the chapter's **"Decisions & lessons affecting this domain"** list | links to the dir files above |
+| One-line decision index | `MASTER.md` "Recent Major Decisions" table | summary row linking to the `decisions/` file |
+
+**Do NOT write decision bodies or gotcha bodies into chapter sections.** Chapters link to the `decisions/`+`lessons/` files. This is the SAME memory the cloud agent (Gilfoyle) reads — keeping one copy is what keeps the two executors in sync.
+
 Which documents are affected?
 - Which **chapters** relate to the work?
-- Any **major decisions** for MASTER.md?
+- Any **major decisions** for `documentation/decisions/`?
 - Did the **roadmap** change?
 
 ### 3. Read Current Documentation
@@ -74,8 +86,8 @@ For each chapter, run through this grid:
 | Key Files | Were new files created? |
 | Architecture | Did the design change? |
 | Implementation | New patterns or code examples? |
-| Key Decisions | Were decisions made with real trade-offs? |
-| Learnings & Gotchas | Problems hit? Wrong assumptions found? |
+| Decisions | Were decisions made with real trade-offs? → write to `documentation/decisions/` |
+| Lessons | Problems hit? Wrong assumptions found? → write to `documentation/lessons/` |
 | Open Questions | Questions answered? New ones surfaced? |
 
 ### 5. Draft Updates
@@ -126,7 +138,9 @@ Show what you plan to update before editing. Wait for approval on non-obvious ch
 ### 7. Apply Updates
 
 - Update the `last_updated` frontmatter on every modified file.
-- Add major decisions to MASTER.md's "Recent Major Decisions" table.
+- Write significant **decisions** to `documentation/decisions/YYYY-MM-DD-<slug>.md` (micro-ADR format). Add a summary row to MASTER.md's "Recent Major Decisions" table linking to the file.
+- Write **lessons/gotchas** to `documentation/lessons/YYYY-MM-DD-<slug>.md` (severity+area frontmatter).
+- Add pointer links to the relevant chapter's "Decisions & lessons affecting this domain" list.
 - Update ROADMAP.md if scope or dependencies changed.
 
 ### 8. Completion Self-Check
@@ -134,9 +148,9 @@ Show what you plan to update before editing. Wait for approval on non-obvious ch
 <VERIFICATION-GATE>
 Before claiming "done," run through this checklist out loud:
 
-- [ ] Every new **decision** has both Rationale AND Alternatives Considered.
+- [ ] Every new **decision** is in `documentation/decisions/` with both Rationale AND Alternatives Considered.
 - [ ] Every non-trivial decision has a **Revisit if** line.
-- [ ] Every debugging session has a **Learnings & Gotchas** entry with all five fields (Problem / Wrong Assumption / Reality / Solution / Prevention).
+- [ ] Every debugging session has a **lesson entry** in `documentation/lessons/` with all required fields (What happened / What we learned / How to apply).
 - [ ] Every "what" statement has a "why" sentence nearby.
 - [ ] The `last_updated` frontmatter is bumped on every modified file.
 - [ ] Cross-references to other chapters are added where decisions in this domain affect others.
