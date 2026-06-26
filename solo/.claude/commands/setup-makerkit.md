@@ -209,7 +209,7 @@ fi
 
 **IMPORTANT**: Do NOT use `cp -r solo/.claude/ project/.claude/` — if `.claude/` already exists (Makerkit template has one), `cp -r` will nest it as `.claude/.claude/` and commands won't be found. Always copy the *contents* of each subdirectory.
 
-This installs the ai-dev-system v2 slash commands (`/start`, `/reflect`, `/update-docs`, `/closeout`, `/vision`, `/kickoff`, `/ship`, `/go-live`, `/finish`, `/setup-makerkit`, `/setup-nativeexpress`), the SessionStart hook, and the documentation system. (`/grind-phase` is retired — batch autonomy is the cloud agent's job.)
+This installs the ai-dev-system v2 slash commands (`/start`, `/reflect`, `/update-docs`, `/closeout`, `/vision`, `/kickoff`, `/promote`, `/finish`, `/setup-makerkit`, `/setup-nativeexpress`), the SessionStart hook, and the documentation system. (`/grind-phase`, `/ship`, and `/go-live` are retired — `/promote` is the production-promotion ritual; batch autonomy is the cloud agent's job.)
 
 **Do NOT skip this step.** Without it, Claude Code loses access to the project lifecycle workflow.
 
@@ -340,6 +340,21 @@ gh repo create {username}/{slug} --private --source=. --remote=origin --push
 ```
 
 If `gh` is not available, print instructions for manual repo creation and continue.
+
+## Step 8a: Protect `main` (production gate from day one)
+
+`main` is production. Protect it immediately so only a reviewed, gate-passing `preview → main` PR can change it — the cloud agent (and a stray local push) can never reach production:
+
+```bash
+gh api -X PUT "repos/{username}/{slug}/branches/main/protection" \
+  -H "Accept: application/vnd.github+json" \
+  -f "required_status_checks[strict]=true" \
+  -F "enforce_admins=false" \
+  -f "required_pull_request_reviews[required_approving_review_count]=0" \
+  -F "restrictions=null" 2>/dev/null || echo "Set main protection manually if the API call fails (private-repo plan limits)."
+```
+
+`enforce_admins=false` lets you `/promote` (you're admin). The agent always targets `preview`, never `main`.
 
 ## Step 9: Create Production Supabase Project
 

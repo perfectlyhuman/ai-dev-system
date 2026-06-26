@@ -56,7 +56,7 @@ Review learnings, reassess priorities, update direction.
 | Stuck | `systematic-debugging` | 4-phase root-cause process |
 | Reflecting | `/reflect` | Reflect on learnings mid-session; recommend what to keep |
 | Done building | `/update-docs` | Capture learnings in chapters |
-| Deploying | `/ship` | Push to preview or main (per `launch.status`) |
+| Promoting | `/promote` | Gate preview, merge preview→main (production) |
 | Planning | `/vision` | Discuss direction, update roadmap |
 | Wrapping up | `/closeout` → `/finish` | Report + decide; then write the handoff |
 

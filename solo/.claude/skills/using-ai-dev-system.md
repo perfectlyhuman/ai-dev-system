@@ -27,8 +27,7 @@ New project? The full install→register→arm flow is in [onboarding.md](../../
 | `/update-docs` | After completing work, before declaring it done. Capture decisions + learnings. |
 | `/closeout` | When tempted to finish — report state + recommend finish-or-keep-going. |
 | `/finish` | Session close. Write the handoff bridge to the next session. |
-| `/ship` | When ready to deploy. Pipeline depends on `launch.status`. |
-| `/go-live` | One-time cutover from pre-launch to live mode. |
+| `/promote` | Production promotion: gate preview, merge preview→main, watch deploy. |
 | `/setup-makerkit`, `/setup-nativeexpress` | Set up a fresh project from a template. |
 
 ## Natural Language → superpowers
@@ -39,7 +38,7 @@ When the user describes building, fixing, refactoring, or designing in natural l
 brainstorming  →  writing-plans  →  using-git-worktrees
               →  subagent-driven-development (per-task implementer + spec-reviewer + quality-reviewer)
               →  test-driven-development (inside each task)
-              →  finishing-a-development-branch (or hand back to ai-dev-system /ship)
+              →  finishing-a-development-branch (or hand back to ai-dev-system /promote)
 ```
 
 For debugging, route to superpowers' `systematic-debugging` (4-phase root-cause process; "3+ failed fixes = question architecture" escalation).
@@ -63,12 +62,11 @@ These Iron Laws (and the full Owner/Gate + surface-condition policy) are canonic
 
 Violating the letter of these laws is violating the spirit of them.
 
-## Branch Strategy by `launch.status`
+## Branch Strategy
 
-Read `.claude/project.json` `launch.status`:
+The pipeline is always **feature → preview**, with `/promote` for preview → main (production). `main` is production (Vercel auto-deploys it) and is branch-protected — the cloud agent never reaches it.
 
-- **`"pre-launch"`** (no active users) → commit to main directly, push to main directly. No feature branches, no preview, no PRs. Blast radius is zero pre-launch.
-- **`"live"`** (real users) → feature branches, 3-tier pipeline (feature → preview → main). `/ship` enforces this.
+`launch.status` is informational only — it flags "do we have real users" for caution level, nothing more. It no longer drives pipeline branching.
 
 When unsure, ask. Never assume.
 
