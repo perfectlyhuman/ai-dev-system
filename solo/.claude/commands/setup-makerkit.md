@@ -292,6 +292,22 @@ The copied `documentation/` already includes the v2 templates (`ROADMAP.md` with
    no background agent yet). Tell the user: "Autonomy scaffolding is in place; the cloud
    agent will be wired when the engine-integration step runs."
 
+## Step 5e: Validate canonical structure (engine compatibility gate)
+
+The cloud engine refuses to drain a repo missing any canonical path (`perfectlyhuman/agents` → `lib/validate-repo-config.ts`). Confirm all 8 exist before registering:
+
+```bash
+cd {projectRoot}
+for p in documentation/MASTER.md documentation/ROADMAP.md documentation/HANDOFF.md \
+         documentation/AUTONOMY-INBOX.md documentation/handoffs \
+         documentation/chapters/README.md documentation/decisions/README.md \
+         documentation/lessons/README.md; do
+  [ -e "$p" ] && echo "OK  $p" || echo "MISSING  $p"
+done
+```
+
+Any `MISSING` means the Step 5b `documentation/` copy was incomplete — re-copy from `solo/documentation/` before proceeding.
+
 ## Step 6: Install Dependencies
 
 ```bash
