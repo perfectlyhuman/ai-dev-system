@@ -30,44 +30,28 @@ version: initial
 
 ## Git Workflow
 
-**The branch strategy depends on `launch.status` in `.claude/project.json`.**
+**Everything targets `preview`. `/promote` ships to production.**
 
-### Pre-launch mode (`launch.status: "pre-launch"`, no active users)
-
-You're the only person affected by a broken deploy. Ceremony slows you down without protecting anyone.
+All work (yours and the cloud agent's) targets feature branches that merge into `preview`. `main` is branch-protected — no direct pushes.
 
 ```
-Code directly on main → push → deploy
-```
-
-| Step | Action |
-|------|--------|
-| 1. Pull latest | `git checkout main && git pull` |
-| 2. Develop | commit logical chunks directly on main |
-| 3. Validate | `pnpm typecheck && pnpm lint:fix && pnpm format:fix` |
-| 4. Push | `git push origin main` — deploys directly |
-
-No feature branches. No preview. No PRs. When you go live, run `/go-live` to switch to the live-mode pipeline below.
-
-### Live mode (`launch.status: "live"`, real users depend on production)
-
-Every production error costs someone something. The 3-tier pipeline protects them.
-
-```
-Feature branches ({branch-prefix}*) → preview → main
-                                ↓          ↓
-                         Vercel Preview  Production
-                           (staging)
+feature/{name} → preview → main (via /promote)
+                     ↓          ↓
+              Vercel Preview  Production
+               (staging)
 ```
 
 | Step | Action | Result |
 |------|--------|--------|
-| 1. Create feature branch | `git checkout main && git pull && git checkout -b {branch-prefix}feature-name` | Branch from up-to-date main |
-| 2. Develop & test locally | `pnpm typecheck && pnpm lint:fix && pnpm format:fix` | Local validation |
-| 3. Push & deploy to staging | Push branch, merge to `preview` | Triggers Vercel preview build |
-| 4. Test on staging | Manual testing on preview URL | Verify in real environment |
-| 5. Deploy to production | Merge `preview` to `main` | Triggers production build |
-| 6. Cleanup | Delete feature branch | Keep branches tidy |
+| 1. Pull latest | `git checkout preview && git pull` | Start from up-to-date preview |
+| 2. Create feature branch | `git checkout -b {branch-prefix}feature-name` | Branch from preview |
+| 3. Develop & test locally | `pnpm typecheck && pnpm lint:fix && pnpm format:fix` | Local validation |
+| 4. Push & merge to preview | Push branch, merge to `preview` | Triggers Vercel preview build |
+| 5. Validate on preview | Check preview URL, watch for errors | Verify in real environment |
+| 6. Ship to production | Run `/promote` | Gates preview → merges preview→main → watches deploy |
+| 7. Cleanup | Delete feature branch | Keep branches tidy |
+
+`launch.status` in `.claude/project.json` is **informational only** — it flags whether real users are on production (affects caution level), but does not switch pipelines.
 
 See [workflows/git-workflow.md](workflows/git-workflow.md) for full details.
 

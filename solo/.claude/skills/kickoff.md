@@ -293,7 +293,7 @@ Things we can't decide yet but need to resolve:
    - Only create chapters for domains that are well-defined enough
    - Use the chapter TEMPLATE.md structure
 
-6. **.claude/project.json** — Fill in project name, description, paths. Set `launch.status: "pre-launch"` and `launch.activeUsers: false` by default — new projects start pre-launch. The user can run `/go-live` later to flip this.
+6. **.claude/project.json** — Fill in project name, description, paths. Set `launch.status: "pre-launch"` and `launch.activeUsers: false` by default — new projects start pre-launch. `launch.status` is informational; set `pre-launch` by default. Update it to `"live"` manually when real users are on production — there is no `/go-live` command.
 
 ### Self-Review After Writing
 

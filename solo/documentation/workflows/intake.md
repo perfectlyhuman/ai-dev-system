@@ -16,7 +16,7 @@ How bugs and feature requests get from a Slack conversation into the project's w
 - **ROADMAP.md = prioritized tracker.** The actual working queue, organized into phases, with task IDs and status markers.
 - **One-way flows:**
   - Intake → roadmap during `/start` (Claude surfaces new issues; you decide what to promote).
-  - Roadmap → issue-close during `/ship` (Claude closes the corresponding issue when its task ships).
+  - Roadmap → issue-close on merge (a `Closes #NN` commit reference auto-closes the issue when the PR merges to the default branch).
 
 No bidirectional sync. GitHub Issues is never the source of truth for priority or status — that lives in ROADMAP.md.
 
@@ -77,10 +77,12 @@ You decide:
 
 ### You ship a task that fixes the issue
 
-When you run `/ship`, Claude sees the task in ROADMAP.md references `#42` and closes it with a comment linking to the commit:
+Include `Closes #42` in your commit message or PR description. GitHub auto-closes the issue when the PR merges to the default branch:
 
 ```
-gh issue close 42 --comment "Shipped in abc1234"
+git commit -m "fix: Stripe checkout 500s on Safari iOS
+
+Closes #42"
 ```
 
 ## Conventions
@@ -93,11 +95,11 @@ When you promote an issue to a task, reference the issue number in the task row:
 | P2-007 | Fix Stripe checkout 500s on Safari iOS (#42) | ⬜ | -- | [chapters/billing.md](chapters/billing.md) |
 ```
 
-The `(#42)` reference is what `/ship` looks for when deciding which issues to close.
+The `(#42)` reference makes it easy to find which issues a task resolves, and ensures the `Closes #42` commit reference targets the right issue.
 
 ### Commit messages
 
-Include `Closes #42` in the commit message for the fix — GitHub will auto-close on merge to default branch, which is belt-and-suspenders with `/ship`'s explicit close.
+Include `Closes #42` in the commit message or PR description. GitHub auto-closes the issue when the PR merges to the default branch — no manual close needed.
 
 ### When not to promote to ROADMAP.md
 
@@ -121,4 +123,4 @@ Linear is a reasonable upgrade if the team grows beyond ~3 engineers, if non-tec
 
 - ROADMAP.md is the source of truth for status and priority. Don't use GitHub's milestones or labels as the organizing system.
 - Reference `#N` in task descriptions when promoting an issue to a task.
-- `/ship` closes issues; don't close them manually unless you're explicitly declining to fix.
+- Issues are closed by `Closes #NN` on merge, not manually — unless you're explicitly declining to fix.

@@ -25,7 +25,7 @@ You don't think about which system is running. Use slash commands for discrete o
 - **ROADMAP.md** — Living project tracker (replaces Linear): phases, tasks, statuses, open questions.
 - **Chapters** — Domain documentation that captures what you built, how, and most importantly **WHY** — decisions, alternatives ruled out, learnings from past mistakes. The point is to prevent re-discovering the same answers in a different guise six weeks later.
 - **Pre-launch vs live modes** — ship fast with no ceremony pre-launch; graduate to feature branches + preview pipeline when real users depend on production.
-- **GitHub Issues intake** — capture bugs/features from Slack via the GitHub app; `/start` surfaces them, `/ship` closes them.
+- **GitHub Issues intake** — capture bugs/features from Slack via the GitHub app; `/start` surfaces them, and a `Closes #NN` commit reference auto-closes them on merge.
 - **SessionStart hook** — every new session auto-loads the ai-dev-system preamble so Claude knows the skill set and the project-wide Iron Laws without you telling it.
 
 ## Slash Commands (the outer shell)
@@ -35,9 +35,8 @@ You don't think about which system is running. Use slash commands for discrete o
 | `/start` | Start of a work session. Orient on state, surface tasks, learnings, intake. |
 | `/vision` | Periodic strategic planning. |
 | `/update-docs` | After completing work, before declaring it done. Captures decisions and learnings into chapters. |
-| `/ship` | When ready to deploy. Pipeline depends on `launch.status` in `project.json`. |
+| `/promote` | Ship to production: gate the preview build, merge `preview → main`, watch deploy. |
 | `/kickoff` | Day 1 of a new project. Guided product discovery → populated docs. |
-| `/go-live` | One-time cutover from pre-launch to live mode. |
 | `/setup-makerkit`, `/setup-nativeexpress` | Set up a fresh project from a template. |
 
 For *building* features, fixing bugs, or refactoring — describe what you want in natural language. Superpowers' chain takes over: brainstorming → writing-plans → subagent-driven-development → TDD → review.
@@ -51,7 +50,7 @@ Day 1:     /kickoff         → Idea → Research → Define → Architecture �
            ┌──────────────────────────────────────────────────────────────────────────┐
            │                                                                          │
            ▼                                                                          │
-Daily:     /start  →  natural-language work  →  /update-docs  →  /ship                │
+Daily:     /start  →  natural-language work  →  /update-docs  →  /promote             │
            │         (superpowers handles the build)                                  │
            │                                                                          │
            └──── /vision (reflect, reprioritize, course correct) ────────────────────┘
@@ -120,7 +119,7 @@ Start of session:   /start                         → orient, pick next task, c
 Working:            "let's build X" / "fix Y"      → superpowers chain handles it
 Stuck:              "I'm stuck on Z"               → systematic-debugging fires
 Done building:      /update-docs                    → capture learnings/decisions in chapters
-Shipping:           /ship                          → deploy (pipeline depends on launch.status)
+Shipping:           /promote                       → gate preview → merge preview→main → watch deploy
 Strategic check:    /vision                        → discuss direction, update roadmap
 ```
 
@@ -142,8 +141,7 @@ your-project/
 │   │   ├── sync.md
 │   │   ├── vision.md
 │   │   ├── update-docs.md
-│   │   ├── ship.md
-│   │   └── go-live.md
+│   │   └── promote.md
 │   └── commands/                 # Mirror of skills/ for slash command invocation
 │
 └── documentation/
@@ -166,25 +164,23 @@ your-project/
 4. **Document negative knowledge.** "We tried X and it failed because Y" prevents repeating mistakes.
 5. **Chapters carry the WHY.** Key Decisions use micro-ADR format with a "Revisit if" line. Learnings & Gotchas use Problem/Wrong-Assumption/Reality/Solution/Prevention.
 6. **ROADMAP.md is your task tracker.** Simple markdown tables with status markers, not a separate tool.
-7. **Pre-launch is for shipping fast; live is for protecting users.** `/ship` automatically applies the right ceremony based on `launch.status`. Use `/go-live` to flip.
+7. **Everything targets `preview`; `/promote` ships to production.** Feature branches merge to `preview`; `/promote` gates, merges `preview → main`, and watches the deploy. `main` is branch-protected from `/setup`. `launch.status` is informational (flags "do we have real users" for caution level) — it does not switch pipelines.
 8. **Slash commands for discrete operations; natural language for building.** Don't memorize which is which — Claude will offer the right slash command and you authorize.
 
-## Pre-launch vs Live
+## Always-Preview Pipeline
 
-New projects start in **pre-launch** mode (set automatically by `/kickoff`). While `launch.status` is `"pre-launch"`:
+Everything goes through `preview` — from day one. There is no "pre-launch shortcut" pipeline:
 
-- Code is committed directly to main — no feature branches.
-- `/ship` is just: run quick tests → commit → push main.
-- No preview branch, no PRs, no ceremony. Blast radius of a broken deploy is zero.
+- All work (yours and the cloud agent's) targets feature branches that merge into `preview`.
+- `preview` gets a Vercel preview deployment; you validate there.
+- `/promote` is the single production action: gates the preview build, merges `preview → main`, and watches the production deploy.
+- `main` is branch-protected from `/setup` — the cloud agent never pushes directly to it.
 
-When real users are about to depend on production, run `/go-live`. It sets `launch.status` to `"live"`, ensures the preview branch exists, and records the cutover as a Decision in MASTER.md. After the flip:
+### What `launch.status` actually means
 
-- Feature branches required.
-- `/ship` uses the 3-tier pipeline: feature → preview → main.
-- Pre-production validation ladder runs before merging to main.
-- Broken deploys get caught at the preview stage before touching production.
+`launch.status` in `.claude/project.json` is **informational only**. It signals whether real users depend on production (affects caution level for destructive operations and the tone of `/start` output). It does **not** switch pipelines — the always-preview pipeline runs regardless.
 
-The transition is a one-way door (operationally). It deserves the explicit ceremony.
+Set it to `"pre-launch"` by default (done automatically by `/kickoff`). Update it to `"live"` manually when real users are on production. There is no `/go-live` command to run.
 
 ## Project-Wide Iron Laws
 
@@ -206,9 +202,9 @@ If your cofounder or teammates want to drop bugs/features from Slack:
 2. Add the GitHub Slack app to your workspace (<https://slack.github.com/>) and run `/github subscribe owner/repo issues` in your product channel.
 3. Any `/github open owner/repo <title>` from Slack creates an issue.
 4. `/start` surfaces new issues and asks whether to promote to ROADMAP.md.
-5. `/ship` closes corresponding issues when their task ships.
+5. Issues are auto-closed on merge when the PR or commit includes `Closes #NN`.
 
-See [documentation/workflows/intake.md](documentation/workflows/intake.md) for full details. If you don't configure intake, `/start` and `/ship` simply skip the external step.
+See [documentation/workflows/intake.md](documentation/workflows/intake.md) for full details. If you don't configure intake, `/start` simply skips the external step.
 
 ## Compared to Team Mode
 
