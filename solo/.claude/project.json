@@ -28,6 +28,7 @@
   "autonomy": {
     "engineRepo": "perfectlyhuman/agents",
     "registered": false,
+    "baseBranch": "preview",
     "gateCommand": "pnpm typecheck && pnpm build && pnpm lint",
     "readiness": {
       "requireGreenGate": true,

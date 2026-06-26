@@ -285,13 +285,6 @@ The copied `documentation/` already includes the v2 templates (`ROADMAP.md` with
 2. **Set the base branch.** Confirm `git.mainBranch` in `project.json` matches the repo's
    default branch (`main`).
 
-3. **Engine registration (STUB — completed by Plan 2).** Leave `autonomy.registered: false`.
-   Registering the repo into the shared engine (`perfectlyhuman/agents` REPOS) is done by
-   the Plan 2 engine integration — it opens a PR to the engine repo with this project's
-   `RepoConfig`. Until that lands, the project runs local-only (you work it in Claude Code;
-   no background agent yet). Tell the user: "Autonomy scaffolding is in place; the cloud
-   agent will be wired when the engine-integration step runs."
-
 ## Step 5e: Validate canonical structure (engine compatibility gate)
 
 The cloud engine refuses to drain a repo missing any canonical path (`perfectlyhuman/agents` → `lib/validate-repo-config.ts`). Confirm all 8 exist before registering:
@@ -631,6 +624,37 @@ The API returns the full auth config on success. Verify `site_url` and `uri_allo
 3. Run `/kickoff` for product discovery, or `/start` to orient
 4. Customize Makerkit's marketing pages in `apps/web/app/(marketing)/` (or wherever the route group lives)
 ```
+
+## Step 12: Register the repo in the cloud engine
+
+Add this project to the shared engine (`perfectlyhuman/agents`) so Gilfoyle can drain it. It registers **dormant** (`drainEnabled: false`) and in **shadow mode** (`autoMergeEnabled: false`) — nothing runs until you arm it after a bed-in (mirrors the Banks rollout).
+
+Open a PR to the engine adding a `RepoConfig` to the `REPOS` array in `lib/repos.ts`, matching the interface exactly:
+
+```ts
+{
+  slug: "{username}/{slug}",
+  drainEnabled: false,
+  roadmapPath: "documentation/ROADMAP.md",
+  drainPromptPath: "gilfoyle/prompt.md",
+  baseBranch: "preview",
+  branchPrefix: "feature/auto-",
+  agentOwnerName: "agent",
+  infisicalPath: "/{slug}",
+  gateCommand: "{the autonomy.gateCommand from .claude/project.json}",
+  idleSleep: "10m",
+  stateBranch: "autonomy-state",
+  maxAttemptsPerTask: 3,
+  autoMergeEnabled: false,
+}
+```
+
+Steps: (1) update local engine clone; (2) on a branch, insert the entry; (3) run `npm run validate-repos` if present (validates canonical paths over the live repo — push first); (4) `gh pr create -R perfectlyhuman/agents --title "register {slug} (dormant, shadow)" --body "..."`; (5) **Riley merges** (shared infra). Set `.claude/project.json` `autonomy.registered: true` only after merge.
+
+### Arming later (after bed-in)
+1. `drainEnabled: true` → agent opens shadow PRs you review.
+2. After 5+ clean shadow merges → `autoMergeEnabled: true` → fully autonomous into `preview`.
+3. `main` always stays your gate.
 
 ---
 
