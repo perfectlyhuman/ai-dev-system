@@ -60,7 +60,7 @@ the current folder name.
 11. Lays the **Sentry** foundation (env wiring; the Expo plugin auto-activates when keys are set)
 12. Lays the **RevenueCat** foundation (env wiring + a checklist to finish in the dashboard)
 13. Configures Supabase auth redirect URLs (including the app's deep-link scheme)
-14. Registers the repo in the cloud engine (dormant + shadow) and wires Infisical secrets
+14. Registers the repo in the cloud engine (dormant + shadow)
 
 ### Architecture
 
@@ -239,8 +239,8 @@ EXPO_PUBLIC_POSTHOG_API_KEY=""
 ```
 
 The local anon key above is the standard Supabase demo key — the same for every local instance;
-it is NOT a secret. The production Supabase keys go into EAS/Infisical later, not into `.env`
-(Step 9 captures them).
+it is NOT a secret. The production Supabase keys go into EAS (build env/secrets) later, not into
+`.env` (Step 9 captures them).
 
 **Append** an OpenRouter section at the end (used by the edge functions in Step 5d):
 
@@ -442,7 +442,7 @@ supabase db push -p "{dbPassword}"
 supabase projects api-keys --project-ref {projectRef}
 ```
 
-Save these values (used for EAS/Infisical secrets, and for the auth URL step):
+Save these values (used for EAS secrets, and for the auth URL step):
 - **Supabase URL**: `https://{projectRef}.supabase.co`
 - **Anon key**: the `anon` JWT → `EXPO_PUBLIC_SUPABASE_ANON_KEY` for production builds
 - **Service role key**: the `service_role` JWT → server/edge secret (the `sb_secret_*` key is
@@ -523,7 +523,7 @@ provider under `src/provider/`. "Foundation ready" means wiring the API key + a 
      `{bundleId}`.
    - Paste the App Store Connect **App-Specific Shared Secret** into the iOS app config.
    - Copy the **Apple API key** (public SDK key) → `EXPO_PUBLIC_REVENUE_CAT_API_KEY_APPLE` in
-     `.env` (and later as an EAS/Infisical secret for production builds).
+     `.env` (and later as an EAS secret for production builds).
    - Create at least one **Entitlement** (e.g. `pro`) and an **Offering** with a package, mapped to
      an App Store Connect subscription/product.
 
@@ -623,7 +623,6 @@ Open a PR to the engine adding a `RepoConfig` to the `REPOS` array in `lib/repos
   baseBranch: "preview",
   branchPrefix: "feature/auto-",
   agentOwnerName: "agent",
-  infisicalPath: "/{slug}",
   gateCommand: "npx tsc --noEmit && npx expo lint",
   idleSleep: "10m",
   stateBranch: "autonomy-state",
@@ -644,17 +643,21 @@ after merge.
 2. After 5+ clean shadow merges → `autoMergeEnabled: true` → autonomous into `preview`.
 3. `main` always stays your gate.
 
-## Step 16: Wire secrets (Infisical)
+## Step 16: Secrets (no Infisical for mobile)
 
-The engine reads each repo's secrets from its Infisical path (`infisicalPath` in the RepoConfig).
+Mobile projects **don't use Infisical.** The cloud drain agent's gate is
+`npx tsc --noEmit && npx expo lint` — pure static checks that need no runtime secrets, so the
+RepoConfig in Step 15 omits `infisicalPath` (the engine treats an absent path as "no runtime
+secrets to load"). Build- and run-time secrets live where they're actually consumed:
 
-1. Create Infisical path `/{slug}` (project `perfectly-human`); add runtime secrets — the production
-   Supabase keys, `OPENROUTER_API_KEY`, `SENTRY_AUTH_TOKEN`, and (when set) the RevenueCat key.
-   Mirror an existing mobile/app path.
-2. **Riley pre-flight (one-time per engine):** confirm the Railway `agents` service's Infisical
-   **machine identity** has read scope covering `/{slug}`. Without it, secret-dependent gate steps
-   fail → tasks park `needs-permission: secret-access`.
-3. Local dev: `infisical run --env=dev --path=/{slug} -- npx expo start`.
+1. **Local dev** reads `.env` directly — just `npx expo start`. No secret manager in the loop.
+2. **Cloud builds (EAS)** hold their own secrets:
+   - `SENTRY_AUTH_TOKEN` → EAS secret (Step 11), so source maps upload during builds.
+   - Production Supabase URL/anon key and the RevenueCat key → set as EAS env vars (or a
+     production build profile in `eas.json`) when you cut production builds. These are
+     public/build-time `EXPO_PUBLIC_*` values, not drain-agent secrets.
+3. `OPENROUTER_API_KEY` (edge-function AI) lives as a **Supabase function secret**
+   (`supabase secrets set`, Step 9) — server-side on Supabase, never in the app bundle.
 
 ---
 
