@@ -14,7 +14,8 @@
  *   5. Runs pnpm install
  *   6. Re-initializes git with a fresh history
  *   7. Creates a private GitHub repo and pushes
- *   8. Deploys to Vercel (if CLI available)
+ *   8. Sets up Framer landing page (optional — template duplication + API key)
+ *   9. Deploys to Vercel (if CLI available)
  *
  * Usage:
  *   node setup-makerkit.js
@@ -82,6 +83,21 @@ function toSlug(name) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
+}
+
+function openBrowser(url) {
+  const openCmd =
+    process.platform === 'win32'
+      ? 'start'
+      : process.platform === 'darwin'
+        ? 'open'
+        : 'xdg-open';
+  try {
+    execSync(`${openCmd} "${url}"`, { stdio: 'pipe' });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -337,7 +353,7 @@ function copyRecursive(src, dest) {
   }
 }
 
-function installAiDevSystem(slug, description) {
+function installAiDevSystem(slug, description, framerConfig) {
   // Determine where the solo mode files are
   // Could be running from the ai-dev-system package or from a local copy
   const packageDir = path.dirname(__filename);
@@ -400,6 +416,15 @@ function installAiDevSystem(slug, description) {
       database: 'apps/web/supabase',
     },
   };
+
+  // Add Framer config if provided
+  if (framerConfig) {
+    projectJson.framer = {
+      templateUrl: framerConfig.templateUrl,
+      projectUrl: '',
+      customDomain: framerConfig.domain || '',
+    };
+  }
 
   fs.mkdirSync(path.dirname(projectJsonPath), { recursive: true });
   fs.writeFileSync(
@@ -500,6 +525,77 @@ function configureShadcnBlocks() {
 
   fs.writeFileSync(mcpPath, JSON.stringify(mcpConfig, null, 2) + '\n', 'utf-8');
   console.log('  ✓ .mcp.json (shadcn MCP server)');
+}
+
+// ---------------------------------------------------------------------------
+// Framer landing page setup
+// ---------------------------------------------------------------------------
+
+async function setupFramerInteractive(templateUrl, slug) {
+  if (!openBrowser(templateUrl)) {
+    console.log(`  → Could not open browser. Open this URL manually: ${templateUrl}`);
+  }
+
+  console.log(`
+  → Opening Framer template in your browser...
+
+  Complete these steps:
+    1. Click "Use for Free" or "Duplicate" on the template page
+    2. Once in the editor, copy the project URL from the address bar
+       (looks like: https://framer.com/projects/Name--abc123)
+    3. Go to Site Settings > General
+    4. Scroll to "Server API" and click "Generate Key"
+    5. Copy the API key
+  `);
+
+  const rl2 = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  const projectUrl = await ask(rl2, 'Framer project URL (after duplicating)', '');
+  const apiKey = await ask(rl2, 'Framer API key', '');
+  rl2.close();
+
+  if (!projectUrl || !apiKey) {
+    console.log('  ⚠ Framer setup skipped — missing project URL or API key');
+    console.log('    You can set this up later with the /landing command');
+    return null;
+  }
+
+  // Store API key in .env.local (gitignored by default in Next.js)
+  const envLocalPath = path.join(projectRoot, 'apps', 'web', '.env.local');
+  let envLocalContent = '';
+  if (fs.existsSync(envLocalPath)) {
+    envLocalContent = fs.readFileSync(envLocalPath, 'utf-8');
+  }
+  if (!envLocalContent.includes('FRAMER_API_KEY')) {
+    if (envLocalContent && !envLocalContent.endsWith('\n')) envLocalContent += '\n';
+    envLocalContent += `\n# Framer Server API key (per-project, keep secret)\nFRAMER_API_KEY=${apiKey}\n`;
+    fs.writeFileSync(envLocalPath, envLocalContent, 'utf-8');
+    console.log('  ✓ apps/web/.env.local (FRAMER_API_KEY)');
+  }
+
+  // Update project.json with the actual project URL
+  const pjPath = path.join(projectRoot, '.claude', 'project.json');
+  if (fs.existsSync(pjPath)) {
+    try {
+      const pj = JSON.parse(fs.readFileSync(pjPath, 'utf-8'));
+      if (pj.framer) {
+        pj.framer.projectUrl = projectUrl;
+      } else {
+        pj.framer = {
+          templateUrl: templateUrl,
+          projectUrl: projectUrl,
+          customDomain: '',
+        };
+      }
+      fs.writeFileSync(pjPath, JSON.stringify(pj, null, 2) + '\n', 'utf-8');
+    } catch {}
+  }
+
+  console.log(`  ✓ Framer project linked: ${projectUrl}`);
+  return { projectUrl, apiKey };
 }
 
 // ---------------------------------------------------------------------------
@@ -618,6 +714,18 @@ async function main() {
   const slug = toSlug(await ask(rl, 'Project slug', defaultSlug));
   const displayName = await ask(rl, 'Display name', toTitleCase(slug));
   const description = await ask(rl, 'Short description (optional)', '');
+
+  // Framer landing page (optional)
+  console.log('\n  --- Landing Page (Framer) ---');
+  console.log('  Provide a Framer template URL to set up a landing page.');
+  console.log('  The app will deploy to app.{domain}, landing page to {domain}.');
+  const framerTemplateUrl = await ask(rl, 'Framer template URL (Enter to skip)', '');
+  let domain = '';
+  if (framerTemplateUrl) {
+    domain = await ask(rl, 'Production domain', `${slug}.com`);
+  }
+  console.log('');
+
   const username = await ask(rl, 'GitHub username', defaultUsername);
 
   const usedStr =
@@ -638,6 +746,9 @@ async function main() {
   // Summary
   // ---------------------------------------------------------------------------
 
+  const useFramer = !!framerTemplateUrl;
+  const totalSteps = useFramer ? 9 : 8;
+
   console.log(`
   ─────────────────────────────────────
   Summary
@@ -646,8 +757,17 @@ async function main() {
   Project:      ${slug} (${displayName})
   Description:  ${description || '(none)'}
   GitHub:       ${username}/${slug}
+`);
 
-  Ports:
+  if (useFramer) {
+    console.log(`  Domain:       ${domain}`);
+    console.log(`  Landing:      ${domain} → Framer`);
+    console.log(`  App:          app.${domain} → Vercel`);
+    console.log(`  Template:     ${framerTemplateUrl}`);
+    console.log('');
+  }
+
+  console.log(`  Ports:
     Supabase API:     ${ports.api}
     Supabase DB:      ${ports.db}
     Supabase Studio:  ${ports.studio}
@@ -664,17 +784,21 @@ async function main() {
   // Execute
   // ---------------------------------------------------------------------------
 
-  console.log('  [1/8] Updating config files...');
+  let step = 0;
+  const next = () => `[${++step}/${totalSteps}]`;
+
+  console.log(`  ${next()} Updating config files...`);
   updateConfigToml(slug, ports);
   updateEnvFiles(slug, displayName, description, ports);
 
-  console.log('\n  [2/8] Installing ai-dev-system...');
-  installAiDevSystem(slug, description);
+  console.log(`\n  ${next()} Installing ai-dev-system...`);
+  const framerConfig = useFramer ? { templateUrl: framerTemplateUrl, domain } : null;
+  installAiDevSystem(slug, description, framerConfig);
 
-  console.log('\n  [3/8] Configuring shadcnblocks...');
+  console.log(`\n  ${next()} Configuring shadcnblocks...`);
   configureShadcnBlocks();
 
-  console.log('\n  [4/8] Installing dependencies...');
+  console.log(`\n  ${next()} Installing dependencies...`);
   try {
     run('pnpm install', { silent: true });
     console.log('  ✓ pnpm install complete');
@@ -682,16 +806,23 @@ async function main() {
     console.log('  ⚠ pnpm install failed — run it manually later');
   }
 
-  console.log('\n  [5/8] Initializing git...');
+  console.log(`\n  ${next()} Initializing git...`);
   reinitGit(slug, displayName);
 
-  console.log('\n  [6/8] Creating GitHub repo...');
+  console.log(`\n  ${next()} Creating GitHub repo...`);
   const githubUrl = createGithubRepo(username, slug);
 
-  console.log('\n  [7/8] Deploying to Vercel...');
+  // Framer setup (interactive — opens browser, prompts for URL and API key)
+  let framerResult = null;
+  if (useFramer) {
+    console.log(`\n  ${next()} Setting up Framer landing page...`);
+    framerResult = await setupFramerInteractive(framerTemplateUrl, slug);
+  }
+
+  console.log(`\n  ${next()} Deploying to Vercel...`);
   const vercelUrl = deployVercel(slug);
 
-  console.log('\n  [8/8] Done!');
+  console.log(`\n  ${next()} Done!`);
 
   // ---------------------------------------------------------------------------
   // Final summary
@@ -718,13 +849,32 @@ async function main() {
   if (vercelUrl) {
     console.log(`  Vercel:       ${vercelUrl}`);
   }
+  if (framerResult) {
+    console.log(`  Framer:       ${framerResult.projectUrl}`);
+  }
 
-  console.log(`
+  if (useFramer) {
+    console.log(`
+  Domain Architecture:
+    ${domain}         → Framer (landing page)
+    app.${domain}     → Vercel (SaaS app)
+
+  Next steps:
+    1. pnpm supabase:web:start    Start local Supabase
+    2. pnpm dev                   Start dev server
+    3. Open Claude Code and run /kickoff or /vision
+    4. Run /landing to customize your Framer landing page
+    5. Configure custom domain in Framer (Site Settings > Custom Domain)
+    6. Run /setup-makerkit for full Supabase + Vercel + DNS setup
+`);
+  } else {
+    console.log(`
   Next steps:
     1. pnpm supabase:web:start    Start local Supabase
     2. pnpm dev                   Start dev server
     3. Open Claude Code and run /kickoff or /vision
 `);
+  }
 }
 
 main().catch((e) => {

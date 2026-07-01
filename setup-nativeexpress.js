@@ -3,6 +3,15 @@
 /**
  * setup-nativeexpress.js
  *
+ * ⚠️ LEGACY / SUPERSEDED. The canonical, current mobile bootstrap is the
+ * `/setup-mobile` slash command (solo/.claude/commands/setup-mobile.md).
+ * That command drops the landing page, clones NativeExpress at the repo root,
+ * wires the Sentry + RevenueCat foundations, and adds the cloud-engine autonomy
+ * layer (preview branch, main protection, canonical docs, engine registration,
+ * Infisical). This script still reflects the older flow (landing page + apps/
+ * nesting, no autonomy) — kept only for the `npx create-ai-dev --nativeexpress`
+ * path. Prefer `/setup-mobile`; update this script before relying on it.
+ *
  * Automated setup for new mobile app projects.
  * Creates a project with:
  *   - apps/  — NativeExpress (Expo + React Native + Supabase) mobile app
@@ -23,9 +32,18 @@
  *
  * Usage:
  *   mkdir my-app && cd my-app
- *   node /path/to/setup-nativeexpress.js
+ *   node /path/to/setup-nativeexpress.js [--no-landing]
  *   npx create-ai-dev --nativeexpress
+ *
+ * Flags:
+ *   --no-landing  Skip the Magic UI landing page entirely. Use when the app's
+ *                 marketing page will live somewhere else (e.g. as a subpage
+ *                 of another site). Skips landing/ scaffold, landing config
+ *                 prompts, and the Vercel link step.
  */
+
+const cliArgs = new Set(process.argv.slice(2));
+const SKIP_LANDING = cliArgs.has('--no-landing');
 
 const fs = require('fs');
 const path = require('path');
@@ -632,7 +650,9 @@ function updateLandingConfig(landingDir, slug, displayName, description, domain)
 // Create root project structure
 // ---------------------------------------------------------------------------
 
-function createRootProject(slug, displayName, description) {
+function createRootProject(slug, displayName, description, opts = {}) {
+  const skipLanding = !!opts.skipLanding;
+
   // Root .gitignore
   const gitignorePath = path.join(projectRoot, '.gitignore');
   if (!fs.existsSync(gitignorePath)) {
@@ -676,6 +696,27 @@ supabase/.temp/
   // Root README
   const readmePath = path.join(projectRoot, 'README.md');
   if (!fs.existsSync(readmePath)) {
+    const structure = skipLanding
+      ? `- \`apps/\` — Mobile app (Expo + React Native + Supabase)`
+      : `- \`apps/\` — Mobile app (Expo + React Native + Supabase)
+- \`landing/\` — Landing page (Next.js + Magic UI)`;
+
+    const landingSection = skipLanding
+      ? ''
+      : `
+
+### Landing Page
+\`\`\`bash
+cd landing
+pnpm install
+pnpm dev
+\`\`\``;
+
+    const deploymentSection = skipLanding
+      ? `- **Mobile App**: Built via EAS Build, deployed to App Store / Google Play`
+      : `- **Landing Page**: Deployed to Vercel
+- **Mobile App**: Built via EAS Build, deployed to App Store / Google Play`;
+
     fs.writeFileSync(
       readmePath,
       `# ${displayName}
@@ -684,8 +725,7 @@ ${description || `${displayName} mobile application.`}
 
 ## Structure
 
-- \`apps/\` — Mobile app (Expo + React Native + Supabase)
-- \`landing/\` — Landing page (Next.js + Magic UI)
+${structure}
 
 ## Quick Start
 
@@ -694,19 +734,11 @@ ${description || `${displayName} mobile application.`}
 cd apps
 npm install
 npx expo start
-\`\`\`
-
-### Landing Page
-\`\`\`bash
-cd landing
-pnpm install
-pnpm dev
-\`\`\`
+\`\`\`${landingSection}
 
 ## Deployment
 
-- **Landing Page**: Deployed to Vercel
-- **Mobile App**: Built via EAS Build, deployed to App Store / Google Play
+${deploymentSection}
 `,
       'utf-8',
     );
@@ -907,7 +939,9 @@ async function main() {
   const slug = toSlug(await ask(rl, 'Project slug', defaultSlug));
   const displayName = await ask(rl, 'Display name', toTitleCase(slug));
   const description = await ask(rl, 'Short description (optional)', '');
-  const domain = await ask(rl, 'Landing page domain', `${slug}.com`);
+  const domain = SKIP_LANDING
+    ? ''
+    : await ask(rl, 'Landing page domain', `${slug}.com`);
 
   // Team selection
   let teamKey = defaultTeam;
@@ -949,7 +983,7 @@ async function main() {
 
   Project:      ${slug} (${displayName})
   Description:  ${description || '(none)'}
-  Domain:       ${domain}
+  Domain:       ${domain || '(no landing page — --no-landing)'}
   Team:         ${team.name}
   Bundle ID:    ${bundleId}
   Apple Team:   ${team.appleTeamId}
@@ -960,8 +994,8 @@ async function main() {
     Supabase DB:      ${ports.db}
     Supabase Studio:  ${ports.studio}
     Inbucket (email): ${ports.inbucket}
-    SMTP:             ${ports.smtp}
-    Landing (Next.js):${ports.landing}
+    SMTP:             ${ports.smtp}${SKIP_LANDING ? '' : `
+    Landing (Next.js):${ports.landing}`}
 
   ─────────────────────────────────────
 `);
@@ -970,39 +1004,42 @@ async function main() {
   // Execute
   // ---------------------------------------------------------------------------
 
-  console.log('  [1/10] Cloning NativeExpress template...');
+  const totalSteps = SKIP_LANDING ? 6 : 10;
+  let stepNum = 0;
+  const step = (label) => `\n  [${++stepNum}/${totalSteps}] ${label}`;
+
+  console.log(step('Cloning NativeExpress template...').trimStart());
   const appsDir = cloneNativeExpress();
 
-  console.log('\n  [2/10] Copying landing page template...');
-  const landingDir = copyLandingTemplate();
+  let landingDir = null;
+  if (!SKIP_LANDING) {
+    console.log(step('Copying landing page template...'));
+    landingDir = copyLandingTemplate();
+  }
 
-  console.log('\n  [3/10] Updating NativeExpress config...');
+  console.log(step('Updating NativeExpress config...'));
   updateNativeExpressConfig(appsDir, slug, displayName, team);
   updateNativeExpressEnv(appsDir, ports);
   updateSupabaseConfig(appsDir, slug, ports);
 
-  console.log('\n  [4/10] Patching AI for OpenRouter...');
+  console.log(step('Patching AI for OpenRouter...'));
   patchOpenRouter(appsDir);
 
-  console.log('\n  [5/10] Updating landing page config...');
-  updateLandingConfig(landingDir, slug, displayName, description, domain);
+  if (!SKIP_LANDING) {
+    console.log(step('Updating landing page config...'));
+    updateLandingConfig(landingDir, slug, displayName, description, domain);
+  }
 
-  console.log('\n  [6/10] Creating project structure...');
-  createRootProject(slug, displayName, description);
+  console.log(step('Creating project structure...'));
+  createRootProject(slug, displayName, description, { skipLanding: SKIP_LANDING });
 
-  console.log('\n  [7/10] Installing ai-dev-system...');
+  console.log(step('Installing ai-dev-system...'));
   installAiDevSystem(slug, description);
 
-  console.log('\n  [8/10] Installing dependencies...');
-  // Detect package manager for each subdir
+  console.log(step('Installing dependencies...'));
   const appsLock = fs.existsSync(path.join(appsDir, 'pnpm-lock.yaml'))
     ? 'pnpm'
     : fs.existsSync(path.join(appsDir, 'yarn.lock'))
-      ? 'yarn'
-      : 'npm';
-  const landingLock = fs.existsSync(path.join(landingDir, 'pnpm-lock.yaml'))
-    ? 'pnpm'
-    : fs.existsSync(path.join(landingDir, 'yarn.lock'))
       ? 'yarn'
       : 'npm';
 
@@ -1013,19 +1050,30 @@ async function main() {
     console.log(`  ⚠ apps/ install failed — run \`${appsLock} install\` in apps/ manually`);
   }
 
-  try {
-    run(`${landingLock} install`, { silent: true, cwd: landingDir });
-    console.log(`  ✓ landing/ (${landingLock} install)`);
-  } catch {
-    console.log(`  ⚠ landing/ install failed — run \`${landingLock} install\` in landing/ manually`);
+  let landingLock = null;
+  if (!SKIP_LANDING) {
+    landingLock = fs.existsSync(path.join(landingDir, 'pnpm-lock.yaml'))
+      ? 'pnpm'
+      : fs.existsSync(path.join(landingDir, 'yarn.lock'))
+        ? 'yarn'
+        : 'npm';
+    try {
+      run(`${landingLock} install`, { silent: true, cwd: landingDir });
+      console.log(`  ✓ landing/ (${landingLock} install)`);
+    } catch {
+      console.log(`  ⚠ landing/ install failed — run \`${landingLock} install\` in landing/ manually`);
+    }
   }
 
-  console.log('\n  [9/10] Initializing git & GitHub...');
+  console.log(step('Initializing git & GitHub...'));
   reinitGit(slug, displayName);
   const githubUrl = createGithubRepo(username, slug);
 
-  console.log('\n  [10/10] Deploying landing page to Vercel...');
-  const vercelUrl = deployVercel(slug, landingDir);
+  let vercelUrl = null;
+  if (!SKIP_LANDING) {
+    console.log(step('Deploying landing page to Vercel...'));
+    vercelUrl = deployVercel(slug, landingDir);
+  }
 
   // ---------------------------------------------------------------------------
   // Final summary
@@ -1038,14 +1086,14 @@ async function main() {
 
   Project:    ${slug} (${displayName})
   Bundle ID:  ${bundleId}
-  Domain:     ${domain}
-  Ports:      Supabase ${ports.api}-${ports.analytics} | Landing ${ports.landing}
+  Domain:     ${domain || '(no landing page)'}
+  Ports:      Supabase ${ports.api}-${ports.analytics}${SKIP_LANDING ? '' : ` | Landing ${ports.landing}`}
 
   Local Dev:
     Mobile:       cd apps && npx expo start
     Supabase:     cd apps && npx supabase start
-    Studio:       http://localhost:${ports.studio}
-    Landing:      cd landing && ${landingLock} dev
+    Studio:       http://localhost:${ports.studio}${SKIP_LANDING ? '' : `
+    Landing:      cd landing && ${landingLock} dev`}
 `);
 
   if (githubUrl) console.log(`  GitHub:       ${githubUrl}`);

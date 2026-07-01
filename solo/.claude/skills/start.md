@@ -70,7 +70,7 @@ each is something the cloud agent (Gilfoyle) parked for Riley (a gate or a surfa
 condition). These are the highest-priority "waiting on you" items.
 
 Then read `.claude/project.json` `autonomy`:
-- If `registered: false` — the project isn't on the engine yet (run `/setup`'s registration step, or it's intentionally local-only).
+- If `registered: false` — the project isn't on the engine yet (run the setup command's registration step, or it's intentionally local-only).
 - If `registered: true` — report the readiness bar from `autonomy.readiness`: is the gate green, is there an agent-eligible ROADMAP task (`Owner: agent`, `Gate: —`), is the base branch set? If all true, the agent should be armed and draining; if not, name the missing condition.
 
 ### 7. Roadmap Orient

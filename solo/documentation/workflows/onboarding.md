@@ -6,13 +6,13 @@ version: v2
 
 # Onboarding a new project (install → register → arm)
 
-How a fresh Makerkit repo goes from clone to "the cloud agent builds for me." Run by `/setup`; this doc is the durable explanation.
+How a fresh repo goes from clone to "the cloud agent builds for me." Run by the setup command (`/setup-web` for Makerkit web apps, `/setup-mobile` for NativeExpress mobile apps); this doc is the durable explanation.
 
 ## The flow
 
-1. **Scaffold (`/setup`).** Installs the v2 bundle: the 8 canonical doc paths the engine validator requires, the v2 command set, `project.json` with the `autonomy` block.
+1. **Scaffold (`/setup-web` or `/setup-mobile`).** Installs the v2 bundle: the 8 canonical doc paths the engine validator requires, the v2 command set, `project.json` with the `autonomy` block.
 2. **`preview` branch.** From `main`. The agent always opens PRs into `preview`; `main` is your gate (fast-merge `preview → main` pre-launch — zero blast radius).
-3. **Register (dormant + shadow).** `/setup` opens a PR to `perfectlyhuman/agents` adding this repo to `REPOS` (`drainEnabled:false`, `autoMergeEnabled:false`). You merge it.
+3. **Register (dormant + shadow).** The setup command opens a PR to `perfectlyhuman/agents` adding this repo to `REPOS` (`drainEnabled:false`, `autoMergeEnabled:false`). You merge it.
 4. **Seed the queue.** `/kickoff` or `/vision` populate the ROADMAP. The agent only touches `Owner: agent`, `Gate: —` rows.
 5. **Arm.** Flip `drainEnabled:true` → shadow PRs you review. After 5+ clean merges, `autoMergeEnabled:true` → fully autonomous into `preview`. Idles when no task is eligible.
 

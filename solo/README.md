@@ -37,7 +37,7 @@ You don't think about which system is running. Use slash commands for discrete o
 | `/update-docs` | After completing work, before declaring it done. Captures decisions and learnings into chapters. |
 | `/promote` | Ship to production: gate the preview build, merge `preview → main`, watch deploy. |
 | `/kickoff` | Day 1 of a new project. Guided product discovery → populated docs. |
-| `/setup`, `/setup-nativeexpress` | Set up a fresh project (web / mobile) from a template. |
+| `/setup-web`, `/setup-mobile` | Set up a fresh project (web / mobile) from a template. |
 
 For *building* features, fixing bugs, or refactoring — describe what you want in natural language. Superpowers' chain takes over: brainstorming → writing-plans → subagent-driven-development → TDD → review.
 
@@ -164,7 +164,7 @@ your-project/
 4. **Document negative knowledge.** "We tried X and it failed because Y" prevents repeating mistakes.
 5. **Chapters carry the WHY.** Key Decisions use micro-ADR format with a "Revisit if" line. Learnings & Gotchas use Problem/Wrong-Assumption/Reality/Solution/Prevention.
 6. **ROADMAP.md is your task tracker.** Simple markdown tables with status markers, not a separate tool.
-7. **Everything targets `preview`; `/promote` ships to production.** Feature branches merge to `preview`; `/promote` gates, merges `preview → main`, and watches the deploy. `main` is branch-protected from `/setup`. `launch.status` is informational (flags "do we have real users" for caution level) — it does not switch pipelines.
+7. **Everything targets `preview`; `/promote` ships to production.** Feature branches merge to `preview`; `/promote` gates, merges `preview → main`, and watches the deploy. `main` is branch-protected from the setup command. `launch.status` is informational (flags "do we have real users" for caution level) — it does not switch pipelines.
 8. **Slash commands for discrete operations; natural language for building.** Don't memorize which is which — Claude will offer the right slash command and you authorize.
 
 ## Always-Preview Pipeline
@@ -174,7 +174,7 @@ Everything goes through `preview` — from day one. There is no "pre-launch shor
 - All work (yours and the cloud agent's) targets feature branches that merge into `preview`.
 - `preview` gets a Vercel preview deployment; you validate there.
 - `/promote` is the single production action: gates the preview build, merges `preview → main`, and watches the production deploy.
-- `main` is branch-protected from `/setup` — the cloud agent never pushes directly to it.
+- `main` is branch-protected from the setup command — the cloud agent never pushes directly to it.
 
 ### What `launch.status` actually means
 
