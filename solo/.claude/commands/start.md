@@ -27,6 +27,7 @@ Read `.claude/project.json`. Note especially:
 - `launch.status` — pre-launch vs live (changes ceremony level).
 - `documentation.root` / `documentation.handoffs` — paths.
 - `intake.provider` — external issue tracker (if any).
+- `roadmap.source` — `"linear"` or `"file"` (default). Determines where the roadmap lives (Step 6). When `"linear"`, use `linear.team` / `linear.teamId`.
 
 If `documentation.handoffs` is not in the schema, fall back to `<documentation.root>/handoffs/`.
 
@@ -64,7 +65,14 @@ Run `TaskList`. Note any task marked `in_progress` from a prior session. Anythin
 
 ### 6. Roadmap Orient
 
-Read `<documentation.roadmap>`. Identify:
+Branch on `roadmap.source` from `.claude/project.json`:
+
+**If `roadmap.source` is `"linear"`** (team-facing projects — the roadmap lives in Linear, not a local file):
+- Using the Linear MCP with `linear.teamId`, fetch the team's projects + issues.
+- Identify: current initiative/phase + focus; issues **In Progress**; top 1-2 **Todo** issues (highest priority, no blockers) ready to pick up; **Blocked** issues and what's blocking.
+- Do **not** read `ROADMAP.md` for content — in Linear-mode it's only a pointer stub. Linear is the source of truth; read from it and (during work, not `/start`) write progress back to it.
+
+**If `roadmap.source` is `"file"` or absent** (default — solo projects): read `<documentation.roadmap>` and identify:
 - Current phase + focus.
 - Tasks marked 🔄 in-progress.
 - Top 1-2 ⬜ ready-to-pick-up tasks with no unresolved dependencies.

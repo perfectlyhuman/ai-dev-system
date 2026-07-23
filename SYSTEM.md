@@ -230,6 +230,10 @@ This file tells Claude Code how to connect all the pieces:
     "initiativeId": "uuid"
   },
 
+  "roadmap": {
+    "source": "file"
+  },
+
   "drive": {
     "roadmapDocId": "google-doc-id",
     "roadmapDocName": "Human-readable name"
@@ -253,6 +257,11 @@ This file tells Claude Code how to connect all the pieces:
   }
 }
 ```
+
+**`roadmap.source` — where the roadmap lives (`"file"` default, or `"linear"`):**
+
+- **`"file"` (default):** the roadmap lives in `documentation/ROADMAP.md`. Right for **solo** projects — no external tool, no team to sync with. `/start` reads the file.
+- **`"linear"`:** the roadmap lives in **Linear** (`linear.team`/`linear.teamId`). Choose this for **team-facing** projects where cofounders/teammates need to see progress, comment, and reprioritize. `/start` reads current projects/issues from Linear; `documentation/ROADMAP.md` becomes a permanent pointer stub (never maintained — Linear is the single source of truth, avoiding two-roadmaps drift). The rest of `documentation/` (decisions, lessons, HANDOFF) is unchanged. Set at scaffold time by `/setup-web`/`/setup-mobile`, or flip an existing project by setting the flag + stubbing `ROADMAP.md`.
 
 ### MCP Server Connections
 

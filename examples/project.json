@@ -9,6 +9,10 @@
     "initiativeId": "your-linear-initiative-id"
   },
 
+  "roadmap": {
+    "source": "file"
+  },
+
   "drive": {
     "roadmapDocId": "your-google-doc-id",
     "roadmapDocName": "MyApp Roadmap | Q1 2026",

@@ -59,6 +59,9 @@ Ask the user these questions using AskUserQuestion (or conversationally):
 4. **Short description** — one sentence (optional, can be added later)
 5. **GitHub username** — for repo creation
    - Auto-detect: run `gh api user -q .login`
+6. **Roadmap mode** — `file` (default) or `linear`
+   - `file`: roadmap lives in `documentation/ROADMAP.md`. The right default for **solo** projects.
+   - `linear`: roadmap lives in **Linear** — choose this for **team-facing** projects where others (cofounders, teammates) need to see progress, comment, and reprioritize. If chosen, ask for the Linear team name + id.
 
 ## Step 2: Detect Available CLIs and Scopes
 
@@ -182,6 +185,8 @@ Also update site_url and any redirect URLs:
 
 ### `.claude/project.json`
 - Update `name` and `description` fields. Other fields (`launch`, `intake`, `git`, `paths`, etc.) keep the ai-dev-system defaults.
+- Set `roadmap.source` to the chosen mode: `"file"` (default) or `"linear"`.
+- **If `"linear"`:** also set `linear.team` + `linear.teamId`, AND replace `documentation/ROADMAP.md` with a short pointer stub (state that the roadmap lives in Linear, with the team link; do NOT maintain a parallel roadmap file — that causes drift). `/start` then reads current projects/issues from Linear instead of the file. The rest of `documentation/` (decisions, lessons, HANDOFF) is unchanged either way.
 
 ### `documentation/MASTER.md` and `documentation/ROADMAP.md`
 - Replace all `next-supabase-saas-kit-turbo` with `{displayName}`
