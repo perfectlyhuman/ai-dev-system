@@ -38,6 +38,7 @@ Read `<documentation.root>/HANDOFF.md`. Note:
 - `session_summary` (one-liner).
 - "Where to start next session" section.
 - "Known leftovers" / "Pending verifications" sections.
+- **"⚡ Autonomous run debrief" section (if present)** — written by `/prep-engines` after a long unattended run. Its **"⛳ NEEDS RILEY"** items (decisions / cost-approvals the run deliberately parked) are the **highest-priority thing to foreground in the report** (step 7), and often the first thing to deal with this session. Surface each as a plain-language question + the run's recommendation.
 
 **Staleness check.** If `last_updated` is more than 5 days ago, flag it loudly. Either Riley forgot `/finish` for several sessions, or there's been a real gap. Offer to do a backfill (next step covers the data).
 
