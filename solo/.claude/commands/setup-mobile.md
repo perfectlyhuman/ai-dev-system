@@ -1,15 +1,22 @@
 ---
-description: "Scaffold a new Perfectly Human mobile app: clone the NativeExpress (robinfaraj) Expo template, rename, provision Supabase, create the EAS project, wire Sentry + RevenueCat foundations, install ai-dev-system v2, register with the cloud engine. Run from inside a fresh, empty project folder. (Web apps: use /setup-web.)"
+description: "Scaffold a new Perfectly Human mobile app: clone the Perfectly Human Expo template (perfectlyhuman/mobile-template), rename, provision Supabase, create the EAS project, wire Sentry + RevenueCat + AI foundations, install ai-dev-system v2, register with the cloud engine. Run from inside a fresh, empty project folder. (Web apps: use /setup-web.)"
 ---
 
 # /setup-mobile - New Mobile App Setup
 
-You are setting up a new Perfectly Human **mobile app** from the NativeExpress template
-(`https://github.com/robinfaraj/nativeexpress` — Expo + React Native + TypeScript + NativeWind +
-GlueStack UI + Supabase + RevenueCat + Sentry + PostHog + i18n). This is a guided, interactive
-process that automates everything the user would normally do manually — including cloning the
-template (Step 0). The user is running you from inside a fresh, (near-)empty project folder named
-after the app (e.g. `empower`).
+You are setting up a new Perfectly Human **mobile app** from the Perfectly Human Expo template
+(`https://github.com/perfectlyhuman/mobile-template` — Expo Router + React Native + TypeScript +
+a custom design-token system (Spectral serif, warm-cream chrome, one brand accent) + Zustand +
+Supabase (anonymous-first auth) + RevenueCat + Sentry + PostHog + a Vercel-AI-SDK edge function).
+The template is Chezmoi's proven foundation with the cooking domain stripped out — it ships the
+"vibe" (floating-pill nav, primitives), the launch/onboarding gate, billing, and an example schema.
+This is a guided, interactive process that automates everything the user would normally do manually —
+including cloning the template (Step 0). The user is running you from inside a fresh, (near-)empty
+project folder named after the app (e.g. `empower`).
+
+**NOT NativeWind/GlueStack, NOT config.js.** The template uses a plain `app.json` + a `src/design/`
+token system consumed via `StyleSheet` — do not look for `config.js`/`app.config.js` or Tailwind.
+Re-skinning is a one-file edit (`src/design/brand.ts`).
 
 This is the mobile sibling of `/setup-web`. It reaches the same end state — a private GitHub repo,
 a production Supabase project, `preview`/`main` branch discipline, the ai-dev-system v2 bundle, and
@@ -22,7 +29,7 @@ if it proves out.
 **No landing page / no Vercel / no Cloudflare.** A mobile app ships through the App Store via EAS,
 not through Vercel. Marketing pages (if any) live elsewhere. This command scaffolds the app only.
 
-## Step 0: Clone the NativeExpress template (you do this — don't ask the user)
+## Step 0: Clone the Perfectly Human mobile template (you do this — don't ask the user)
 
 You are running inside the new project's folder (e.g. `.../perfectlyhuman/empower`), which should be
 empty or nearly empty. The template is **private** — the user's `gh`/git auth has access. Clone it
@@ -34,29 +41,29 @@ into the current folder and flatten it to the repo root (the Expo app IS the rep
 if [ -f package.json ]; then echo "package.json already exists — is this really a fresh project folder? Confirm before proceeding."; fi
 
 # git clone refuses a non-empty target, so clone into a temp dir and move contents up.
-git clone --depth 1 https://github.com/robinfaraj/nativeexpress.git .ne-template
-rm -rf .ne-template/.git          # drop template history (Step 7 re-inits fresh)
-shopt -s dotglob; mv .ne-template/* .; shopt -u dotglob
-rmdir .ne-template
+git clone --depth 1 https://github.com/perfectlyhuman/mobile-template.git .ph-template
+rm -rf .ph-template/.git          # drop template history (Step 7 re-inits fresh)
+shopt -s dotglob; mv .ph-template/* .; shopt -u dotglob
+rmdir .ph-template
 ```
 
 If the clone fails (network/auth), STOP and report — nothing else can proceed. The template is
-private; if auth fails, tell the user to confirm `gh auth status` shows access to `robinfaraj`.
+private; if auth fails, tell the user to confirm `gh auth status` shows access to `perfectlyhuman`.
 Always clone fresh from the canonical URL above — the template evolves. The project slug defaults to
 the current folder name.
 
 ## What This Does
 
-1. Clones NativeExpress fresh at the repo root (Step 0)
-2. Renames/configures the app across `config.js` (name, slug, scheme, bundle ID, owner)
+1. Clones the Perfectly Human mobile template fresh at the repo root (Step 0)
+2. Renames/configures the app across `app.json` + `src/design/brand.ts` (name, slug, scheme, bundle ID, owner, brand)
 3. Assigns unique local Supabase dev ports (so multiple projects can run simultaneously)
-4. Wires `.env` (Supabase, Sentry + RevenueCat placeholders, OpenRouter for edge-function AI)
-5. Patches the AI edge functions to use OpenRouter (model-agnostic), if present
+4. Wires `.env` (Supabase + Sentry/RevenueCat placeholders; the AI key is a Supabase secret, not `.env`)
+5. Confirms the AI edge function (Vercel AI SDK + Anthropic, already wired — no patch needed)
 6. Installs the ai-dev-system (skills, commands, documentation, hook) + mobile `project.json`
 7. Reinitializes git with a clean history; creates the `preview` branch
 8. Creates a private GitHub repo, pushes, and protects `main`
 9. Creates a production Supabase project, links it, and pushes migrations
-10. Creates an EAS project for iOS builds and writes its ID into `config.js`
+10. Creates an EAS project for iOS builds and writes its ID into `app.json` (`extra.eas.projectId`)
 11. Lays the **Sentry** foundation (env wiring; the Expo plugin auto-activates when keys are set)
 12. Lays the **RevenueCat** foundation (env wiring + a checklist to finish in the dashboard)
 13. Configures Supabase auth redirect URLs (including the app's deep-link scheme)
@@ -138,10 +145,10 @@ Ask the Supabase region (default: `us-east-1`). Confirm the Expo owner (default:
 
 ## Step 4: Assign Ports
 
-Look at the user's other projects (both Makerkit web and NativeExpress mobile, likely in
+Look at the user's other projects (both Makerkit web and Expo mobile, likely in
 `C:/Users/riley/Cursor/perfectlyhuman/`) to find ports already in use. Check each sibling for:
 - `{sibling}/apps/web/supabase/config.toml` (Makerkit web)
-- `{sibling}/supabase/config.toml` (NativeExpress mobile, cloned at root)
+- `{sibling}/supabase/config.toml` (Expo mobile, cloned at root)
 
 Pick the next free port group. A "port group" is `{groupNumber}` where:
 - `apiPort` = 54321 + (groupNumber * 10)
@@ -180,10 +187,10 @@ Show the user the full plan and wait for approval:
 - EAS:       {expoOwner}/{slug} (iOS builds)
 
 **Local files I'll modify**:
-- `config.js`               — appName, slug, scheme, bundleId, owner (easProjectId in Step 10)
-- `.env`                    — Supabase URL/key, Sentry + RevenueCat placeholders, OpenRouter
+- `app.json`                — name, slug, scheme, bundleId, owner (easProjectId in Step 10)
+- `src/design/brand.ts`     — appName, tagline, accent/gradient/tints (the one-file re-skin)
+- `.env`                    — Supabase URL + local anon key (AI key is a Supabase secret, not here)
 - `supabase/config.toml`    — project_id + port assignments
-- `supabase/functions/…`    — OpenRouter patch (if AI functions present)
 - `.claude/project.json`    — name, description, mobile paths + gate command
 - `documentation/MASTER.md, ROADMAP.md` — replace template name
 
@@ -192,66 +199,48 @@ OK to proceed?
 
 Wait for approval before continuing.
 
-## Step 5a: Configure `config.js`
+## Step 5a: Configure `app.json` + `src/design/brand.ts`
 
-Read `config.js` and make these replacements in the `general` block (the template ships TODO
-comments on each line — replace the value, the comment can stay or go):
+The template uses a plain **`app.json`** (there is NO `config.js`/`app.config.js`). Edit the `expo`
+block:
 
-- `appName: 'Native Express'` → `appName: '{displayName}'`
-- `owner: "your-expo-account-username"` → `owner: '{expoOwner}'`
-- `slug: 'native-express'` → `slug: '{slug}'`
-- `scheme: 'nativeexpress'` → `scheme: '{scheme}'`
-- `iosBundleIdentifier: 'com.robinfaraj.nativeexpress'` → `iosBundleIdentifier: '{bundleId}'`
-- `androidPackageName: 'com.robinfaraj.nativeexpress'` → `androidPackageName: '{bundleId}'`
+- `"name": "Mobile Template"` → `"{displayName}"`
+- `"slug": "mobile-template"` → `"{slug}"`
+- `"owner": "perfectlyhuman"` → `"{expoOwner}"` (usually leave `perfectlyhuman`)
+- `"scheme": "mobiletemplate"` → `"{scheme}"`
+- `ios.bundleIdentifier: "com.perfectlyhuman.mobiletemplate"` → `"{bundleId}"`
+- The `@sentry/react-native/expo` plugin's `project`/`organization` → the app's Sentry project/org
+  (Step 11), or leave the placeholders for now.
 
-Leave `easProjectId` for now — Step 10 fills it after `eas init`. Leave the `googleOauth` block
-alone (Google/Apple sign-in is configured later, per Step 14's "Configure later" list).
+Leave `extra.eas.projectId` empty — Step 10 fills it after `eas init`.
 
-**Note**: `config.js` feeds `app.config.js` dynamically. Only edit `config.js`, never
-`app.config.js`.
+Then set the brand in **`src/design/brand.ts`** — the one-file re-skin: `appName`, `tagline`,
+`accent`/`accentDeep`/`accentSoft`, `gradient`, and `tints`. (The neutral system tokens in
+`tokens.ts` stay shared — that's the cross-app "vibe".) Optionally replace the placeholder app
+icon/splash under `assets/images/`.
 
 ## Step 5b: Configure `.env`
 
-Copy `.env.example` to `.env` and set the local Supabase values plus service placeholders. The
-template's `.env.example` has these keys:
+Copy `.env.example` to `.env` and set the local Supabase values. Every key is `EXPO_PUBLIC_*`
+(public, embedded in the app bundle — NEVER put a secret here):
 
 ```
-# SUPABASE
 EXPO_PUBLIC_SUPABASE_URL="http://127.0.0.1:{apiPort}"
-EXPO_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0"
-EXPO_PUBLIC_SUPABASE_BUCKET_NAME="avatars"
-
-# REVENUE CAT - PAYMENT (foundation ready; fill in Step 12)
-EXPO_PUBLIC_REVENUE_CAT_API_KEY_APPLE=""
-
-# SENTRY - ERROR TRACKING (foundation ready; fill in Step 11)
+EXPO_PUBLIC_SUPABASE_ANON_KEY="<local demo anon key printed by `supabase start`>"
+EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=""
+EXPO_PUBLIC_POSTHOG_KEY=""
+EXPO_PUBLIC_POSTHOG_HOST="https://us.i.posthog.com"
 EXPO_PUBLIC_SENTRY_DSN=""
-EXPO_PUBLIC_SENTRY_URL=""
-EXPO_PUBLIC_SENTRY_PROJECT=""
-EXPO_PUBLIC_SENTRY_ORGANIZATION=""
-
-# ONE SIGNAL - PUSH NOTIFICATIONS (optional)
-EXPO_PUBLIC_ONE_SIGNAL_APP_ID=""
-
-# POSTHOG - TRACKING (optional)
-EXPO_PUBLIC_POSTHOG_HOST=""
-EXPO_PUBLIC_POSTHOG_API_KEY=""
+EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY=""
+EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY=""
+SUPABASE_PROJECT_REF=""
 ```
 
-The local anon key above is the standard Supabase demo key — the same for every local instance;
-it is NOT a secret. The production Supabase keys go into EAS (build env/secrets) later, not into
-`.env` (Step 9 captures them).
+The local anon key is the standard Supabase demo key (same for every local instance; NOT a secret).
+Leave the rest empty — Steps 11/12 fill Sentry/RevenueCat.
 
-**Append** an OpenRouter section at the end (used by the edge functions in Step 5d):
-
-```
-# OPENROUTER - AI Model Gateway (https://openrouter.ai) — for Supabase edge functions
-OPENROUTER_API_KEY=""
-OPENROUTER_DEFAULT_MODEL="anthropic/claude-sonnet-4-6"
-```
-
-Leave Sentry/RevenueCat/OneSignal/PostHog values as empty strings here — Steps 11 and 12 handle
-Sentry and RevenueCat; the others are wired when the user needs them.
+**The AI provider key is NOT in `.env`.** It's a server-side Supabase secret (`ANTHROPIC_API_KEY`),
+set in Step 9, read only by the `ai-generate` edge function — it must never ship in the app bundle.
 
 ## Step 5c: Configure `supabase/config.toml`
 
@@ -268,19 +257,19 @@ with their own `port =`. Replace carefully per section, and set the project id:
 - `[inbucket] pop3_port = 54326` → `pop3_port = {pop3Port}`
 - `[analytics] port = 54327` → `port = {analyticsPort}`
 
-## Step 5d: Patch AI edge functions to OpenRouter (resilient — skip if absent)
+## Step 5d: AI edge function (already wired — nothing to patch)
 
-The template ships Supabase edge functions under `supabase/functions/` (`_utils`, `call-llm`,
-`delete-account`). Make the AI calls model-agnostic via OpenRouter (OpenAI-API-compatible):
+The template ships `supabase/functions/ai-generate` — a generic text-generation endpoint using the
+**Vercel AI SDK** calling **Anthropic directly** (`@ai-sdk/anthropic`, no gateway/proxy hop) — plus
+`supabase/functions/revenuecat-webhook`. There is NOTHING to patch. The AI is model-agnostic via the
+SDK and stays DORMANT (returns 503) until you set `ANTHROPIC_API_KEY` as a Supabase secret (Step 9).
 
-1. In the shared OpenAI util (e.g. `supabase/functions/_utils/openai.ts`):
-   - `Deno.env.get("OPENAI_API_KEY")` → `Deno.env.get("OPENROUTER_API_KEY")`
-   - Add `baseURL: "https://openrouter.ai/api/v1"` to the OpenAI client constructor
-2. In `supabase/functions/call-llm/index.ts`, replace any hardcoded model:
-   - `model: "gpt-4o"` → `model: Deno.env.get("OPENROUTER_DEFAULT_MODEL") || "anthropic/claude-sonnet-4-6"`
+- To switch providers: swap the adapter + key in `ai-generate/index.ts` (e.g. `@ai-sdk/openai`).
+- To route through Vercel AI Gateway instead of direct: pass a `"provider/model"` string
+  (see vercel.com/docs/ai-gateway). Do NOT reintroduce OpenRouter.
+- The client calls it via `src/services/ai/generate.ts` (`supabase.functions.invoke`).
 
-**If these files or patterns have moved/changed**, log a warning and leave manual instructions —
-the template evolves. Edge functions run on Deno: use `Deno.env.get()`, never `process.env`.
+Edge functions run on Deno — `Deno.env.get()`, never `process.env`.
 
 ## Step 5e: Install ai-dev-system
 
@@ -359,10 +348,10 @@ Any `MISSING` means the Step 5e `documentation/` copy was incomplete — re-copy
 
 ## Step 6: Install Dependencies
 
-The template uses yarn (ships `yarn.lock`):
+The template uses **npm** (ships `package-lock.json`):
 
 ```bash
-yarn install    # or: npm install, if the user prefers / yarn is unavailable
+npm install
 ```
 
 If this fails, note the error and continue — the user can fix it later.
@@ -373,7 +362,7 @@ If this fails, note the error and continue — the user can fix it later.
 # Fresh start (template history already dropped in Step 0)
 git init
 git add .
-git commit -m "Initial commit: {displayName} from NativeExpress template"
+git commit -m "Initial commit: {displayName} from Perfectly Human mobile template"
 git branch -M main
 
 # preview is the cloud agent's drain target — created from main
@@ -448,13 +437,15 @@ Save these values (used for EAS secrets, and for the auth URL step):
 - **Service role key**: the `service_role` JWT → server/edge secret (the `sb_secret_*` key is
   masked by the CLI; use the JWT)
 
-**Deploy edge functions** (the template ships `call-llm`, `delete-account`) and set their secrets:
+**Deploy edge functions** (the template ships `ai-generate` and `revenuecat-webhook`) and set their
+secrets. The AI stays dormant (returns 503) until `ANTHROPIC_API_KEY` is set; the webhook takes no
+Supabase JWT (RevenueCat can't send one):
 
 ```bash
-supabase functions deploy --project-ref {projectRef}
-supabase secrets set OPENROUTER_API_KEY="{key or PLACEHOLDER}" \
-                     OPENROUTER_DEFAULT_MODEL="anthropic/claude-sonnet-4-6" \
-                     --project-ref {projectRef}
+supabase functions deploy ai-generate --project-ref {projectRef}
+supabase functions deploy revenuecat-webhook --no-verify-jwt --project-ref {projectRef}
+supabase secrets set ANTHROPIC_API_KEY="{key, or omit to keep AI dormant}" --project-ref {projectRef}
+# Optional server secrets: RC_WEBHOOK_SECRET (webhook auth), POSTHOG_KEY (server-side funnel).
 ```
 
 ## Step 10: Create the EAS Project
@@ -463,18 +454,20 @@ supabase secrets set OPENROUTER_API_KEY="{key or PLACEHOLDER}" \
 eas init --non-interactive   # falls back to interactive if the flag isn't supported
 ```
 
-EAS returns a project ID. Write it into `config.js`:
-- `easProjectId: 'c3746970-...'` (the template's placeholder) → `easProjectId: '{newEasProjectId}'`
+EAS returns a project ID. Write it into `app.json`:
+- `extra.eas.projectId: ""` (empty in the template) → `"{newEasProjectId}"`
 
-If the EAS CLI isn't available or you're not logged in, leave the template's `easProjectId` as a
-placeholder and print manual instructions (`npm i -g eas-cli && eas login && eas init`).
+If the EAS CLI isn't available or you're not logged in, leave `extra.eas.projectId` empty and print
+manual instructions (`npm i -g eas-cli && eas login && eas init`).
 
 ## Step 11: Sentry foundation
 
-The template already ships `@sentry/react-native` (`src/sentry.js` init + the
-`@sentry/react-native/expo` config plugin in `app.config.js`). The plugin **auto-activates** when
-`EXPO_PUBLIC_SENTRY_URL`, `EXPO_PUBLIC_SENTRY_PROJECT`, and `EXPO_PUBLIC_SENTRY_ORGANIZATION` are
-set — so "foundation ready" means wiring those keys, not adding any code.
+The template already ships `@sentry/react-native` (initialized in `src/app/_layout.tsx` + the
+`@sentry/react-native/expo` config plugin in `app.json`, and `getSentryExpoConfig` in
+`metro.config.js` for source maps). Sentry is dormant until `EXPO_PUBLIC_SENTRY_DSN` is set (the SDK
+no-ops without it). Source-map upload during EAS builds needs `SENTRY_AUTH_TOKEN` as an EAS secret
+plus the plugin's `project`/`organization` in `app.json` — so "foundation ready" means wiring those,
+not adding any code.
 
 **If a Sentry auth token exists** at `~/.config/ai-dev-system/secrets.json` (key
 `sentry_auth_token`), offer to create the project and fill the env vars automatically via the
@@ -513,7 +506,7 @@ The template already ships `react-native-purchases` + `react-native-purchases-ui
 provider under `src/provider/`. "Foundation ready" means wiring the API key + a dashboard checklist
 — no code to add.
 
-1. Set the env placeholder (already stubbed in Step 5b): `EXPO_PUBLIC_REVENUE_CAT_API_KEY_APPLE`.
+1. Set the env placeholder (already stubbed in Step 5b): `EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY`.
 2. **If a RevenueCat token exists** at `~/.config/ai-dev-system/secrets.json` (key
    `revenuecat_api_token`), you may create the project/app via the RevenueCat v2 API; otherwise
    leave it for the user.
@@ -522,7 +515,7 @@ provider under `src/provider/`. "Foundation ready" means wiring the API key + a 
    - Create a **Project** (or reuse the PH project) and add an **iOS app** with bundle ID
      `{bundleId}`.
    - Paste the App Store Connect **App-Specific Shared Secret** into the iOS app config.
-   - Copy the **Apple API key** (public SDK key) → `EXPO_PUBLIC_REVENUE_CAT_API_KEY_APPLE` in
+   - Copy the **Apple API key** (public SDK key) → `EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY` in
      `.env` (and later as an EAS secret for production builds).
    - Create at least one **Entitlement** (e.g. `pro`) and an **Offering** with a package, mapped to
      an App Store Connect subscription/product.
@@ -596,8 +589,8 @@ to https://supabase.com/dashboard/project/{projectRef}/auth/url-configuration.
 ### Configure later
 - RevenueCat: finish the App Store Connect + dashboard checklist (Step 12)
 - Sentry:     paste DSN/org/project if not auto-created (Step 11)
-- Google/Apple Sign-In: config.js googleOauth + Apple Developer / Google Cloud consoles
-- OpenRouter: set OPENROUTER_API_KEY in .env and as a Supabase secret
+- Apple Sign-In: route to `/link-account` to enable (dormant by default; mind the anon-link caveat in that file)
+- AI: set `ANTHROPIC_API_KEY` as a Supabase secret to activate the `ai-generate` edge function
 - Push (OneSignal), Analytics (PostHog): set the EXPO_PUBLIC_* vars when needed
 
 ### Quick Start
@@ -656,7 +649,7 @@ secrets to load"). Build- and run-time secrets live where they're actually consu
    - Production Supabase URL/anon key and the RevenueCat key → set as EAS env vars (or a
      production build profile in `eas.json`) when you cut production builds. These are
      public/build-time `EXPO_PUBLIC_*` values, not drain-agent secrets.
-3. `OPENROUTER_API_KEY` (edge-function AI) lives as a **Supabase function secret**
+3. `ANTHROPIC_API_KEY` (the `ai-generate` edge function) lives as a **Supabase function secret**
    (`supabase secrets set`, Step 9) — server-side on Supabase, never in the app bundle.
 
 ---
@@ -664,8 +657,8 @@ secrets to load"). Build- and run-time secrets live where they're actually consu
 ## Rules
 
 - Always present the full summary before making changes.
-- Always clone NativeExpress fresh from GitHub — never copy from an old local clone. It's private;
-  the user's git auth has access.
+- Always clone the Perfectly Human mobile template fresh from GitHub — never copy from an old local
+  clone. It's private; the user's git auth has access.
 - All remote steps (GitHub, Supabase, EAS) are best-effort — skip gracefully if CLIs aren't
   installed or steps fail.
 - Don't modify any files the user didn't approve.
@@ -674,26 +667,26 @@ secrets to load"). Build- and run-time secrets live where they're actually consu
 - iOS is the focus; Android config is written but not the build target for now.
 - No Vercel, no Cloudflare, no landing page — a mobile app ships via EAS/App Store.
 
-### NativeExpress / Expo gotchas
+### Template / Expo gotchas
 - The template evolves between clones. Config patching should be resilient — log warnings if
   expected patterns aren't found rather than failing hard.
-- `config.js` feeds `app.config.js` dynamically. Only modify `config.js`, never `app.config.js`.
+- Config lives in a plain `app.json` (no `config.js`/`app.config.js`). Re-skin via `src/design/brand.ts`.
 - Bundle IDs cannot have hyphens: `{bundlePrefix}.{slugnohyphens}` (e.g. `com.perfectlyhuman.empower`).
-- The `easProjectId` in `config.js` must match the EAS project — update it after `eas init`.
+- `extra.eas.projectId` in `app.json` must match the EAS project — update it after `eas init`.
 - Supabase edge functions run on Deno — use `Deno.env.get()`, not `process.env`.
 - `newArchEnabled: true` is on in the template (React Native New Architecture).
 
 ### Sentry gotchas
-- The template's `@sentry/react-native/expo` plugin is guarded: it only activates when
-  `EXPO_PUBLIC_SENTRY_URL` + `EXPO_PUBLIC_SENTRY_PROJECT` + `EXPO_PUBLIC_SENTRY_ORGANIZATION` are all
-  set. Leaving them empty is safe (Sentry stays dormant) — that's the "foundation ready" state.
+- Sentry stays dormant until `EXPO_PUBLIC_SENTRY_DSN` is set (the SDK no-ops without it) — leaving it
+  empty is the safe "foundation ready" state. The `@sentry/react-native/expo` plugin's
+  `project`/`organization` live in `app.json` (used for source-map upload during EAS builds).
 - Source-map upload during EAS builds needs `SENTRY_AUTH_TOKEN` as an **EAS secret**, not a public
   `EXPO_PUBLIC_*` var.
 - For deeper Sentry work (tracing, replay, profiling), use the `sentry-react-native-sdk` skill.
 
 ### RevenueCat gotchas
 - `react-native-purchases` + `react-native-purchases-ui` ship in the template; only the API key is
-  missing. `EXPO_PUBLIC_REVENUE_CAT_API_KEY_APPLE` is the public SDK key (safe in the app), NOT a
+  missing. `EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY` is the public SDK key (safe in the app), NOT a
   secret server key.
 - Real subscriptions require App Store Connect products + a RevenueCat entitlement/offering — that's
   dashboard work the command can't fully automate. Leave the checklist (Step 12).
