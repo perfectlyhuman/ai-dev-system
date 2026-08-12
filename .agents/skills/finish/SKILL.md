@@ -18,7 +18,7 @@ Read `.ai-dev/project.yaml`. Note:
 - main branch, optional preview branch, and integration strategy;
 - deployment verification commands or URLs.
 
-Finish the project that owns the current Codex task—the repository in which the task was opened and `start` established context. Changing the shell working directory or completing cross-repository work does not transfer ownership. Cross-repository changes may need their own verification and delivery, but another repository's `finish`, roadmap, or recommended next action never substitutes for closing the owning project.
+Finish the project that owns the current Codex task—the repository in which the task was opened and `start` established context. Changing the shell working directory or completing cross-repository work does not transfer ownership. Cross-repository changes may need their own verification and delivery, but another repository's `finish` or roadmap never substitutes for closing the owning project.
 
 The configured delivery mode is standing authorization for its routine actions. Do not ask Riley again before committing, pushing, integrating, or verifying delivery when those actions are in scope and checks pass.
 
@@ -82,7 +82,7 @@ Do not claim shipped when only a local commit or branch push succeeded. State th
 
 Never force-push, bypass failing required checks, revoke credentials, run destructive migrations, or override protected workflows merely to complete `finish`.
 
-## 6. Close with evidence and direction
+## 6. Close with evidence
 
 Report concisely:
 
@@ -95,14 +95,8 @@ Report concisely:
 **Git:** {commit, branch, push/integration state}
 **Deployment:** {verified state, when applicable}
 **Remaining:** {only real leftovers or blockers}
-
-**Recommended next:** {single next action}
 ```
 
-If a clear next implementation phase is ready, end with:
+A successful `finish` is terminal. Do not recommend a next action, offer `go`, or turn session closure into another continuation checkpoint. The roadmap preserves future work, and the next `start` will select from current evidence when Riley returns.
 
-> Reply `go` and I will {specific next action}.
-
-Offer `go` only when the recommended work belongs to the same owning project and continuing the current task is intentional. If the highest-value next work belongs to another project, tell Riley to open that repository in a new Codex task and run `start`; do not use `go` to carry the current task across the project boundary.
-
-Do not offer `go` when the session is blocked on a consequential decision; ask that decision directly. Do not invent multiple next-step options when one path is already established.
+If real leftovers or blockers remain, state them precisely under `Remaining`. If closing is impossible without a consequential decision, report that `finish` is blocked and ask only for the required decision. Otherwise end after the evidence report so Riley can close Codex immediately.

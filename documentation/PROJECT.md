@@ -27,7 +27,7 @@ AI coding sessions are individually capable but discontinuous. Without durable p
 
 ## Product principles
 
-1. **Forward motion:** recommend and pursue the highest-value next action.
+1. **Forward motion while active:** recommend and pursue the highest-value next action during an active work session; a successful `finish` is terminal and closes the loop without proposing more work.
 2. **Settled means settled:** reopen decisions only when evidence or a recorded revisit condition warrants it.
 3. **Options earn attention:** present alternatives only when multiple live paths materially change the outcome.
 4. **Internal roadmap is canonical:** Linear may project or contribute stakeholder input, never replace technical product memory.

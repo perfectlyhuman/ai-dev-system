@@ -65,6 +65,8 @@ The proposed action must be specific enough that `go` has an unambiguous meaning
 
 Do not manufacture checkpoints merely to request `go`. Continue autonomously when existing authorization already covers the work. Use the prompt at natural scope boundaries, after consequential design agreements, or when the next action represents a new substantive implementation phase.
 
+`finish` is the exception: it is a terminal ritual, not a new checkpoint. A successful `finish` reports what shipped and any real leftovers, then stops without recommending another action or offering `go`. The next session's `start` restores context and selects the next action from fresh evidence.
+
 ### Settled decisions stay settled
 
 Do not reopen a decision merely because alternatives exist. Reconsider it only when:
@@ -320,7 +322,7 @@ It should:
 6. Execute the configured delivery mode: commit, push, or ship.
 7. Verify remote branch, merge, promotion, and deployment state where applicable.
 8. Surface only genuine blockers or decisions requiring Riley.
-9. State what shipped, what remains, and the recommended next action.
+9. State what shipped and any real leftovers, then end the task without recommending another action.
 
 `finish` does not write or archive session handoffs. Work-in-progress belongs in the roadmap; durable context belongs in project documentation; implementation history belongs in git.
 
