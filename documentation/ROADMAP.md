@@ -4,17 +4,17 @@ This is the canonical product and execution roadmap. Completed history belongs i
 
 ## Current focus
 
-**Outcome:** Audit and migrate `commodore-app` as the second real-project pilot.
-**Why now:** Banks has now passed a complete v3 lifecycle on consequential delivery drift. Commodore is the next distinct test: a cofounder project with non-technical stakeholders, a canonical internal technical roadmap, and Linear as an optional stakeholder projection rather than source of truth.
-**Success evidence:** Commodore has one trustworthy internal roadmap, Linear's audience and synchronization boundary are explicit, legacy Claude/process runtime no longer directs work, observed product/code/documentation drift is reconciled, and the migrated system identifies one verified highest-value next action.
+**Outcome:** Complete the `commodore-app` pilot by using v3 to resolve the delivery drift its migration exposed.
+**Why now:** Commodore now has a canonical internal roadmap, an explicit Linear stakeholder boundary, a Codex-only lifecycle, and its previously local product work safely on the remote branch. The next proof is whether v3 drives the real product through a consequential boundary without reverting to handoffs or permission ceremony: three local-only Supabase migrations, an untested browser flow, a stale `main`, and a manual production deployment.
+**Success evidence:** Commodore's hosted migration history is reconciled safely, Search → save draft → reopen is browser-smoked, `main` contains the verified state, the manual Vercel deployment is Ready, and Linear can be refreshed as a founder-facing projection from the correct internal roadmap.
 
 ## In progress
 
-**V3-PILOT-002 — Commodore migration** — audit the live repository and Linear boundary, then install and adapt v3 without making Linear the technical source of truth.
+**V3-PILOT-002 — Commodore migration and delivery proof** — v3 installation and runtime cleanup are complete on remote commit `0614be2`. Finish the pilot by reconciling the three local-only Supabase migrations and smoke-testing the Search/Lists path before fast-forwarding `main` and deploying production.
 
 ## Next
 
-1. **V3-PILOT-002 — Audit and migrate `commodore-app`** — evaluate documentation and product drift plus the boundary between the canonical internal roadmap and Linear's stakeholder projection.
+1. **V3-PILOT-002 — Clear Commodore's delivery gate** — inspect the hosted schema against the three local-only migrations, apply only the verified delta, then browser-smoke Search → save draft → reopen using Commodore's new v3 lifecycle.
 
 ## Later
 
