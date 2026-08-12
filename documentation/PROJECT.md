@@ -36,6 +36,7 @@ AI coding sessions are individually capable but discontinuous. Without durable p
 7. **Verification over ceremony:** prove work with evidence, then ship according to standing project authorization.
 8. **Plain language first:** explain practical meaning and trade-offs before implementation detail.
 9. **`go` means proceed:** at real checkpoints, a specific `go` prompt authorizes the named next phase without another planning loop.
+10. **Private reasoning stays private:** client scopes preserve the full internal operating context; shared surfaces receive only deliberate, audience-appropriate commitments and outcomes.
 
 ## Scope
 
@@ -45,6 +46,7 @@ AI coding sessions are individually capable but discontinuous. Without durable p
 - A small project contract at `.ai-dev/project.yaml`.
 - Canonical repository-local product, roadmap, chapter, decision, and lesson memory.
 - A safe installer for repository-scoped skills.
+- Private client scopes with their own roadmap and durable memory, plus optional client-visible shared work.
 - Self-hosting in this repository, followed by real-world audits of `banks` and `commodore-app`.
 
 ### Not now
@@ -82,6 +84,7 @@ Source skill packages live in `skills/`. The installer places project-scoped cop
 | What survives from the legacy system? | [V3 migration map](../docs/v3-migration-map.md) |
 | How is v3 implemented? | [Architecture](chapters/architecture.md) |
 | Why are skills installed per repository? | [Repository-scoped skills decision](decisions/2026-08-11-repository-scoped-skills.md) |
+| How do private client scopes relate to shared work? | [Client scopes and shared work decision](decisions/2026-08-11-client-scopes-and-shared-work.md) |
 | What does the distributable package contain? | [Repository README](../README.md) |
 
 ## Open product questions

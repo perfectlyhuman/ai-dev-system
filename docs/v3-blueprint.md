@@ -24,7 +24,7 @@ V3 must:
 
 1. Restore useful project context at the beginning of every session without relying on chat history.
 2. Preserve the why behind the product, architecture, priorities, and material decisions.
-3. Keep one canonical internal roadmap for every project, including Commodore.
+3. Keep one canonical internal roadmap for every project, including Commodore, and for every configured private client scope.
 4. Recommend and pursue the highest-value next action instead of repeatedly returning control for routine decisions.
 5. Make documentation maintenance proportional to the durable knowledge created.
 6. Finish sessions completely: reconcile documentation, verify work, commit it, and deliver it according to project posture.
@@ -220,6 +220,35 @@ The core lifecycle is implemented as Codex skills. Riley may invoke them with th
 
 Natural-language implementation remains the default. V3 does not create a special skill for ordinary feature work, tests, branching, or debugging unless repeated evidence later shows a real gap.
 
+### Client scopes and shared work
+
+Consulting and custom-development products need more than a product roadmap. Each active client is a private scope within the same repository and lifecycle runtime:
+
+```text
+documentation/clients/{client}/
+  PROJECT.md
+  ROADMAP.md
+  chapters/
+  decisions/
+  lessons/
+  archive/roadmap/
+```
+
+The scope is Banks' internal operating brain for the engagement. It may hold technical detail, delivery strategy, hypotheses, risks, unresolved questions, conflicts, stakeholder dynamics, and context that requires tact. It is private by default and is never automatically exposed.
+
+A client-facing application may separately own shared initiatives, projects, or tasks. V3 configures that as optional `shared_work`, such as a Supabase `work_projects` table. Shared work contains deliberately client-appropriate commitments, outcomes, status, and collaboration—not the private reasoning used to deliver them.
+
+The work model is therefore partitioned rather than mirrored:
+
+```text
+root ROADMAP        private client ROADMAP        shared client work
+product/builds      engagement execution          visible commitments
+       \                    |                    /
+        +----------- stable links --------------+
+```
+
+A record may exist in any one layer without counterparts in the others. Related records may link by stable identifiers, but descriptions are not copied. Code does not imply a client commitment, and sensitive internal context is never projected automatically.
+
 ## Core lifecycle
 
 ### `kickoff`
@@ -246,7 +275,7 @@ Used at the beginning of every work session.
 It should:
 
 1. Read `.ai-dev/project.yaml` and Riley-global context.
-2. Read `PROJECT.md`, the active portion of `ROADMAP.md`, and only the chapters relevant to current work.
+2. Read `PROJECT.md`, the active portion of `ROADMAP.md`, and only the chapters relevant to current work; for active client work, load the private scope roadmap and inspect optional shared work separately.
 3. Inspect git status, recent commits, the current branch, and configured remote state.
 4. Run pending verification that is explicitly recorded in the roadmap or project docs and safe to automate.
 5. For Commodore, surface relevant Linear changes as external input without treating Linear as canonical.
@@ -266,7 +295,7 @@ It should:
 3. Update only affected documents.
 4. Remove or correct stale information rather than layering contradictions on top.
 5. Archive completed roadmap items when appropriate.
-6. Reconcile the optional Linear projection for Commodore after the internal roadmap is current.
+6. Reconcile optional client shared work or the Commodore Linear projection only after the relevant internal roadmap is current and only with audience-appropriate information.
 7. Report what changed and what intentionally did not require documentation.
 
 It should not demand a decision record, lesson, chapter update, or user preview for every change. Documentation is valuable only when its signal remains high.

@@ -1,10 +1,13 @@
 import assert from 'node:assert/strict';
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 
 import { installProject } from './install.mjs';
+
+const packageRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 function options(projectRoot, overrides = {}) {
   return {
@@ -27,7 +30,8 @@ test('installs, reruns idempotently, and protects drifted skills', () => {
   const projectRoot = mkdtempSync(join(tmpdir(), 'ai-dev-system-'));
 
   try {
-    const first = installProject(options(projectRoot));
+    const configured = options(projectRoot, { previewBranch: 'preview' });
+    const first = installProject(configured);
     assert.ok(first.created.includes('.ai-dev/project.yaml'));
     assert.ok(first.created.includes('.agents/skills/start'));
 
@@ -54,8 +58,10 @@ test('installs, reruns idempotently, and protects drifted skills', () => {
     const config = readFileSync(join(projectRoot, '.ai-dev', 'project.yaml'), 'utf8');
     assert.match(config, /name: "fixture-project"/);
     assert.match(config, /entity: "test"/);
+    assert.match(config, /preview_branch: "preview"/);
+    assert.match(config, /scopes: \[\]/);
 
-    const second = installProject(options(projectRoot));
+    const second = installProject(configured);
     assert.equal(second.created.length, 0);
     assert.ok(second.unchanged.includes('.agents/skills/start'));
 
@@ -63,11 +69,11 @@ test('installs, reruns idempotently, and protects drifted skills', () => {
     writeFileSync(installedStart, `${readFileSync(installedStart, 'utf8')}\nlocal drift\n`);
 
     assert.throws(
-      () => installProject(options(projectRoot)),
+      () => installProject(configured),
       /Installed skill has drifted/,
     );
 
-    const refreshed = installProject(options(projectRoot, { refreshSkills: true }));
+    const refreshed = installProject({ ...configured, refreshSkills: true });
     assert.ok(refreshed.refreshed.includes('.agents/skills/start'));
     assert.doesNotMatch(readFileSync(installedStart, 'utf8'), /local drift/);
   } finally {
@@ -85,4 +91,21 @@ test('dry run reports writes without creating them', () => {
   } finally {
     rmSync(projectRoot, { recursive: true, force: true });
   }
+});
+
+test('project schema partitions private client scopes from shared work', () => {
+  const schema = JSON.parse(
+    readFileSync(join(packageRoot, 'schema', 'project.schema.json'), 'utf8'),
+  );
+  const scope = schema.$defs.scope;
+  const scopeDocumentation = schema.$defs.scopeDocumentation;
+  const sharedWork = schema.$defs.sharedWork;
+
+  assert.ok(scope.required.includes('visibility'));
+  assert.ok(scope.required.includes('documentation'));
+  assert.equal(scope.properties.visibility.const, 'private');
+  assert.ok(scopeDocumentation.required.includes('roadmap'));
+  assert.ok(scopeDocumentation.required.includes('roadmap_archive'));
+  assert.equal(sharedWork.properties.audience.const, 'client');
+  assert.equal(sharedWork.properties.provider.const, 'supabase');
 });

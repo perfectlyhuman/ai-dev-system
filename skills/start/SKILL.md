@@ -30,6 +30,16 @@ Read only the chapters, decisions, and lessons relevant to the current focus or 
 
 Treat recorded decisions as settled. Reopen one only when its revisit condition is met, new evidence invalidates a premise, an external constraint changed, or Riley explicitly asks.
 
+If `scopes` are configured, determine whether the request or changed files concern one of them. Load that scope's private `PROJECT.md`, active `ROADMAP.md`, and only its relevant chapters, decisions, and lessons in addition to the root project context. Select an obvious single scope without asking; ask only when work genuinely spans ambiguous scopes.
+
+Keep the three work layers distinct:
+
+- The root `ROADMAP.md` owns the product, platform, and reusable builds.
+- A scope's private `ROADMAP.md` owns internal engagement execution, including technical work, hypotheses, risks, unresolved questions, stakeholder dynamics, and tact-sensitive context.
+- Optional `shared_work` owns only the commitments and outcomes deliberately made visible to the client.
+
+Link related records with stable identifiers when useful. Do not mirror descriptions across layers, infer a client commitment from implementation work, or expose private scope text through the shared surface.
+
 ## 3. Inspect repository and remote state
 
 Gather evidence appropriate to the repository:
@@ -46,6 +56,10 @@ Preserve unrelated dirty work. Do not mutate files, pull, switch branches, or ru
 Run explicitly pending read-only verification when it is safe and useful. Do not turn `start` into a full test suite unless a recorded pending check requires it.
 
 ## 4. Reconcile optional external signals
+
+For an active scope with `shared_work`, inspect that surface using available authenticated tooling. A Supabase surface is canonical only for the configured account's client-visible work. Query only relevant rows and never expose credentials. If access is unavailable, report that exact signal gap without pretending the private roadmap represents the current shared view.
+
+Compare the private scope roadmap and shared work against recent client decisions, deliverables, and implementation evidence. Surface drift in either direction without treating differences as automatic errors: private work may intentionally have no shared counterpart. Client work can require a product build, but the private objective, client-visible outcome, and product implementation remain linked records rather than duplicated descriptions.
 
 When the project enables Linear, inspect changes relevant to the current roadmap. Treat comments, reprioritization, and status changes as stakeholder input. Surface meaningful differences without treating Linear as canonical or copying technical details into it.
 
@@ -65,6 +79,7 @@ Use this shape, omitting empty sections:
 ## Session start
 
 **Current focus:** {outcome}
+**Scope:** {active private scope and shared-work state, when applicable}
 **Repository:** {branch, clean/dirty, meaningful delta}
 **External signals:** {only meaningful configured input}
 **Needs attention:** {real contradiction, blocker, or pending verification}

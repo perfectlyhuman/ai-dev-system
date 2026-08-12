@@ -9,7 +9,7 @@ Make the repository easier for a fresh future session to understand. Preserve si
 
 ## 1. Establish the comparison
 
-Read `.ai-dev/project.yaml`, the configured `PROJECT.md`, active `ROADMAP.md`, and only documentation related to the work under review.
+Read `.ai-dev/project.yaml`, the configured root `PROJECT.md`, active root `ROADMAP.md`, and only documentation related to the work under review. If the work concerns a configured scope, also read that scope's private `PROJECT.md`, active `ROADMAP.md`, relevant durable knowledge, and optional shared-work state.
 
 Inspect relevant evidence:
 
@@ -44,6 +44,10 @@ Make the smallest coherent documentation change:
 - Add a decision record only for a material choice. Include context, decision, reasoning, consequences, and a concrete revisit condition.
 - Add a lesson only for durable negative knowledge. Include the false assumption, observed reality, resolution, and future prevention.
 
+For scoped work, keep product-wide architecture and build direction in the root project system. Keep private engagement execution in the scope tree: client objectives, technical weeds, people and operating context, hypotheses, risks, unresolved questions, stakeholder dynamics, conflicts, client-specific decisions, and lessons. Treat the entire scope tree as private by default. Write factual evidence distinctly from interpretation when political or interpersonal context matters.
+
+Use optional `shared_work` only for client-appropriate commitments, outcomes, status, and collaboration. Link across boundaries with stable identifiers when useful; do not copy the same description into multiple layers. Never automatically project private decisions, lessons, risks, conflicts, or stakeholder analysis. Rewrite shared updates for their audience rather than sanitizing copied internal prose.
+
 Replace stale statements; do not append a contradictory new paragraph beneath them. Link to one canonical explanation instead of copying it across files.
 
 Never place credentials or secret values in documentation.
@@ -59,6 +63,10 @@ Reflect verified reality:
 - Remove obsolete work instead of preserving it as noise.
 
 When completed items no longer help decide current work, move them into a dated or quarterly file under the configured roadmap archive. Preserve meaningful shipped outcomes and rationale, not a transcript of checkboxes.
+
+Apply the same active-roadmap and archive rules to the private scope roadmap. A private item does not need a shared counterpart.
+
+When `shared_work` is configured, reconcile it only when verified evidence changes a client-visible commitment, outcome, or lifecycle state. Technical implementation alone does not create a client commitment. Do not mirror the private roadmap into the shared table. If the correct client-facing framing requires tact or a consequential judgment, keep the underlying state current internally and surface that specific projection decision instead of exposing raw internal context.
 
 ## 5. Refresh optional projections
 

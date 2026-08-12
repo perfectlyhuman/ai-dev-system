@@ -15,7 +15,7 @@ Read `.ai-dev/project.yaml`. Note:
 - documentation paths;
 - required verification commands;
 - delivery mode: `commit`, `push`, or `ship`;
-- main branch and integration strategy; and
+- main branch, optional preview branch, and integration strategy;
 - deployment verification commands or URLs.
 
 The configured delivery mode is standing authorization for its routine actions. Do not ask Riley again before committing, pushing, integrating, or verifying delivery when those actions are in scope and checks pass.
@@ -26,7 +26,7 @@ Inspect the working tree, staged changes, commits, current branch, upstream, and
 
 Run the `update-docs` workflow for everything not already reconciled during the session. This pass is mandatory; documentation edits are not mandatory when the durability test finds nothing worth recording.
 
-Ensure roadmap state matches verified reality. Do not write or archive `HANDOFF.md`.
+Ensure the root roadmap and any active private scope roadmap match verified reality. Reconcile optional shared work only when the session changed a verified client-visible commitment, outcome, or status. Do not mirror private work into it or expose tact-sensitive context. Do not write or archive `HANDOFF.md`.
 
 ## 3. Verify the work
 
@@ -62,11 +62,14 @@ Create the local commit and verify the working tree state. Do not push.
 
 Create the commit, push the current branch to its configured upstream, and verify the remote contains the commit.
 
+When `preview_branch` is configured and the current branch is that branch, this is the normal continuously delivered stopping point. Verify the preview deployment when deployment checks are configured. Do not silently promote it to the production `main_branch`; that requires `ship` authorization or an explicit production request.
+
 ### `ship`
 
 Create the commit and move it through the repository's configured integration path:
 
 - Push the working branch.
+- If a preview branch is configured, reconcile it with the main branch safely before promotion; never assume a long-lived preview branch is a fast-forward.
 - If already on the main branch and direct delivery is allowed, push main.
 - If on a feature branch, use the configured direct or pull-request integration strategy.
 - Respect branch protection and required checks.

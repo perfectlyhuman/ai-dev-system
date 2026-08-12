@@ -34,6 +34,8 @@ documentation/archive/        Completed roadmap history
 
 The internal `ROADMAP.md` is canonical. External systems such as Linear are optional project adapters, never competing sources of truth.
 
+Consulting and custom-development repositories may also define private client scopes. Each scope has its own internal roadmap and durable knowledge tree. An optional Supabase `shared_work` surface contains only deliberately client-visible initiatives, projects, and tasks; it does not replace or mirror the private client operating context.
+
 ## Install into a project
 
 Run the installer from this repository:
@@ -57,6 +59,7 @@ Useful configuration options include:
 --stage prototype|design-partner|live
 --delivery-mode commit|push|ship
 --main-branch <name>
+--preview-branch <name>
 --integration direct|pull-request
 --deployment none|automatic|manual
 ```

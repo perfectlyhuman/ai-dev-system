@@ -17,6 +17,7 @@ documentation:
 delivery:
   mode: ship
   main_branch: main
+  # preview_branch: preview
   integration: direct
   deployment: automatic
   branch_prefix: codex/
@@ -27,6 +28,32 @@ verification:
   deployment: []
 
 services: {}
+
+# Optional client contexts share this runtime. Every scope is private and has
+# its own internal roadmap. A shared work surface is a separate client-facing
+# projection, not a replacement for that roadmap.
+#
+# scopes:
+#   - id: example-client
+#     name: Example Client
+#     kind: client
+#     visibility: private
+#     documentation:
+#       root: documentation/clients/example-client
+#       project: documentation/clients/example-client/PROJECT.md
+#       roadmap: documentation/clients/example-client/ROADMAP.md
+#       chapters: documentation/clients/example-client/chapters
+#       decisions: documentation/clients/example-client/decisions
+#       lessons: documentation/clients/example-client/lessons
+#       roadmap_archive: documentation/clients/example-client/archive/roadmap
+#     shared_work:
+#       provider: supabase
+#       audience: client
+#       project_ref: abcdefghijklmnopqrst
+#       account_slug: example-client
+#       table: work_projects
+#       events_table: work_project_events
+scopes: []
 
 integrations:
   linear: false

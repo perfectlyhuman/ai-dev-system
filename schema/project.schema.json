@@ -60,6 +60,11 @@
           "type": "string",
           "minLength": 1
         },
+        "preview_branch": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional continuously delivered branch used before production promotion."
+        },
         "integration": {
           "enum": ["direct", "pull-request"]
         },
@@ -89,6 +94,12 @@
         "type": "string",
         "minLength": 1
       }
+    },
+    "scopes": {
+      "type": "array",
+      "description": "Durable sub-project contexts, such as client engagements, that share this repository and lifecycle runtime.",
+      "items": { "$ref": "#/$defs/scope" },
+      "uniqueItems": true
     },
     "integrations": {
       "type": "object",
@@ -140,6 +151,57 @@
         "minLength": 1
       },
       "uniqueItems": true
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "kind", "visibility", "documentation"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "name": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["client"] },
+        "visibility": {
+          "const": "private",
+          "description": "The scope tree is an internal operating surface and is never automatically exposed to the client."
+        },
+        "documentation": { "$ref": "#/$defs/scopeDocumentation" },
+        "shared_work": { "$ref": "#/$defs/sharedWork" }
+      }
+    },
+    "scopeDocumentation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root", "project", "roadmap", "chapters", "decisions", "lessons", "roadmap_archive"],
+      "properties": {
+        "root": { "$ref": "#/$defs/repositoryPath" },
+        "project": { "$ref": "#/$defs/repositoryPath" },
+        "roadmap": { "$ref": "#/$defs/repositoryPath" },
+        "chapters": { "$ref": "#/$defs/repositoryPath" },
+        "decisions": { "$ref": "#/$defs/repositoryPath" },
+        "lessons": { "$ref": "#/$defs/repositoryPath" },
+        "roadmap_archive": { "$ref": "#/$defs/repositoryPath" }
+      }
+    },
+    "sharedWork": {
+      "type": "object",
+      "description": "Optional client-visible work surface. It is not a replacement for the private scope roadmap.",
+      "additionalProperties": false,
+      "required": ["provider", "audience", "project_ref", "account_slug", "table"],
+      "properties": {
+        "provider": { "const": "supabase" },
+        "audience": { "const": "client" },
+        "project_ref": {
+          "type": "string",
+          "pattern": "^[a-z0-9]{20}$",
+          "description": "Public Supabase project reference, never an API key."
+        },
+        "account_slug": { "type": "string", "minLength": 1 },
+        "table": { "type": "string", "minLength": 1 },
+        "events_table": { "type": "string", "minLength": 1 }
+      }
     }
   }
 }

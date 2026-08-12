@@ -6,11 +6,11 @@ This is the canonical product and execution roadmap. Completed history belongs i
 
 **Outcome:** Audit and migrate `banks` as the first real-project pilot.
 **Why now:** The core lifecycle and root package are proven in isolation. A real solo SaaS project is the fastest way to test whether the system detects documentation, roadmap, architecture, and code drift without recreating process bloat.
-**Success evidence:** `banks` has a trustworthy `.ai-dev/project.yaml`, canonical product memory and roadmap, a documented drift assessment, and a verified highest-value implementation direction.
+**Success evidence:** `banks` has a trustworthy `.ai-dev/project.yaml`, canonical product memory and roadmap, a private L'Ecole scope with its own internal roadmap, Supabase explicitly retained as the separate client-visible work surface, a documented drift assessment, and a verified highest-value implementation direction.
 
 ## In progress
 
-No work is currently half-finished. The complete self-hosting and root cutover sequence is archived in [2026 Q3](archive/roadmap/2026-Q3.md); V3-PILOT-001 is ready.
+**V3-PILOT-001 — Banks migration** — adapt the v3 contract for private client scopes and preview delivery, then install it into Banks and consolidate the L'Ecole operating context without mirroring its Supabase work board.
 
 ## Next
 

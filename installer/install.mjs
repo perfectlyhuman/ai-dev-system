@@ -38,6 +38,7 @@ Options:
   --stage <value>             prototype | design-partner | live
   --delivery-mode <value>     commit | push | ship
   --main-branch <name>        Main branch (default: main)
+  --preview-branch <name>     Optional continuously delivered pre-production branch
   --integration <value>       direct | pull-request
   --deployment <value>        none | automatic | manual
   --refresh-skills            Replace drifted installed skill copies
@@ -68,6 +69,7 @@ function parseArgs(argv) {
     ['--stage', 'stage'],
     ['--delivery-mode', 'deliveryMode'],
     ['--main-branch', 'mainBranch'],
+    ['--preview-branch', 'previewBranch'],
     ['--integration', 'integration'],
     ['--deployment', 'deployment'],
   ]);
@@ -155,7 +157,7 @@ documentation:
 delivery:
   mode: ${options.deliveryMode}
   main_branch: ${yamlString(options.mainBranch)}
-  integration: ${options.integration}
+${options.previewBranch ? `  preview_branch: ${yamlString(options.previewBranch)}\n` : ''}  integration: ${options.integration}
   deployment: ${options.deployment}
   branch_prefix: codex/
 
@@ -165,6 +167,8 @@ verification:
   deployment: []
 
 services: {}
+
+scopes: []
 
 integrations:
   linear: false
