@@ -1,0 +1,89 @@
+# AI Dev System
+
+## What this is
+
+AI Dev System is Riley's operating system for building software with Codex. It connects product intent, an internal roadmap, durable project knowledge, implementation, verification, and delivery so a new session can move quickly without losing why the product exists or repeating settled work.
+
+It is not an autonomous engineering organization or a heavyweight development methodology. It is a small layer around a capable coding agent that preserves direction and removes recurring coordination friction.
+
+## Who it is for
+
+The system is designed for Riley as a solo developer and as the technical founder on Commodore. Riley's advantage is the ability to apply first-principles product judgment and move faster than a conventional team; the system should compound that advantage.
+
+The active portfolio currently includes:
+
+- Perfectly Human: `chezmoi`
+- Clubb Ventures: `banks`, `cosskit`, and `rare-data`
+- Commodore Strategies: `commodore-app`
+- Internal infrastructure: `ai-dev-system`
+
+## Why this should exist
+
+AI coding sessions are individually capable but discontinuous. Without durable product and project memory, they lose rationale, drift from the roadmap, reopen decisions, and make Riley supervise routine mechanics. AI Dev System gives each session enough trustworthy context to reason in a linear direction while keeping documentation proportional to its future value.
+
+## Current stage
+
+**Design partner.** Riley is the only direct user. The Claude-based system served real daily work, and the Codex-native v3 now self-hosts its complete lifecycle. Changes can ship quickly because there are no external users; the next proof is whether v3 maintains clarity and momentum while replacing the legacy root package and migrating real projects.
+
+## Product principles
+
+1. **Forward motion:** recommend and pursue the highest-value next action.
+2. **Settled means settled:** reopen decisions only when evidence or a recorded revisit condition warrants it.
+3. **Options earn attention:** present alternatives only when multiple live paths materially change the outcome.
+4. **Internal roadmap is canonical:** Linear may project or contribute stakeholder input, never replace technical product memory.
+5. **Durable why over session narrative:** preserve product rationale, material decisions, and expensive lessons; do not archive chat-like handoffs.
+6. **Autonomy matches real risk:** routine reversible work belongs to Codex; Riley handles consequential product judgment and real external risk.
+7. **Verification over ceremony:** prove work with evidence, then ship according to standing project authorization.
+8. **Plain language first:** explain practical meaning and trade-offs before implementation detail.
+9. **`go` means proceed:** at real checkpoints, a specific `go` prompt authorizes the named next phase without another planning loop.
+
+## Scope
+
+### Now
+
+- A Codex-native `kickoff -> start -> work -> update-docs -> finish` lifecycle.
+- A small project contract at `.ai-dev/project.yaml`.
+- Canonical repository-local product, roadmap, chapter, decision, and lesson memory.
+- A safe installer for repository-scoped skills.
+- Self-hosting in this repository, followed by real-world audits of `banks` and `commodore-app`.
+
+### Not now
+
+- Superpowers, OMC, Gilfoyle, or other autonomous engineering orchestration.
+- Google Drive as part of the development system.
+- Generic framework-specific process packages.
+- A public product optimized for unknown developers.
+- Bitwarden-backed credential automation, the Commodore Linear adapter, and broader marketing workflows until the core daily loop is proven.
+
+## System overview
+
+```text
+Riley-global context (optional, local)
+               |
+     .ai-dev/project.yaml
+               |
+  PROJECT.md + ROADMAP.md
+      |              |
+ chapters / decisions / lessons
+               |
+ kickoff | start | update-docs | finish
+               |
+        code -> verify -> deliver
+```
+
+Source skill packages live in `v3/skills/`. The installer places project-scoped copies in `.agents/skills/`, the repository location Codex scans. The source package remains authoritative; installed copies are refreshed deliberately and checked for local drift.
+
+## Knowledge map
+
+| Question | Read |
+|---|---|
+| What are we doing now and next? | [ROADMAP.md](ROADMAP.md) |
+| What is the complete v3 contract? | [V3 blueprint](../docs/v3-blueprint.md) |
+| What survives from the legacy system? | [V3 migration map](../docs/v3-migration-map.md) |
+| How is v3 implemented? | [Architecture](chapters/architecture.md) |
+| Why are skills installed per repository? | [Repository-scoped skills decision](decisions/2026-08-11-repository-scoped-skills.md) |
+| What does the distributable package contain? | [V3 implementation README](../v3/README.md) |
+
+## Open product questions
+
+There are no questions blocking the current self-hosting sequence. Packaging for broader distribution remains deliberately deferred until the system proves itself across Riley's active projects.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Dev Update Docs"
+  short_description: "Reconcile durable project knowledge"
+  default_prompt: "Use $update-docs to reconcile project documentation with the work completed."

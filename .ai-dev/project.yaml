@@ -1,0 +1,36 @@
+# AI Dev System v3 project contract. Never put secret values in this file.
+schema_version: 3
+name: "ai-dev-system"
+description: "Riley's Codex-native operating system for moving from product idea to fast, durable daily execution."
+entity: "perfectly-human"
+stage: design-partner
+
+documentation:
+  root: documentation
+  project: documentation/PROJECT.md
+  roadmap: documentation/ROADMAP.md
+  chapters: documentation/chapters
+  decisions: documentation/decisions
+  lessons: documentation/lessons
+  roadmap_archive: documentation/archive/roadmap
+
+delivery:
+  mode: ship
+  main_branch: "master"
+  integration: direct
+  deployment: none
+  branch_prefix: codex/
+
+verification:
+  focused:
+    - node --check v3/installer/install.mjs
+  required:
+    - node --test v3/installer/install.test.mjs
+  deployment: []
+
+services:
+  github_repository: "perfectlyhuman/ai-dev-system"
+
+integrations:
+  linear: false
+  intake: false

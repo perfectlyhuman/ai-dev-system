@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Dev Finish"
+  short_description: "Verify, document, commit, and deliver work"
+  default_prompt: "Use $finish to close this session completely and deliver the verified work."

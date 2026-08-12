@@ -1,0 +1,33 @@
+# AI Dev System v3 project contract. Never put secret values in this file.
+schema_version: 3
+name: project-name
+description: One sentence describing the product and its user.
+entity: perfectly-human
+stage: prototype
+
+documentation:
+  root: documentation
+  project: documentation/PROJECT.md
+  roadmap: documentation/ROADMAP.md
+  chapters: documentation/chapters
+  decisions: documentation/decisions
+  lessons: documentation/lessons
+  roadmap_archive: documentation/archive/roadmap
+
+delivery:
+  mode: ship
+  main_branch: main
+  integration: direct
+  deployment: automatic
+  branch_prefix: codex/
+
+verification:
+  focused: []
+  required: []
+  deployment: []
+
+services: {}
+
+integrations:
+  linear: false
+  intake: false

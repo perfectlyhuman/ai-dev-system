@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfectlyhuman.dev/ai-dev-system/v3/project.schema.json",
+  "title": "AI Dev System v3 project contract",
+  "description": "Non-secret configuration for an AI Dev System project.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "name",
+    "entity",
+    "stage",
+    "documentation",
+    "delivery",
+    "verification"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 3
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entity": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable non-secret alias such as perfectly-human, clubb-ventures, or commodore."
+    },
+    "stage": {
+      "enum": ["prototype", "design-partner", "live"]
+    },
+    "documentation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root", "project", "roadmap", "chapters", "decisions", "lessons", "roadmap_archive"],
+      "properties": {
+        "root": { "$ref": "#/$defs/repositoryPath" },
+        "project": { "$ref": "#/$defs/repositoryPath" },
+        "roadmap": { "$ref": "#/$defs/repositoryPath" },
+        "chapters": { "$ref": "#/$defs/repositoryPath" },
+        "decisions": { "$ref": "#/$defs/repositoryPath" },
+        "lessons": { "$ref": "#/$defs/repositoryPath" },
+        "roadmap_archive": { "$ref": "#/$defs/repositoryPath" }
+      }
+    },
+    "delivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "main_branch", "integration", "deployment", "branch_prefix"],
+      "properties": {
+        "mode": {
+          "enum": ["commit", "push", "ship"]
+        },
+        "main_branch": {
+          "type": "string",
+          "minLength": 1
+        },
+        "integration": {
+          "enum": ["direct", "pull-request"]
+        },
+        "deployment": {
+          "enum": ["none", "automatic", "manual"]
+        },
+        "branch_prefix": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["focused", "required", "deployment"],
+      "properties": {
+        "focused": { "$ref": "#/$defs/commands" },
+        "required": { "$ref": "#/$defs/commands" },
+        "deployment": { "$ref": "#/$defs/commands" }
+      }
+    },
+    "services": {
+      "type": "object",
+      "description": "Non-secret platform and project aliases used by this project.",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "integrations": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "linear": {
+          "oneOf": [
+            { "const": false },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["workspace", "team", "projection"],
+              "properties": {
+                "workspace": { "type": "string", "minLength": 1 },
+                "team": { "type": "string", "minLength": 1 },
+                "projection": { "const": "stakeholder" }
+              }
+            }
+          ]
+        },
+        "intake": {
+          "oneOf": [
+            { "const": false },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["provider"],
+              "properties": {
+                "provider": { "enum": ["github"] },
+                "repository": { "type": "string", "minLength": 1 }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "repositoryPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?![A-Za-z]:[\\\\/])(?![\\\\/]{2}).+",
+      "description": "A repository-relative path."
+    },
+    "commands": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    }
+  }
+}
