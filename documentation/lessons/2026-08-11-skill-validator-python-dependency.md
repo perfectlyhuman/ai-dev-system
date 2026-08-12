@@ -1,4 +1,4 @@
-# Skill validator requires an explicit Python dependency environment
+# Validation tools require explicit dependency and cache environments
 
 ## Context
 
@@ -20,8 +20,10 @@ uv --cache-dir <workspace-temp> run --python <bundled-python> --with pyyaml <qui
 
 Project-contract validation similarly needs `jsonschema` declared when it is not already present. Remove the workspace-owned cache after validation.
 
+The same constraint recurred during the root package cutover: `npm pack` failed with `EPERM` when npm tried to use the machine-global cache. Passing `--cache <workspace-temp>` allowed both packing and the local tarball installation to run without changing machine permissions.
+
 ## Prevention
 
 - Treat `ModuleNotFoundError` from a provided validator as a runtime dependency problem, not evidence that the artifact is invalid.
 - Keep temporary dependency caches inside an explicitly writable project or temp directory when sandboxed.
-- During the root cutover, consider a project-owned deterministic validation command so future `finish` runs do not depend on reconstructing this environment manually.
+- If this manual environment reconstruction recurs, add a project-owned deterministic validation command rather than relying on remembered invocation details.

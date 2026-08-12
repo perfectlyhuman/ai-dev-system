@@ -1,7 +1,0 @@
-﻿ M setup-makerkit.js
- M setup-nativeexpress.js
-?? .claude/
-?? .superpowers/
-?? docs/omc-integration-baseline-2026-05-18/
-?? docs/omc-integration-plan-2026-05-18.md
-?? skills/landing-page.md

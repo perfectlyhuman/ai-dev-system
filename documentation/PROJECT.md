@@ -23,7 +23,7 @@ AI coding sessions are individually capable but discontinuous. Without durable p
 
 ## Current stage
 
-**Design partner.** Riley is the only direct user. The Claude-based system served real daily work, and the Codex-native v3 now self-hosts its complete lifecycle. Changes can ship quickly because there are no external users; the next proof is whether v3 maintains clarity and momentum while replacing the legacy root package and migrating real projects.
+**Design partner.** Riley is the only direct user. The Codex-native system is the repository's sole root product and self-hosts its complete lifecycle. Changes can ship quickly because there are no external users; the next proof is whether the system preserves clarity, direction, and momentum while migrating real projects.
 
 ## Product principles
 
@@ -71,7 +71,7 @@ Riley-global context (optional, local)
         code -> verify -> deliver
 ```
 
-Source skill packages live in `v3/skills/`. The installer places project-scoped copies in `.agents/skills/`, the repository location Codex scans. The source package remains authoritative; installed copies are refreshed deliberately and checked for local drift.
+Source skill packages live in `skills/`. The installer places project-scoped copies in `.agents/skills/`, the repository location Codex scans. The source package remains authoritative; installed copies are refreshed deliberately and checked for local drift.
 
 ## Knowledge map
 
@@ -82,7 +82,7 @@ Source skill packages live in `v3/skills/`. The installer places project-scoped 
 | What survives from the legacy system? | [V3 migration map](../docs/v3-migration-map.md) |
 | How is v3 implemented? | [Architecture](chapters/architecture.md) |
 | Why are skills installed per repository? | [Repository-scoped skills decision](decisions/2026-08-11-repository-scoped-skills.md) |
-| What does the distributable package contain? | [V3 implementation README](../v3/README.md) |
+| What does the distributable package contain? | [Repository README](../README.md) |
 
 ## Open product questions
 

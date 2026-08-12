@@ -86,15 +86,11 @@ These are not part of the core implementation. Their names may appear in the blu
 
 | Current path | Disposition during v3 construction |
 |---|---|
-| `solo/.claude/` | Read-only legacy reference; no incremental enhancement. |
-| `solo/documentation/` | Source material for evaluating templates; not copied wholesale. |
-| `skills/` | Legacy team-mode reference; no incremental enhancement. |
-| `templates/` | Review for useful fields; replace with v3 templates. |
-| `docs/omc-*` | Historical evidence and postmortems; do not incorporate OMC into v3. |
-| `docs/orchestration-decision-*` | Historical evidence; superseded where it conflicts with the v3 blueprint. |
-| `docs/upgrade-plan-*` | Historical evidence; superseded by the v3 blueprint and this map. |
-| `README.md` and `SYSTEM.md` | Remain legacy-facing until the v3 core is ready for cutover, then replace. |
-| Root installer scripts | Remain untouched during initial v3 construction, then replace or remove at cutover. |
+| `solo/.claude/` and `solo/documentation/` | Removed at root cutover; retained in git history only. |
+| Legacy `skills/` and `templates/` | Removed and replaced by the v3 packages at the root paths. |
+| OMC, orchestration, and upgrade diagnostics | Removed at root cutover; the approved v3 design records the durable conclusions. |
+| `README.md` and `SYSTEM.md` | README replaced with the v3 product; redundant legacy SYSTEM removed. |
+| Root installer scripts | Removed and replaced by `installer/install.mjs`. |
 
 ## Clean implementation sequence
 
@@ -151,12 +147,12 @@ Implement the Bitwarden/account registry after the daily loop is proven. Impleme
 
 ## Completed implementation phase
 
-The clean `v3/` surface now contains the `.ai-dev/project.yaml` schema and template, canonical documentation templates, and Codex-native `kickoff`, `start`, `update-docs`, and `finish` skill contracts. The legacy Claude implementation was not modified.
+The clean implementation was built and proven under `v3/`, then promoted to the repository root. `skills/`, `templates/`, `schema/`, and `installer/` are now the only product packages. The legacy runtime, setup modes, and redundant system documentation were removed; git history retains them if historical investigation is ever necessary.
 
-The v3 installer is also implemented and tested. `ai-dev-system` now self-hosts the project contract, canonical documentation, and repository-scoped skill copies. Behavioral `start`, fresh-task skill discovery, documentation reconciliation, verification, and direct `finish` delivery all passed.
+`ai-dev-system` self-hosts the project contract, canonical documentation, and repository-scoped skill copies. Behavioral `start`, fresh-task skill discovery, documentation reconciliation, verification, direct `finish` delivery, and a clean root-package installation all pass.
 
 ## Immediate next action
 
-Cut the root repository product over to v3: replace the legacy README, npm metadata, package entrypoint, and default setup path; remove or clearly archive the superseded Claude-era runtime; and verify installation in a clean fixture.
+Audit and migrate `banks` as the first real-project pilot. Use observed drift to refine v3 only where evidence demonstrates a need.
 
-Reply `go` and Codex will execute the root cutover without reopening the approved architecture.
+Reply `go` and Codex will begin the `banks` audit and migration without reopening the approved architecture.

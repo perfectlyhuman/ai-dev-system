@@ -14,7 +14,7 @@ import { basename, dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const installerPath = fileURLToPath(import.meta.url);
-const v3Root = resolve(dirname(installerPath), '..');
+const packageRoot = resolve(dirname(installerPath), '..');
 const skillNames = ['kickoff', 'start', 'update-docs', 'finish'];
 
 const allowed = {
@@ -25,10 +25,10 @@ const allowed = {
 };
 
 function usage() {
-  return `AI Dev System v3 installer
+  return `AI Dev System installer
 
 Usage:
-  node v3/installer/install.mjs [options]
+  node installer/install.mjs [options]
 
 Options:
   --project <path>            Project root (default: current directory)
@@ -233,7 +233,7 @@ function ensureFile(target, content, options, result) {
 }
 
 function installSkill(name, options, result) {
-  const source = join(v3Root, 'skills', name);
+  const source = join(packageRoot, 'skills', name);
   const target = join(options.projectRoot, '.agents', 'skills', name);
 
   if (!existsSync(source)) {
@@ -279,11 +279,11 @@ function scaffoldProject(options, result) {
 
   ensureFile(configTarget, renderProjectConfig(options), options, result);
 
-  const projectTemplate = readFileSync(join(v3Root, 'templates', 'PROJECT.md'), 'utf8').replace(
+  const projectTemplate = readFileSync(join(packageRoot, 'templates', 'PROJECT.md'), 'utf8').replace(
     '# Project Name',
     `# ${options.name}`,
   );
-  const roadmapTemplate = readFileSync(join(v3Root, 'templates', 'ROADMAP.md'), 'utf8').replace(
+  const roadmapTemplate = readFileSync(join(packageRoot, 'templates', 'ROADMAP.md'), 'utf8').replace(
     '# Project Roadmap',
     `# ${options.name} Roadmap`,
   );
@@ -329,7 +329,7 @@ export function installProject(inputOptions) {
 }
 
 function printResult(result, dryRun) {
-  console.log(`${dryRun ? 'Dry run for' : 'Installed AI Dev System v3 in'} ${result.projectRoot}`);
+  console.log(`${dryRun ? 'Dry run for' : 'Installed AI Dev System in'} ${result.projectRoot}`);
   for (const [label, entries] of [
     ['create', result.created],
     ['refresh', result.refreshed],

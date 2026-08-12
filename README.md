@@ -1,225 +1,86 @@
-# AI Development System
+# AI Dev System
 
-A complete system for AI-assisted software development. Two modes:
+AI Dev System is Riley's Codex-native operating system for building products quickly without losing product intent, technical rationale, roadmap direction, or hard-won lessons between sessions.
 
-| Mode | Best For | External Tools | Setup |
-|------|----------|---------------|-------|
-| **[Solo](#solo-mode)** | Solopreneur + Claude | None (all in-repo) | `npx create-ai-dev --solo` |
-| **[Team](#team-mode)** | Team with stakeholders | Linear + Google Drive | `npx create-ai-dev --team` |
+It adds a small durable layer around Codex:
 
-## Solo Mode
-
-**Everything lives in your repo.** No Linear, no Google Drive, no external tools. Documentation IS the project management system. Optimized for one developer + Claude Code shipping fast.
-
-```
-Vision → Roadmap → Implement → Document Learnings → Reflect → Updated Vision
+```text
+idea -> kickoff -> roadmap -> build -> verify -> ship -> learn
+                    ^                              |
+                    +------ durable memory <------+
 ```
 
-**8 skills**: `/kickoff`, `/sync`, `/dev`, `/vision`, `/test`, `/update-docs`, `/ship`, `/check-assumptions`
+Ordinary coding remains ordinary conversation with Codex. The system provides only four lifecycle skills:
 
-See **[solo/README.md](solo/README.md)** for full setup and usage.
+| Skill | Use it when |
+|---|---|
+| `kickoff` | A new idea or undocumented product needs a trustworthy foundation. |
+| `start` | Beginning every product or coding session. |
+| `update-docs` | Meaningful decisions, progress, or reusable lessons have accumulated. |
+| `finish` | Closing a substantive session; this includes the necessary documentation pass, verification, commit, and configured delivery. |
 
-### Quick Start (Solo)
+## What gets installed
 
-```bash
-# From your project root
-npx create-ai-dev --solo
+```text
+.ai-dev/project.yaml          Project-specific paths and standing authorization
+.agents/skills/               Repository-scoped lifecycle skills Codex discovers
+documentation/PROJECT.md      Product intent and project orientation
+documentation/ROADMAP.md      Canonical current and upcoming work
+documentation/chapters/       Deeper product and technical context
+documentation/decisions/      Material decisions worth preserving
+documentation/lessons/        Expensive mistakes worth preventing
+documentation/archive/        Completed roadmap history
 ```
 
-Or with pnpm:
-```bash
-pnpm create ai-dev --solo
+The internal `ROADMAP.md` is canonical. External systems such as Linear are optional project adapters, never competing sources of truth.
+
+## Install into a project
+
+Run the installer from this repository:
+
+```powershell
+node C:\Users\riley\perfectlyhuman\ai-dev-system\installer\install.mjs `
+  --project C:\path\to\project `
+  --description "What this product does" `
+  --entity "perfectlyhuman"
 ```
 
-That's it. Then run `/kickoff` in Claude Code — a guided product discovery session that takes you from idea to populated documentation, ready to build.
+Or, when using the npm package:
 
-<details>
-<summary>Alternative: install without npm</summary>
-
-```bash
-npx degit perfectlyhuman/ai-dev-system _ai-setup --force && node _ai-setup/setup.js --solo
-```
-</details>
-
----
-
-## Team Mode
-
-Integrates strategic planning (Google Docs), project management (Linear), and code implementation (Claude Code) into a unified workflow with synchronized layers.
-
-### What This Solves
-
-- **Vision lives in docs** that get stale and disconnected from reality
-- **Project management** becomes a graveyard of outdated tickets
-- **Code knowledge** exists only in developers' heads
-- **AI assistants** start fresh every session, lacking project context
-
-### The Three Pillars
-
-```
-Roadmap Doc (Strategic)     → What we want to build and why
-        ↓
-Linear (Tactical)           → What we're working on now
-        ↓
-Codebase + Docs (Implementation) → What actually exists
+```text
+npx create-ai-dev --description "What this product does" --entity perfectlyhuman
 ```
 
-### Prerequisites
+Useful configuration options include:
 
-- [Claude Code](https://claude.ai/code) CLI installed
-- [Linear](https://linear.app) account with API key
-- Google Cloud service account with Drive API access (for Roadmap doc)
-- Node.js 18+ (for setup script)
-
-## Installation
-
-### 1. Install into your project
-
-```bash
-# From your project root
-npx create-ai-dev --team
+```text
+--stage prototype|design-partner|live
+--delivery-mode commit|push|ship
+--main-branch <name>
+--integration direct|pull-request
+--deployment none|automatic|manual
 ```
 
-Or with pnpm:
-```bash
-pnpm create ai-dev --team
+The installer is idempotent. It does not overwrite an existing project contract or canonical documentation. If an installed skill has local drift, installation stops until the difference is reviewed; `--refresh-skills` deliberately restores the authoritative source copy.
+
+After installation, ask Codex to run `kickoff` for a new or undocumented product. For an established project with trustworthy documentation, begin with `start`.
+
+## Repository map
+
+| Path | Purpose |
+|---|---|
+| `skills/` | Authoritative lifecycle skill packages. |
+| `installer/` | Installer and its tests. |
+| `schema/` | Strict project-contract schema. |
+| `templates/` | Initial canonical documentation scaffolds. |
+| `documentation/` | This project's own canonical memory. |
+| `docs/` | V3 design, migration, and self-hosting evidence. |
+
+## Verify
+
+```text
+npm test
+npm run check
 ```
 
-### 2. Run setup
-
-```bash
-node .claude/init.js
-```
-
-The setup will prompt you for:
-- Project name
-- Linear team name and API key
-- Google Drive document ID for your Roadmap
-- Documentation folder location
-
-### 3. Configure Claude Code MCP servers
-
-Add to your Claude Code settings (`~/.claude/settings.json` or project `.claude/settings.json`):
-
-```json
-{
-  "mcpServers": {
-    "google-drive": {
-      "command": "npx",
-      "args": ["-y", "@anthropic/mcp-google-drive"],
-      "env": {
-        "GOOGLE_APPLICATION_CREDENTIALS": "/path/to/service-account.json"
-      }
-    },
-    "linear": {
-      "command": "npx",
-      "args": ["-y", "@anthropic/mcp-linear"],
-      "env": {
-        "LINEAR_API_KEY": "lin_api_xxxxx"
-      }
-    }
-  }
-}
-```
-
-### 4. Verify installation
-
-```bash
-claude
-# Then type: /sync
-```
-
-You should see a status report showing all systems connected.
-
-## Skills Reference
-
-| Skill | Purpose | When to Use |
-|-------|---------|-------------|
-| `/sync` | Morning check-in | Start of day, re-orient |
-| `/vision` | Strategic planning | Weekly planning, priority shifts |
-| `/align` | Sync Linear with Roadmap | After /vision, when drift detected |
-| `/dev [ID]` | Work on an issue | Main development mode |
-| `/test` | Run comprehensive tests | Before shipping |
-| `/update-docs` | Update codebase docs | After completing work |
-| `/check-assumptions` | Debug reflection | When stuck |
-| `/branch [ID]` | Create issue branch | Start of /dev |
-| `/ship` | Push, PR, close branch | End of /dev |
-
-## Typical Daily Workflow
-
-```
-Morning:
-  /sync                    → Check all systems, get oriented
-
-Planning (weekly):
-  /vision                  → Discuss strategy, update Roadmap
-  /align                   → Push changes to Linear
-
-Development (main loop):
-  /dev INT-XX              → Pick issue, create branch, implement
-    → /check-assumptions   → If stuck
-    → /test                → Verify changes
-    → /update-docs         → Capture learnings
-    → /ship                → Push and close
-  /dev INT-YY              → Next issue...
-```
-
-## Project Structure After Setup
-
-```
-your-project/
-├── .claude/
-│   ├── project.json       # Project configuration
-│   ├── skills/            # Workflow skills
-│   │   ├── sync.md
-│   │   ├── vision.md
-│   │   ├── align.md
-│   │   ├── dev.md
-│   │   └── ...
-│   └── templates/         # Reference templates
-├── docs/                  # Or app/documentation/
-│   ├── MASTER.md          # Documentation entry point
-│   └── chapters/          # Domain-specific docs
-└── ... your code ...
-```
-
-## Creating the Roadmap Doc
-
-1. Create a new Google Doc
-2. Copy the structure from `templates/roadmap.md`
-3. Share with your service account email
-4. Note the document ID from the URL: `docs.google.com/document/d/[THIS-ID]/edit`
-
-## Setting Up Linear
-
-1. Create a Team for your project
-2. Create an Initiative for your current work period
-3. Create Projects matching your Roadmap projects
-4. Get your API key from Linear Settings → API
-
-## Full Documentation
-
-See [SYSTEM.md](SYSTEM.md) for complete documentation including:
-- Detailed explanation of each pillar
-- Skill execution details
-- Documentation templates
-- Troubleshooting guide
-
-## Updating
-
-To update the system in an existing project:
-
-```bash
-# Backup your project.json first!
-cp .claude/project.json .claude/project.json.bak
-
-# Pull latest
-npx degit yourusername/ai-dev-system .claude --force
-
-# Restore your config
-mv .claude/project.json.bak .claude/project.json
-```
-
-## License
-
-MIT - Use freely, modify as needed.
+The design contract is documented in [`docs/v3-blueprint.md`](docs/v3-blueprint.md). Current product direction lives in [`documentation/ROADMAP.md`](documentation/ROADMAP.md).

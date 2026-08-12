@@ -1,29 +1,28 @@
 {
   "name": "create-ai-dev",
-  "version": "1.0.0",
-  "description": "AI Development System - Documentation-driven project management for solopreneur + Claude Code workflows",
+  "version": "3.0.0",
+  "description": "Codex-native product memory, roadmap, and delivery system for fast AI-assisted development",
+  "type": "module",
   "bin": {
-    "create-ai-dev": "./bin.js"
+    "create-ai-dev": "./installer/install.mjs"
   },
   "files": [
-    "bin.js",
-    "setup.js",
-    "setup-makerkit.js",
-    "setup-nativeexpress.js",
-    "solo/",
+    "installer/install.mjs",
+    "schema/",
     "skills/",
     "templates/",
-    "examples/",
-    "init.js",
-    "SYSTEM.md"
+    "README.md"
   ],
+  "scripts": {
+    "check": "node --check installer/install.mjs",
+    "test": "node --test installer/install.test.mjs"
+  },
   "keywords": [
-    "claude",
-    "claude-code",
+    "codex",
+    "openai",
     "ai-development",
-    "documentation",
-    "project-management",
-    "solopreneur",
+    "product-memory",
+    "roadmap",
     "developer-tools"
   ],
   "author": "Perfectly Human",
@@ -32,5 +31,8 @@
     "type": "git",
     "url": "git+https://github.com/perfectlyhuman/ai-dev-system.git"
   },
-  "homepage": "https://github.com/perfectlyhuman/ai-dev-system#readme"
+  "homepage": "https://github.com/perfectlyhuman/ai-dev-system#readme",
+  "engines": {
+    "node": ">=20"
+  }
 }

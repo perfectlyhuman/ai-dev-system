@@ -37,33 +37,33 @@ finish -> reconcile -> verify -> commit -> deliver
 |---|---|---|
 | Authoritative design | `docs/v3-blueprint.md` | Product and behavior contract. |
 | Migration decisions | `docs/v3-migration-map.md` | Keep, adapt, remove, and cutover sequence. |
-| Skill sources | `v3/skills/` | Distributable lifecycle skill packages. |
+| Skill sources | `skills/` | Distributable lifecycle skill packages. |
 | Installed skills | `.agents/skills/` | Repository-scoped copies Codex discovers. |
-| Installer | `v3/installer/install.mjs` | Safe scaffold and skill synchronization. |
-| Installer tests | `v3/installer/install.test.mjs` | Idempotency, drift protection, refresh, and dry-run behavior. |
-| Project schema | `v3/schema/project.schema.json` | Machine-readable project contract. |
-| Templates | `v3/templates/` | Initial canonical document structures. |
+| Installer | `installer/install.mjs` | Safe scaffold and skill synchronization. |
+| Installer tests | `installer/install.test.mjs` | Idempotency, drift protection, refresh, and dry-run behavior. |
+| Project schema | `schema/project.schema.json` | Machine-readable project contract. |
+| Templates | `templates/` | Initial canonical document structures. |
 
 ## Working conventions
 
-- Change skill sources under `v3/skills/`, then run the installer with `--refresh-skills` to update installed copies.
+- Change skill sources under `skills/`, then run the installer with `--refresh-skills` to update installed copies.
 - Never hand-edit installed copies without intentionally creating drift; the installer will stop rather than overwrite it silently.
 - Keep project-specific facts in `.ai-dev/project.yaml` or canonical documentation, not in shared skill instructions.
 - Do not place secret values in the project contract or documentation.
-- Treat the root legacy implementation as read-only until V3-CUT-001 deliberately replaces the default product surface.
+- Treat `skills/`, `templates/`, `schema/`, and `installer/` as the canonical product packages. Superseded implementations exist only in git history.
 
 ## Verification
 
 Run:
 
 ```text
-node --check v3/installer/install.mjs
-node --test v3/installer/install.test.mjs
+node --check installer/install.mjs
+node --test installer/install.test.mjs
 ```
 
-Validate `.ai-dev/project.yaml` against `v3/schema/project.schema.json` after contract changes. Validate all skill source and installed folders with the official skill validator after skill changes.
+Validate `.ai-dev/project.yaml` against `schema/project.schema.json` after contract changes. Validate all skill source and installed folders with the official skill validator after skill changes.
 
 ## Related decisions and lessons
 
 - [Install lifecycle skills per repository](../decisions/2026-08-11-repository-scoped-skills.md)
-- [Run the skill validator in an explicit dependency environment](../lessons/2026-08-11-skill-validator-python-dependency.md)
+- [Run validation tools in an explicit dependency and cache environment](../lessons/2026-08-11-skill-validator-python-dependency.md)

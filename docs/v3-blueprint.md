@@ -2,7 +2,7 @@
 
 **Status:** Authoritative design baseline
 **Date:** 2026-08-11
-**Implementation state:** Core skills, schema, templates, and installer implemented; repository discovery and the complete self-hosted daily loop validated; root product cutover pending
+**Implementation state:** Implemented, self-hosted, and promoted to the repository root; real-project pilots pending
 
 ## Purpose
 

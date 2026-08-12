@@ -23,9 +23,9 @@ delivery:
 
 verification:
   focused:
-    - node --check v3/installer/install.mjs
+    - node --check installer/install.mjs
   required:
-    - node --test v3/installer/install.test.mjs
+    - node --test installer/install.test.mjs
   deployment: []
 
 services:

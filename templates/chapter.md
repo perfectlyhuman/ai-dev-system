@@ -1,92 +1,30 @@
-# [Domain Name] Documentation
+# Domain
 
-> **Reading time:** ~X minutes
-> **Prerequisites:** [Other chapters to read first, or "None"]
+## Purpose
 
-## Overview
+Explain what this domain owns and why it exists.
 
-[2-3 sentences explaining what this domain covers and its role in the system]
+## Mental model
 
-## Key Concepts
+Give a fresh session the concepts and relationships required to reason correctly.
 
-### [Concept Name]
-[Definition and explanation]
+## Architecture and flow
 
-### [Concept Name]
-[Definition and explanation]
+Describe the current design, data flow, boundaries, and important external dependencies.
 
-## Architecture
+## Code map
 
-```
-[ASCII diagram showing how components in this domain interact]
-```
+| Area | Path | Responsibility |
+|---|---|---|
 
-### Data Flow
-1. [Step 1]
-2. [Step 2]
-3. [Step 3]
+## Working conventions
 
-## Key Files
+Record project-specific patterns that materially affect changes in this domain.
 
-| File | Purpose |
-|------|---------|
-| `path/to/file.ts` | [What it does] |
-| `path/to/file.ts` | [What it does] |
-| `path/to/file.ts` | [What it does] |
+## Verification
 
-## Common Patterns
+Describe how to prove changes in this domain work.
 
-### [Pattern Name]
+## Related decisions and lessons
 
-**When to use:** [Trigger condition]
-
-```typescript
-// Example code showing the pattern
-```
-
-### [Pattern Name]
-
-**When to use:** [Trigger condition]
-
-```typescript
-// Example code
-```
-
-## Key Decisions
-
-| Decision | Rationale | Trade-offs | Date |
-|----------|-----------|------------|------|
-| [What] | [Why] | [Downsides] | [When] |
-
-## Learnings & Gotchas
-
-### [Gotcha Title]
-**Problem:** [What goes wrong]
-**Solution:** [How to fix/avoid it]
-**Example:**
-```typescript
-// Bad
-[code that causes the problem]
-
-// Good
-[code that avoids it]
-```
-
-### [Gotcha Title]
-**Problem:** [Description]
-**Solution:** [Fix]
-
-## Testing
-
-### How to Test
-```bash
-[Test command]
-```
-
-### Key Test Files
-- `path/to/test.ts` - [What it tests]
-
-## Related
-
-- [Other Chapter](other-chapter.md) - [Why related]
-- [External Resource](https://example.com) - [What it provides]
+Link to canonical records rather than copying their contents.

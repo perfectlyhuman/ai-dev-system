@@ -9,7 +9,7 @@ Riley needs the same lifecycle across several projects, while each repository mu
 
 ## Decision
 
-Keep authoritative skill packages under `v3/skills/` in this source repository. Install copies into each project's `.agents/skills/` using the v3 installer.
+Keep authoritative skill packages under `skills/` in this source repository. Install copies into each project's `.agents/skills/` using the installer.
 
 ## Why
 

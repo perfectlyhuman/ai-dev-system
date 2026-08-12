@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
@@ -10,7 +10,7 @@ function options(projectRoot, overrides = {}) {
   return {
     projectRoot,
     name: 'fixture-project',
-    description: 'A fixture used to verify the v3 installer.',
+    description: 'A fixture used to verify the AI Dev System installer.',
     entity: 'test',
     stage: 'prototype',
     deliveryMode: 'commit',
@@ -24,12 +24,32 @@ function options(projectRoot, overrides = {}) {
 }
 
 test('installs, reruns idempotently, and protects drifted skills', () => {
-  const projectRoot = mkdtempSync(join(tmpdir(), 'ai-dev-system-v3-'));
+  const projectRoot = mkdtempSync(join(tmpdir(), 'ai-dev-system-'));
 
   try {
     const first = installProject(options(projectRoot));
     assert.ok(first.created.includes('.ai-dev/project.yaml'));
     assert.ok(first.created.includes('.agents/skills/start'));
+
+    for (const skill of ['kickoff', 'start', 'update-docs', 'finish']) {
+      assert.ok(existsSync(join(projectRoot, '.agents', 'skills', skill, 'SKILL.md')));
+      assert.ok(existsSync(join(projectRoot, '.agents', 'skills', skill, 'agents', 'openai.yaml')));
+    }
+
+    for (const document of ['PROJECT.md', 'ROADMAP.md']) {
+      assert.ok(existsSync(join(projectRoot, 'documentation', document)));
+    }
+
+    for (const directory of [
+      'chapters',
+      'decisions',
+      'lessons',
+      join('archive', 'roadmap'),
+    ]) {
+      assert.ok(existsSync(join(projectRoot, 'documentation', directory)));
+    }
+
+    assert.equal(existsSync(join(projectRoot, '.claude')), false);
 
     const config = readFileSync(join(projectRoot, '.ai-dev', 'project.yaml'), 'utf8');
     assert.match(config, /name: "fixture-project"/);
@@ -56,7 +76,7 @@ test('installs, reruns idempotently, and protects drifted skills', () => {
 });
 
 test('dry run reports writes without creating them', () => {
-  const projectRoot = mkdtempSync(join(tmpdir(), 'ai-dev-system-v3-dry-'));
+  const projectRoot = mkdtempSync(join(tmpdir(), 'ai-dev-system-dry-'));
 
   try {
     const result = installProject(options(projectRoot, { dryRun: true }));
