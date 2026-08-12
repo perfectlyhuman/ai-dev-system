@@ -4,17 +4,17 @@ This is the canonical product and execution roadmap. Completed history belongs i
 
 ## Current focus
 
-**Outcome:** Audit and migrate `banks` as the first real-project pilot.
-**Why now:** The core lifecycle and root package are proven in isolation. A real solo SaaS project is the fastest way to test whether the system detects documentation, roadmap, architecture, and code drift without recreating process bloat.
-**Success evidence:** `banks` has a trustworthy `.ai-dev/project.yaml`, canonical product memory and roadmap, a private L'Ecole scope with its own internal roadmap, Supabase explicitly retained as the separate client-visible work surface, a documented drift assessment, and a verified highest-value implementation direction.
+**Outcome:** Prove the migrated system in a real Banks work cycle by reconciling `preview` and `main` delivery truth.
+**Why now:** The Banks migration successfully compressed the operating surface and separated product, private client, and shared client work. The highest-confidence test is now whether `start` through `finish` can drive a consequential piece of existing drift to a verified outcome without reviving handoffs or process bloat.
+**Success evidence:** A fresh Banks session identifies the branch crosswalk as the highest-value action, maps logical changes and migrations across `preview` and `main`, verifies the preview lane, records durable findings in the right roadmap, and closes through the configured delivery path without an unsafe promotion.
 
 ## In progress
 
-**V3-PILOT-001 — Banks migration** — adapt the v3 contract for private client scopes and preview delivery, then install it into Banks and consolidate the L'Ecole operating context without mirroring its Supabase work board.
+**V3-EVAL-001 — Banks live lifecycle** — use the migrated system to complete BP-DELIVERY-001, the `preview`/`main` logical-change crosswalk and preview verification.
 
 ## Next
 
-1. **V3-PILOT-001 — Audit and migrate `banks`** — use a real solo SaaS project to identify documentation, roadmap, architecture, and code drift produced by the prior system.
+1. **V3-EVAL-001 — Run Banks through a real v3 lifecycle** — resolve the delivery-truth drift identified by the pilot and evaluate whether the compact memory system sustains implementation-grade work.
 2. **V3-PILOT-002 — Audit and migrate `commodore-app`** — evaluate the same drift plus the boundary between the canonical internal roadmap and Linear's stakeholder projection.
 
 ## Later
