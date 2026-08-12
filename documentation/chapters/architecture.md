@@ -15,6 +15,8 @@ The system has four layers:
 
 Code and external systems are evidence, not additional competing memory layers. Git records implementation history. Linear is an optional Commodore stakeholder projection. Deployment platforms report delivery reality.
 
+Each Codex task has one owning project: the repository where the task was opened and its project contract was loaded. Cross-repository work can supply evidence or complete a bounded dependency, but changing working directories never transfers ownership. The owning project still receives the roadmap reconciliation, `finish`, and next recommendation; substantive work in another product begins in a new task rooted there.
+
 For consulting products, each client scope adds a private project-memory tree and internal roadmap under the repository's documentation. An optional Supabase shared-work surface is client-facing collaboration, not a competing copy of that private roadmap. The root roadmap owns reusable product builds, the scope roadmap owns internal engagement execution, and shared work owns only client-visible commitments and outcomes.
 
 ## Architecture and flow
@@ -69,4 +71,5 @@ Validate `.ai-dev/project.yaml` against `schema/project.schema.json` after contr
 
 - [Install lifecycle skills per repository](../decisions/2026-08-11-repository-scoped-skills.md)
 - [Partition private client scopes from shared work](../decisions/2026-08-11-client-scopes-and-shared-work.md)
+- [Keep cross-repository work anchored to the owning task](../lessons/2026-08-11-cross-repository-work-does-not-transfer-task-ownership.md)
 - [Run validation tools in an explicit dependency and cache environment](../lessons/2026-08-11-skill-validator-python-dependency.md)

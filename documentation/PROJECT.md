@@ -23,7 +23,7 @@ AI coding sessions are individually capable but discontinuous. Without durable p
 
 ## Current stage
 
-**Design partner.** Riley is the only direct user. The Codex-native system is the repository's sole root product and self-hosts its complete lifecycle. Changes can ship quickly because there are no external users; the next proof is whether the system preserves clarity, direction, and momentum while migrating real projects.
+**Design partner.** Riley is the only direct user. The Codex-native system is the repository's sole root product and self-hosts its complete lifecycle. Banks and Commodore have now proven the system against real consulting, delivery, database, deployment, and stakeholder-projection work. The next proof is repeatable adoption across the rest of Riley's active portfolio without losing project-task boundaries.
 
 ## Product principles
 
@@ -46,8 +46,9 @@ AI coding sessions are individually capable but discontinuous. Without durable p
 - A small project contract at `.ai-dev/project.yaml`.
 - Canonical repository-local product, roadmap, chapter, decision, and lesson memory.
 - A safe installer for repository-scoped skills.
+- Project-owned tasks whose `start`, recommendations, and `finish` stay anchored to the repository where the task was opened.
 - Private client scopes with their own roadmap and durable memory, plus optional client-visible shared work.
-- Self-hosting in this repository, followed by real-world audits of `banks` and `commodore-app`.
+- Project-owned migrations of `chezmoi`, `cosskit`, and `rare-data`, incorporating only lessons earned through real use.
 
 ### Not now
 

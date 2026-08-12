@@ -2,7 +2,7 @@
 
 **Status:** Authoritative design baseline
 **Date:** 2026-08-11
-**Implementation state:** Implemented, self-hosted, and promoted to the repository root; real-project pilots pending
+**Implementation state:** Implemented, self-hosted, proven in Banks and Commodore, and rolling out across the remaining active portfolio
 
 ## Purpose
 
@@ -102,6 +102,12 @@ Most current projects are pre-launch or design-partner stage. V3 should not impo
 ### Plain language, technical precision
 
 Lead with the practical meaning, trade-off, and recommendation. Preserve technical accuracy and make deeper detail available without forcing Riley to translate implementation jargon before contributing first-principles judgment.
+
+### One project owns each Codex task
+
+A Codex task belongs to the repository where Riley opened it and `start` loaded the project contract. Inspecting or modifying another repository, changing the shell working directory, or completing a cross-project pilot does not silently transfer task ownership.
+
+The owning project keeps responsibility for context, roadmap reconciliation, `finish`, and the recommended next action. When the next substantive phase belongs to another product, finish the current task and direct Riley to open a new task in that repository and run `start`. This keeps project memory and momentum local without forbidding bounded cross-repository work.
 
 ## System architecture
 
@@ -381,12 +387,14 @@ The old `create-ai-dev` public-package ambition is deferred. V3 is optimized for
 
 V3 will be evaluated through real use, not feature count.
 
-The first evaluation sequence is:
+The initial evaluation sequence was:
 
 1. Self-host the core lifecycle in `ai-dev-system`.
 2. Use it for real implementation work and record friction.
 3. Audit `banks` for documentation, roadmap, architectural, and code drift.
 4. Audit `commodore-app` for the same issues plus the Linear projection boundary.
 5. Revise v3 only where observed failures demonstrate a need.
+
+That sequence is complete. Portfolio rollout continues through project-owned tasks in `chezmoi`, `cosskit`, and `rare-data`; each migration is both adoption work and another source of evidence for narrowly earned v3 improvements.
 
 The system is working when sessions begin with clarity, routine work moves without procedural drag, important decisions are not forgotten or re-litigated, finished work reaches its intended destination, and Riley spends attention on product judgment rather than supervising mechanics.

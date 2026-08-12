@@ -11,6 +11,8 @@ Orient from durable evidence, not prior chat history or archived handoffs.
 
 Find and read `.ai-dev/project.yaml` from the repository root. Resolve all configured paths relative to that root unless a path is explicitly absolute.
 
+That repository is the owning project for the entire Codex task. Inspecting, editing, verifying, or delivering work in another repository does not transfer task ownership, and changing the shell working directory is never a project switch. Keep orientation, roadmap reconciliation, recommendations, and eventual `finish` anchored to the owning project. If the next substantive work belongs to another project, close this task and tell Riley to open a new task rooted in that repository.
+
 If the file is missing, report that the project is not installed and recommend installing or running `kickoff`. Do not silently infer a conflicting project structure.
 
 If available, read Riley-global context from `C:\Users\riley\.ai-dev-system\RILEY.md`, `projects.yaml`, and the non-secret `registry.yaml`. Missing global files are optional and must not block the session.

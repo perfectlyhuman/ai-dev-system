@@ -18,6 +18,8 @@ Read `.ai-dev/project.yaml`. Note:
 - main branch, optional preview branch, and integration strategy;
 - deployment verification commands or URLs.
 
+Finish the project that owns the current Codex task—the repository in which the task was opened and `start` established context. Changing the shell working directory or completing cross-repository work does not transfer ownership. Cross-repository changes may need their own verification and delivery, but another repository's `finish`, roadmap, or recommended next action never substitutes for closing the owning project.
+
 The configured delivery mode is standing authorization for its routine actions. Do not ask Riley again before committing, pushing, integrating, or verifying delivery when those actions are in scope and checks pass.
 
 Inspect the working tree, staged changes, commits, current branch, upstream, and recent roadmap work. Separate session-related changes from unrelated pre-existing work. Never discard, overwrite, or silently include unrelated work.
@@ -100,5 +102,7 @@ Report concisely:
 If a clear next implementation phase is ready, end with:
 
 > Reply `go` and I will {specific next action}.
+
+Offer `go` only when the recommended work belongs to the same owning project and continuing the current task is intentional. If the highest-value next work belongs to another project, tell Riley to open that repository in a new Codex task and run `start`; do not use `go` to carry the current task across the project boundary.
 
 Do not offer `go` when the session is blocked on a consequential decision; ask that decision directly. Do not invent multiple next-step options when one path is already established.

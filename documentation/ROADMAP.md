@@ -4,17 +4,19 @@ This is the canonical product and execution roadmap. Completed history belongs i
 
 ## Current focus
 
-**Outcome:** Complete the `commodore-app` pilot by using v3 to resolve the delivery drift its migration exposed.
-**Why now:** Commodore now has a canonical internal roadmap, an explicit Linear stakeholder boundary, a Codex-only lifecycle, and its previously local product work safely on the remote branch. The next proof is whether v3 drives the real product through a consequential boundary without reverting to handoffs or permission ceremony: three local-only Supabase migrations, an untested browser flow, a stale `main`, and a manual production deployment.
-**Success evidence:** Commodore's hosted migration history is reconciled safely, Search → save draft → reopen is browser-smoked, `main` contains the verified state, the manual Vercel deployment is Ready, and Linear can be refreshed as a founder-facing projection from the correct internal roadmap.
+**Outcome:** Complete v3 adoption across Riley's active portfolio through project-owned migrations.
+**Why now:** The system is implemented, self-hosted, and proven through Banks and Commodore. Those pilots exercised private client scopes, divergent delivery lanes, hosted database reconciliation, browser verification, production deployment, and Linear projection. The remaining adoption work should now happen inside each product's own Codex task so its `start`, memory, roadmap, and `finish` remain local.
+**Success evidence:** `chezmoi`, `cosskit`, and `rare-data` each have a trustworthy v3 contract and canonical memory; their first project-owned `start` and `finish` succeed; and only recurring evidence-backed friction changes the shared system.
 
 ## In progress
 
-**V3-PILOT-002 — Commodore migration and delivery proof** — v3 installation and runtime cleanup are complete on remote commit `0614be2`. Finish the pilot by reconciling the three local-only Supabase migrations and smoke-testing the Search/Lists path before fast-forwarding `main` and deploying production.
+**V3-ROLLOUT-001 — Remaining portfolio adoption** — Banks and Commodore are complete. `chezmoi`, `cosskit`, and `rare-data` remain uninstalled; each migration must begin in a new Codex task rooted in that repository rather than being absorbed into an AI Dev System task.
 
 ## Next
 
-1. **V3-PILOT-002 — Clear Commodore's delivery gate** — inspect the hosted schema against the three local-only migrations, apply only the verified delta, then browser-smoke Search → save draft → reopen using Commodore's new v3 lifecycle.
+1. **Migrate `chezmoi` in a project-owned task** — open Codex in `chezmoi`, assess its existing roadmap and Claude-era runtime, install v3, and close its first lifecycle with `finish`.
+2. **Migrate `cosskit` in a project-owned task** — preserve its useful product memory while replacing the obsolete runtime and proving its own delivery contract.
+3. **Kick off `rare-data` in a project-owned task** — it lacks a standard project foundation, so establish trustworthy product context and a v3 roadmap before ordinary `start` sessions.
 
 ## Later
 
