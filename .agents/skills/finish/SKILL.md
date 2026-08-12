@@ -18,7 +18,7 @@ Read `.ai-dev/project.yaml`. Note:
 - main branch, optional preview branch, and integration strategy;
 - deployment verification commands or URLs.
 
-Finish the project that owns the current Codex task—the repository in which the task was opened and `start` established context. Changing the shell working directory or completing cross-repository work does not transfer ownership. Cross-repository changes may need their own verification and delivery, but another repository's `finish` or roadmap never substitutes for closing the owning project.
+Finish the project that owns the current Codex task—the repository in which the task was opened and `start` established context. Changing the shell working directory or completing cross-repository work does not transfer ownership. Cross-repository changes need their own verification and delivery, but another repository's `finish` or roadmap never substitutes for closing the owning project. An `ai-dev-system` task may complete and deliver another repository's v3 migration as system-owned adoption work; do not begin that repository's ordinary product work in the migration task.
 
 The configured delivery mode is standing authorization for its routine actions. Do not ask Riley again before committing, pushing, integrating, or verifying delivery when those actions are in scope and checks pass.
 

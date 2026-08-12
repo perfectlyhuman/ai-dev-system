@@ -8,8 +8,3 @@ Thumbs.db
 # Editors
 .vscode/
 .idea/
-
-# Machine-local agent state
-.claude/
-.omc/
-.superpowers/

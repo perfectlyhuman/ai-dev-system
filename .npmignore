@@ -1,8 +1,5 @@
 .agents/
 .ai-dev/
-.claude/
-.omc/
-.superpowers/
 docs/
 documentation/
 node_modules/

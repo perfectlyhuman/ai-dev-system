@@ -1,7 +1,7 @@
 # AI Dev System v3 Migration Map
 
 **Status:** Authoritative disposition of the legacy system
-**Date:** 2026-08-11
+**Date:** 2026-08-12
 **Companion:** `docs/v3-blueprint.md`
 
 ## Migration rule
@@ -151,8 +151,8 @@ The clean implementation was built and proven under `v3/`, then promoted to the 
 
 `ai-dev-system` self-hosts the project contract, canonical documentation, and repository-scoped skill copies. Behavioral `start`, fresh-task skill discovery, documentation reconciliation, verification, direct `finish` delivery, and a clean root-package installation all pass.
 
-## Immediate next action
+## Completed rollout
 
-Audit and migrate `banks` as the first real-project pilot. Use observed drift to refine v3 only where evidence demonstrates a need.
+The v3 foundation is installed and delivered in every active product repository: Banks, Commodore, Chezmoi, Cosskit, and Rare Data. These migrations were owned and closed by AI Dev System tasks. Ordinary product work now begins in a new task rooted in the relevant repository and uses that project's `start` and `finish` lifecycle.
 
-Reply `go` and Codex will begin the `banks` audit and migration without reopening the approved architecture.
+The rollout earned only narrow shared-system corrections: private client scopes, asymmetric Linear projection, explicit preview lanes, preservation of unrelated dirty work, and a hard distinction between cross-repository work and task ownership. Claude, Superpowers, OMC, Gilfoyle, Google Drive, and handoff machinery were not carried forward.

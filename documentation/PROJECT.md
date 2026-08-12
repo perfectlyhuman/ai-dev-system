@@ -23,7 +23,7 @@ AI coding sessions are individually capable but discontinuous. Without durable p
 
 ## Current stage
 
-**Design partner.** Riley is the only direct user. The Codex-native system is the repository's sole root product and self-hosts its complete lifecycle. Banks and Commodore have now proven the system against real consulting, delivery, database, deployment, and stakeholder-projection work. The next proof is repeatable adoption across the rest of Riley's active portfolio without losing project-task boundaries.
+**Design partner.** Riley is the only direct user. The Codex-native system is the repository's sole root product, self-hosts its complete lifecycle, and is installed across Banks, Commodore, Chezmoi, Cosskit, and Rare Data. Those migrations proved the system against consulting client scopes, stakeholder projection, mobile and web delivery, data infrastructure, dirty-worktree preservation, and cross-repository task boundaries.
 
 ## Product principles
 
@@ -48,7 +48,8 @@ AI coding sessions are individually capable but discontinuous. Without durable p
 - A safe installer for repository-scoped skills.
 - Project-owned tasks whose `start`, recommendations, and `finish` stay anchored to the repository where the task was opened.
 - Private client scopes with their own roadmap and durable memory, plus optional client-visible shared work.
-- Project-owned migrations of `chezmoi`, `cosskit`, and `rare-data`, incorporating only lessons earned through real use.
+- Complete v3 operation across Riley's active portfolio, with migrations owned by `ai-dev-system` and ordinary product sessions owned by each project.
+- Evidence-driven maintenance and the next focused expansion into Bitwarden-backed account and credential coordination.
 
 ### Not now
 
@@ -56,7 +57,7 @@ AI coding sessions are individually capable but discontinuous. Without durable p
 - Google Drive as part of the development system.
 - Generic framework-specific process packages.
 - A public product optimized for unknown developers.
-- Bitwarden-backed credential automation, the Commodore Linear adapter, and broader marketing workflows until the core daily loop is proven.
+- The Commodore Linear adapter and broader marketing workflows until concrete project needs make them active.
 
 ## System overview
 
@@ -90,4 +91,4 @@ Source skill packages live in `skills/`. The installer places project-scoped cop
 
 ## Open product questions
 
-There are no questions blocking the current self-hosting sequence. Packaging for broader distribution remains deliberately deferred until the system proves itself across Riley's active projects.
+There are no questions blocking daily use. Packaging for broader distribution remains deliberately deferred while Riley's private system accumulates operating evidence.

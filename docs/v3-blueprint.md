@@ -111,6 +111,8 @@ A Codex task belongs to the repository where Riley opened it and `start` loaded 
 
 The owning project keeps responsibility for context, roadmap reconciliation, `finish`, and the recommended next action. When the next substantive phase belongs to another product, finish the current task and direct Riley to open a new task in that repository and run `start`. This keeps project memory and momentum local without forbidding bounded cross-repository work.
 
+Portfolio migration is AI Dev System work even though it edits another repository. An `ai-dev-system` task owns the audit, v3 installation, verification, commit, and delivery of that migration. After the migrated repository is ready, its ordinary product work starts in a new project-owned task.
+
 ## System architecture
 
 V3 has four small layers.
@@ -397,6 +399,6 @@ The initial evaluation sequence was:
 4. Audit `commodore-app` for the same issues plus the Linear projection boundary.
 5. Revise v3 only where observed failures demonstrate a need.
 
-That sequence is complete. Portfolio rollout continues through project-owned tasks in `chezmoi`, `cosskit`, and `rare-data`; each migration is both adoption work and another source of evidence for narrowly earned v3 improvements.
+That sequence and the portfolio rollout are complete. Banks, Commodore, Chezmoi, Cosskit, and Rare Data now run v3. Future product work begins in project-owned tasks; future shared-system changes must be justified by recurring evidence from those tasks.
 
 The system is working when sessions begin with clarity, routine work moves without procedural drag, important decisions are not forgotten or re-litigated, finished work reaches its intended destination, and Riley spends attention on product judgment rather than supervising mechanics.

@@ -6,4 +6,6 @@
 
 **Resolution:** The repository where the task was opened and its contract loaded remains the owner until that task ends. Other repositories can be inspected, changed, verified, and delivered as bounded related work, but the owning project's documentation must still be reconciled and its `finish` must close the task.
 
+**Necessary exception:** Portfolio adoption is itself AI Dev System product work. A task owned by `ai-dev-system` may therefore audit, install, verify, commit, and deliver v3 in another repository, just as the Banks and Commodore pilots did. The exception ends when migration ends: ordinary product work begins in a new task rooted in the migrated project, where its own `start`, roadmap, and `finish` take over.
+
 **Prevention:** When the next substantive work belongs to another product, finish the current task and tell Riley to open a new Codex task rooted in that repository and run `start`. Never use a changed shell working directory—or a bare `go` continuation—to cross that boundary silently.
