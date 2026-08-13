@@ -5,16 +5,16 @@ This is the canonical product and execution roadmap. Completed history belongs i
 ## Current focus
 
 **Outcome:** Operate v3 as Riley's daily development system across the full active portfolio and evolve it only from observed friction.
-**Why now:** The clean Codex-native implementation is self-hosted and installed in Banks, Commodore, Chezmoi, Cosskit, and Rare Data. The rollout exercised consulting client scopes, stakeholder projection, mobile delivery, web deployment, data infrastructure, dirty-worktree preservation, and project ownership boundaries. The core system is now deployed; the next phase is evidence-driven operation and focused capability expansion.
-**Success evidence:** Project-owned sessions begin with trustworthy context, finish with verified delivery, preserve the internal roadmap and durable why, and require Riley's attention for product judgment rather than routine mechanics. Shared-system changes are tied to recurring evidence rather than speculative process.
+**Why now:** The clean Codex-native implementation is self-hosted and installed in Banks, Commodore, Chezmoi, Cosskit, and Rare Data. The rollout exercised consulting client scopes, stakeholder projection, mobile delivery, web deployment, data infrastructure, dirty-worktree preservation, and project ownership boundaries. Live Chezmoi use also exposed and corrected the missing Riley-global runtime layer and excess `start` ceremony. The core system is now deployed; the next phase is evidence-driven operation and focused capability expansion.
+**Success evidence:** Project-owned sessions begin with trustworthy global and project context, finish with verified delivery, preserve the internal roadmap and durable why, and require Riley's attention for product judgment rather than routine mechanics. Shared-system changes are tied to recurring evidence rather than speculative process.
 
 ## In progress
 
-None. The v3 portfolio rollout is complete.
+None. The v3 portfolio rollout and Riley-global runtime correction are complete.
 
 ## Next
 
-1. **Accounts and credentials** — implement the selected Bitwarden-backed registry, project consumer graph, scoped Codex access, and rotation workflow without storing secret values in repositories.
+1. **Accounts and credentials** — build the account model, project secret manifests, Bitwarden resolution, consumer graph, scoped Codex access, and rotation workflow on the installed non-secret registry without storing secret values in repositories.
 2. **Evidence-driven maintenance** — use friction from real project-owned `start` and `finish` sessions to justify narrowly scoped system changes.
 
 ## Later

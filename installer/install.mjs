@@ -10,6 +10,7 @@ import {
   statSync,
   writeFileSync,
 } from 'node:fs';
+import { homedir } from 'node:os';
 import { basename, dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -41,12 +42,14 @@ Options:
   --preview-branch <name>     Optional continuously delivered pre-production branch
   --integration <value>       direct | pull-request
   --deployment <value>        none | automatic | manual
+  --global-root <path>        Machine-wide context root (default: ~/.ai-dev-system)
   --refresh-skills            Replace drifted installed skill copies
   --dry-run                   Report actions without writing
   --help                      Show this help
 
-The installer never overwrites .ai-dev/project.yaml or canonical project
-documentation. It only replaces installed skills when --refresh-skills is set.`;
+The installer never overwrites .ai-dev/project.yaml, canonical project
+documentation, or Riley-global guidance. It only replaces installed skills
+when --refresh-skills is set.`;
 }
 
 function parseArgs(argv) {
@@ -72,6 +75,7 @@ function parseArgs(argv) {
     ['--preview-branch', 'previewBranch'],
     ['--integration', 'integration'],
     ['--deployment', 'deployment'],
+    ['--global-root', 'globalRoot'],
   ]);
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -112,20 +116,42 @@ function assertOption(value, values, label) {
   }
 }
 
+function readConfiguredProjectName(projectConfig) {
+  const content = readFileSync(projectConfig, 'utf8');
+  const match = content.match(/^name:\s*(.+?)\s*$/m);
+  if (!match) return undefined;
+
+  const scalar = match[1].trim();
+  if (scalar.startsWith('"')) {
+    try {
+      return JSON.parse(scalar);
+    } catch {
+      return undefined;
+    }
+  }
+  if (scalar.startsWith("'") && scalar.endsWith("'")) return scalar.slice(1, -1);
+  return scalar.split(/\s+#/, 1)[0].trim();
+}
+
 function validateOptions(options) {
   options.projectRoot = resolve(options.projectRoot);
-  options.name ||= basename(options.projectRoot);
+  options.globalRoot = resolve(options.globalRoot || join(homedir(), '.ai-dev-system'));
 
   if (!existsSync(options.projectRoot) || !statSync(options.projectRoot).isDirectory()) {
     throw new Error(`Project root is not a directory: ${options.projectRoot}`);
   }
+
+  const projectConfig = join(options.projectRoot, '.ai-dev', 'project.yaml');
+  options.name ||= existsSync(projectConfig)
+    ? readConfiguredProjectName(projectConfig)
+    : basename(options.projectRoot);
+  options.name ||= basename(options.projectRoot);
 
   assertOption(options.stage, allowed.stage, '--stage');
   assertOption(options.deliveryMode, allowed.deliveryMode, '--delivery-mode');
   assertOption(options.integration, allowed.integration, '--integration');
   assertOption(options.deployment, allowed.deployment, '--deployment');
 
-  const projectConfig = join(options.projectRoot, '.ai-dev', 'project.yaml');
   if (!existsSync(projectConfig) && (!options.description || !options.entity)) {
     throw new Error(
       '--description and --entity are required when .ai-dev/project.yaml does not exist',
@@ -217,6 +243,10 @@ function record(result, kind, projectRoot, target) {
   result[kind].push(relative(projectRoot, target).replaceAll('\\', '/'));
 }
 
+function recordGlobal(result, kind, target) {
+  result.global[kind].push(relative(result.globalRoot, target).replaceAll('\\', '/'));
+}
+
 function ensureDirectory(target, options, result) {
   if (existsSync(target)) return;
   record(result, 'created', options.projectRoot, target);
@@ -234,6 +264,76 @@ function ensureFile(target, content, options, result) {
     mkdirSync(dirname(target), { recursive: true });
     writeFileSync(target, content, 'utf8');
   }
+}
+
+function ensureGlobalFile(target, content, options, result) {
+  if (existsSync(target)) {
+    recordGlobal(result, 'unchanged', target);
+    return;
+  }
+
+  recordGlobal(result, 'created', target);
+  if (!options.dryRun) {
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, content, 'utf8');
+  }
+}
+
+function registerProject(options, result) {
+  const target = join(options.globalRoot, 'projects.yaml');
+  let registry = { schema_version: 1, projects: {} };
+  let kind = 'created';
+
+  if (existsSync(target)) {
+    kind = 'unchanged';
+    try {
+      registry = JSON.parse(readFileSync(target, 'utf8'));
+    } catch {
+      recordGlobal(result, 'unchanged', target);
+      result.warnings.push(
+        `Skipped project registration because ${target} is not JSON-compatible YAML.`,
+      );
+      return;
+    }
+
+    if (
+      registry?.schema_version !== 1 ||
+      !registry.projects ||
+      typeof registry.projects !== 'object' ||
+      Array.isArray(registry.projects)
+    ) {
+      recordGlobal(result, 'unchanged', target);
+      result.warnings.push(`Skipped project registration because ${target} has an unknown shape.`);
+      return;
+    }
+
+    if (registry.projects[options.name] !== options.projectRoot) kind = 'refreshed';
+  }
+
+  registry.projects[options.name] = options.projectRoot;
+  recordGlobal(result, kind, target);
+
+  if (!options.dryRun && kind !== 'unchanged') {
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, `${JSON.stringify(registry, null, 2)}\n`, 'utf8');
+  }
+}
+
+function installGlobalContext(options, result) {
+  const templateRoot = join(packageRoot, 'templates', 'global');
+  ensureGlobalFile(
+    join(options.globalRoot, 'RILEY.md'),
+    readFileSync(join(templateRoot, 'RILEY.md'), 'utf8'),
+    options,
+    result,
+  );
+  ensureGlobalFile(
+    join(options.globalRoot, 'registry.yaml'),
+    readFileSync(join(templateRoot, 'registry.yaml'), 'utf8'),
+    options,
+    result,
+  );
+  registerProject(options, result);
 }
 
 function installSkill(name, options, result) {
@@ -321,11 +421,19 @@ export function installProject(inputOptions) {
 
   const result = {
     projectRoot: options.projectRoot,
+    globalRoot: options.globalRoot,
     created: [],
     refreshed: [],
     unchanged: [],
+    global: {
+      created: [],
+      refreshed: [],
+      unchanged: [],
+    },
+    warnings: [],
   };
 
+  installGlobalContext(options, result);
   scaffoldProject(options, result);
   for (const skillName of skillNames) installSkill(skillName, options, result);
 
@@ -341,6 +449,17 @@ function printResult(result, dryRun) {
   ]) {
     for (const entry of entries) console.log(`  ${label.padEnd(7)} ${entry}`);
   }
+
+  console.log(`${dryRun ? 'Global context dry run for' : 'Riley-global context in'} ${result.globalRoot}`);
+  for (const [label, entries] of [
+    ['create', result.global.created],
+    ['refresh', result.global.refreshed],
+    ['keep', result.global.unchanged],
+  ]) {
+    for (const entry of entries) console.log(`  ${label.padEnd(7)} ${entry}`);
+  }
+
+  for (const warning of result.warnings) console.warn(`  warning ${warning}`);
 }
 
 function main() {

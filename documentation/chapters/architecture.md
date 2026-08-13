@@ -8,7 +8,7 @@ V3 supplies the smallest durable layer Codex needs to work coherently across ses
 
 The system has four layers:
 
-1. Optional Riley-global context for stable working preferences, project locations, account aliases, and future credential routing.
+1. Installed Riley-global context for stable working preferences and project locations, plus non-secret account aliases and future credential routing.
 2. `.ai-dev/project.yaml` for facts that vary by project: maturity, documentation paths, verification, delivery authorization, optional private client scopes, and integrations.
 3. Repository-local canonical memory in `documentation/`.
 4. Four focused Codex skills for `kickoff`, `start`, `update-docs`, and `finish`.
@@ -34,6 +34,8 @@ finish -> reconcile -> verify -> commit -> deliver
 ```
 
 `start` does not read a generated session handoff. It reconstructs current state from the project contract, canonical documents, git, and configured external signals. `finish` updates those same durable sources and completes delivery according to standing authorization.
+
+The installer bootstraps `C:\Users\riley\.ai-dev-system\` without replacing personal guidance. `RILEY.md` is the runtime authority for cross-project working preferences, `projects.yaml` is an installer-maintained local path index, and `registry.yaml` is a non-secret metadata surface. Project-owned documentation can override a global preference only for a concrete recorded reason.
 
 ## Code map
 
@@ -70,6 +72,7 @@ Validate `.ai-dev/project.yaml` against `schema/project.schema.json` after contr
 ## Related decisions and lessons
 
 - [Install lifecycle skills per repository](../decisions/2026-08-11-repository-scoped-skills.md)
+- [Install Riley-global context without overwriting personal guidance](../decisions/2026-08-13-riley-global-context.md)
 - [Partition private client scopes from shared work](../decisions/2026-08-11-client-scopes-and-shared-work.md)
 - [Keep cross-repository work anchored to the owning task](../lessons/2026-08-11-cross-repository-work-does-not-transfer-task-ownership.md)
 - [Run validation tools in an explicit dependency and cache environment](../lessons/2026-08-11-skill-validator-python-dependency.md)

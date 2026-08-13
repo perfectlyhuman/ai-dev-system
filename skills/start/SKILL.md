@@ -17,7 +17,9 @@ AI Dev System portfolio migrations are a deliberate exception to where the edite
 
 If the file is missing, report that the project is not installed and recommend installing or running `kickoff`. Do not silently infer a conflicting project structure.
 
-If available, read Riley-global context from `C:\Users\riley\.ai-dev-system\RILEY.md`, `projects.yaml`, and the non-secret `registry.yaml`. Missing global files are optional and must not block the session.
+Read Riley-global context from `C:\Users\riley\.ai-dev-system\RILEY.md`, `projects.yaml`, and the non-secret `registry.yaml`. Load `RILEY.md` as the cross-project working contract before project documentation. Use `projects.yaml` for project identity and path resolution, and consult `registry.yaml` only when account, organization, service, or remote-resource identity is relevant.
+
+The installer creates all three files without overwriting personal guidance. If `RILEY.md` is missing, report global-context installation drift but continue from repository-local evidence. Do not narrate successful reads, empty registries, or missing data that the current task does not need.
 
 ## 2. Restore only relevant knowledge
 
@@ -57,7 +59,7 @@ Gather evidence appropriate to the repository:
 
 Preserve unrelated dirty work. Do not mutate files, pull, switch branches, or run destructive commands during a standalone `start`.
 
-Run explicitly pending read-only verification when it is safe and useful. Do not turn `start` into a full test suite unless a recorded pending check requires it.
+Run a read-only verification command only when canonical documentation explicitly records that check as pending and it is safe and useful. Configured focused or required commands describe later work and `finish`; their presence alone does not make them pending during `start`. Inspect diffs enough to understand unfinished work, but do not turn a standalone `start` into implementation review or a test run merely because the tree is dirty.
 
 ## 4. Reconcile optional external signals
 
@@ -68,6 +70,8 @@ Compare the private scope roadmap and shared work against recent client decision
 When the project enables Linear, inspect changes relevant to the current roadmap. Treat comments, reprioritization, and status changes as stakeholder input. Surface meaningful differences without treating Linear as canonical or copying technical details into it.
 
 Inspect optional intake only when configured. Distinguish new input from accepted roadmap work.
+
+If no enabled integration, scope, or intake source yields meaningful input, omit external signals entirely. Do not list unconfigured systems or evidence that was not required and was not inspected.
 
 ## 5. Determine the next action
 
@@ -91,6 +95,8 @@ Use this shape, omitting empty sections:
 **Recommended next:** {one concrete action}
 **Why:** {plain-language reason}
 ```
+
+Apply the same signal filter to intermediate commentary. Do not narrate routine file checks, expected absences, disabled integrations, or other non-events.
 
 If Riley invoked `start` by itself, remain read-only and end with:
 

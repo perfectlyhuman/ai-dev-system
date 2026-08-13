@@ -119,9 +119,9 @@ V3 has four small layers.
 
 ### 1. Riley-global context
 
-Installed locally and available across projects. It contains stable information about how Riley works, not project implementation detail.
+Installed locally and available across projects. It contains stable information about how Riley works, not project implementation detail. The local files are runtime context; repository templates provide safe first-install defaults.
 
-Planned location:
+Location:
 
 ```text
 C:\Users\riley\.ai-dev-system\
@@ -130,11 +130,11 @@ C:\Users\riley\.ai-dev-system\
   projects.yaml
 ```
 
-- `RILEY.md` contains the working contract above and other durable personal preferences.
-- `registry.yaml` will map platforms, identities, organizations, and remote project IDs without containing secret values.
-- `projects.yaml` will index active projects and their local paths.
+- `RILEY.md` contains the working contract above and other durable personal preferences. Installation creates it only when absent and never overwrites it.
+- `projects.yaml` indexes installed projects and their local paths. The installer maintains it as JSON-compatible YAML so updates remain dependency-free and deterministic.
+- `registry.yaml` maps platforms, identities, organizations, and remote project IDs without containing secret values.
 
-The registry and credential capability are part of the v3 architecture but are not prerequisites for the core implementation.
+The global context and project index are part of the daily v3 runtime. The registry file now exists as the non-secret foundation; Bitwarden resolution, scoped access, consumer mapping, and rotation remain the next credential capability.
 
 ### 2. Project contract
 
@@ -369,7 +369,7 @@ Codex should not stop merely to ask permission for:
 
 ### Accounts and credentials
 
-Bitwarden Password Manager and Bitwarden Secrets Manager are the selected foundation. V3 will later add a non-secret global account registry, project secret manifests, scoped machine access, consumer mapping, and safe rotation workflows. This follows the core lifecycle implementation; it does not block it.
+Bitwarden Password Manager and Bitwarden Secrets Manager are the selected foundation. The machine-wide non-secret registry is installed; v3 will next add its account model, project secret manifests, scoped machine access, consumer mapping, Bitwarden resolution, and safe rotation workflows without storing secret values in repositories.
 
 ### Marketing
 

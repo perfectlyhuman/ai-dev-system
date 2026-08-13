@@ -23,7 +23,7 @@ AI coding sessions are individually capable but discontinuous. Without durable p
 
 ## Current stage
 
-**Design partner.** Riley is the only direct user. The Codex-native system is the repository's sole root product, self-hosts its complete lifecycle, and is installed across Banks, Commodore, Chezmoi, Cosskit, and Rare Data. Those migrations proved the system against consulting client scopes, stakeholder projection, mobile and web delivery, data infrastructure, dirty-worktree preservation, and cross-repository task boundaries.
+**Design partner.** Riley is the only direct user. The Codex-native system is the repository's sole root product, self-hosts its complete lifecycle, and is installed across Banks, Commodore, Chezmoi, Cosskit, and Rare Data. Those migrations proved the system against consulting client scopes, stakeholder projection, mobile and web delivery, data infrastructure, dirty-worktree preservation, and cross-repository task boundaries. Riley-global guidance and project discovery are now installed machine-wide rather than existing only as design intent and fragmented skill behavior.
 
 ## Product principles
 
@@ -43,6 +43,7 @@ AI coding sessions are individually capable but discontinuous. Without durable p
 ### Now
 
 - A Codex-native `kickoff -> start -> work -> update-docs -> finish` lifecycle.
+- An installed Riley-global working contract and local project index shared across project-owned tasks.
 - A small project contract at `.ai-dev/project.yaml`.
 - Canonical repository-local product, roadmap, chapter, decision, and lesson memory.
 - A safe installer for repository-scoped skills.
@@ -86,6 +87,7 @@ Source skill packages live in `skills/`. The installer places project-scoped cop
 | What survives from the legacy system? | [V3 migration map](../docs/v3-migration-map.md) |
 | How is v3 implemented? | [Architecture](chapters/architecture.md) |
 | Why are skills installed per repository? | [Repository-scoped skills decision](decisions/2026-08-11-repository-scoped-skills.md) |
+| Where do Riley's cross-project preferences live? | [Riley-global context decision](decisions/2026-08-13-riley-global-context.md) |
 | How do private client scopes relate to shared work? | [Client scopes and shared work decision](decisions/2026-08-11-client-scopes-and-shared-work.md) |
 | What does the distributable package contain? | [Repository README](../README.md) |
 

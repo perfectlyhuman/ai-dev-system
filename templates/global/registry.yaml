@@ -1,0 +1,5 @@
+# Non-secret account, organization, service, and remote-resource metadata.
+# Never store passwords, tokens, recovery codes, API keys, or other secret values here.
+schema_version: 1
+accounts: {}
+services: {}

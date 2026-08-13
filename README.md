@@ -21,6 +21,18 @@ Ordinary coding remains ordinary conversation with Codex. The system provides on
 
 ## What gets installed
 
+The first installation on a machine also creates Riley-global context shared by every project:
+
+```text
+C:\Users\riley\.ai-dev-system\RILEY.md       Cross-project working contract
+C:\Users\riley\.ai-dev-system\projects.yaml Local project-path index
+C:\Users\riley\.ai-dev-system\registry.yaml Non-secret account and service metadata
+```
+
+`RILEY.md` is personal durable guidance and is never overwritten by later installs. The installer safely registers each project in JSON-compatible `projects.yaml`. `registry.yaml` contains aliases and identifiers only; secret values belong in the selected credential provider.
+
+Each project receives:
+
 ```text
 .ai-dev/project.yaml          Project-specific paths and standing authorization
 .agents/skills/               Repository-scoped lifecycle skills Codex discovers
@@ -62,9 +74,10 @@ Useful configuration options include:
 --preview-branch <name>
 --integration direct|pull-request
 --deployment none|automatic|manual
+--global-root <path>
 ```
 
-The installer is idempotent. It does not overwrite an existing project contract or canonical documentation. If an installed skill has local drift, installation stops until the difference is reviewed; `--refresh-skills` deliberately restores the authoritative source copy.
+The installer is idempotent. It does not overwrite existing global guidance, a project contract, or canonical documentation. If an installed skill has local drift, installation stops until the difference is reviewed; `--refresh-skills` deliberately restores the authoritative source copy.
 
 After installation, ask Codex to run `kickoff` for a new or undocumented product. For an established project with trustworthy documentation, begin with `start`.
 
