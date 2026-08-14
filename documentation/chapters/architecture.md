@@ -8,8 +8,8 @@ V3 supplies the smallest durable layer Codex needs to work coherently across ses
 
 The system has four layers:
 
-1. Installed Riley-global context for stable working preferences and project locations, plus non-secret account aliases and future credential routing.
-2. `.ai-dev/project.yaml` for facts that vary by project: maturity, documentation paths, verification, delivery authorization, optional private client scopes, and integrations.
+1. Installed Riley-global context for stable working preferences and project locations, plus non-secret account, organization, and service aliases.
+2. `.ai-dev/project.yaml` for facts that vary by project, alongside `.ai-dev/access.yaml` for required external capabilities and non-secret authentication references.
 3. Repository-local canonical memory in `documentation/`.
 4. Four focused Codex skills for `kickoff`, `start`, `update-docs`, and `finish`.
 
@@ -35,7 +35,11 @@ finish -> reconcile -> verify -> commit -> deliver
 
 `start` does not read a generated session handoff. It reconstructs current state from the project contract, canonical documents, git, and configured external signals. `finish` updates those same durable sources and completes delivery according to standing authorization.
 
-The installer bootstraps `C:\Users\riley\.ai-dev-system\` without replacing personal guidance. `RILEY.md` is the runtime authority for cross-project working preferences, `projects.yaml` is an installer-maintained local path index, and `registry.yaml` is a non-secret metadata surface. Project-owned documentation can override a global preference only for a concrete recorded reason.
+The installer bootstraps `C:\Users\riley\.ai-dev-system\` without replacing personal guidance. `RILEY.md` is the runtime authority for cross-project working preferences, `projects.yaml` is an installer-maintained local path index, and `registry.yaml` is a non-secret, JSON-compatible metadata surface the dependency-free access runtime can resolve. Project-owned documentation can override a global preference only for a concrete recorded reason.
+
+The access runtime turns external-service readiness into observed state. A project requests friendly credential routes and capabilities in JSON-compatible `.ai-dev/access.yaml`; the global registry resolves them to provider identities, approved consumers, and either persistent CLI authentication or non-secret Bitwarden references. The doctor discards provider output and reports only ready, planned, missing, blocked, or invalid state. Persistent CLIs handle ordinary provider operations. Bitwarden-backed values pass only through allowlisted broker adapters; the first adapter installs an approved application key directly into a declared Vercel project over standard input. The runtime exposes neither arbitrary secret injection nor raw-secret output.
+
+The broker runs locally as Riley's Windows user. Its Bitwarden machine token is protected at rest with DPAPI and credential values are kept out of repository files, chat, and intentional command output. This is an accidental-disclosure guardrail rather than a hard same-user isolation boundary; the adapter interface can later move behind a separate Windows identity or remote service without changing project manifests.
 
 ## Code map
 
@@ -48,6 +52,9 @@ The installer bootstraps `C:\Users\riley\.ai-dev-system\` without replacing pers
 | Installer | `installer/install.mjs` | Safe scaffold and skill synchronization. |
 | Installer tests | `installer/install.test.mjs` | Idempotency, drift protection, refresh, and dry-run behavior. |
 | Project schema | `schema/project.schema.json` | Machine-readable project contract. |
+| Access schema | `schema/access.schema.json` | Non-secret capability and authentication-reference contract. |
+| Registry schema | `schema/registry.schema.json` | Machine-wide non-secret provider identity and resource model. |
+| Access runtime | `skills/access/` | Provider checks and allowlisted local credential-broker operations. |
 | Templates | `templates/` | Initial canonical document structures. |
 
 ## Working conventions
@@ -56,6 +63,7 @@ The installer bootstraps `C:\Users\riley\.ai-dev-system\` without replacing pers
 - Never hand-edit installed copies without intentionally creating drift; the installer will stop rather than overwrite it silently.
 - Keep project-specific facts in `.ai-dev/project.yaml` or canonical documentation, not in shared skill instructions.
 - Do not place secret values in the project contract or documentation.
+- Do not place secret values or Bitwarden machine-account tokens in the access contract; only non-secret aliases and UUID references belong there.
 - Treat `skills/`, `templates/`, `schema/`, and `installer/` as the canonical product packages. Superseded implementations exist only in git history.
 
 ## Verification
@@ -73,6 +81,7 @@ Validate `.ai-dev/project.yaml` against `schema/project.schema.json` after contr
 
 - [Install lifecycle skills per repository](../decisions/2026-08-11-repository-scoped-skills.md)
 - [Install Riley-global context without overwriting personal guidance](../decisions/2026-08-13-riley-global-context.md)
+- [Declare and verify project access without storing secrets](../decisions/2026-08-13-project-access-contracts.md)
 - [Partition private client scopes from shared work](../decisions/2026-08-11-client-scopes-and-shared-work.md)
 - [Keep cross-repository work anchored to the owning task](../lessons/2026-08-11-cross-repository-work-does-not-transfer-task-ownership.md)
 - [Run validation tools in an explicit dependency and cache environment](../lessons/2026-08-11-skill-validator-python-dependency.md)

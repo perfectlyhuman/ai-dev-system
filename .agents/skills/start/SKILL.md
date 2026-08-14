@@ -19,6 +19,8 @@ If the file is missing, report that the project is not installed and recommend i
 
 Read Riley-global context from `C:\Users\riley\.ai-dev-system\RILEY.md`, `projects.yaml`, and the non-secret `registry.yaml`. Load `RILEY.md` as the cross-project working contract before project documentation. Use `projects.yaml` for project identity and path resolution, and consult `registry.yaml` only when account, organization, service, or remote-resource identity is relevant.
 
+If `.ai-dev/access.yaml` exists, read its non-secret capability requirements. Run the installed access doctor's provider-limited check only when the current request, active roadmap work, external reconciliation, or likely delivery depends on that provider. Report a missing capability as a concrete access gap; do not enumerate unrelated services or ask Riley to locate raw tokens.
+
 The installer creates all three files without overwriting personal guidance. If `RILEY.md` is missing, report global-context installation drift but continue from repository-local evidence. Do not narrate successful reads, empty registries, or missing data that the current task does not need.
 
 ## 2. Restore only relevant knowledge
@@ -56,6 +58,7 @@ Gather evidence appropriate to the repository:
 - configured remotes;
 - open or unfinished work visible in code and tests; and
 - deployment or CI state when the project contract provides a safe way to inspect it.
+- readiness of declared external capabilities that the current work actually needs.
 
 Preserve unrelated dirty work. Do not mutate files, pull, switch branches, or run destructive commands during a standalone `start`.
 

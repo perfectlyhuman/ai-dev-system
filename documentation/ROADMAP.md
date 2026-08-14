@@ -10,12 +10,11 @@ This is the canonical product and execution roadmap. Completed history belongs i
 
 ## In progress
 
-None. The v3 portfolio rollout and Riley-global runtime correction are complete.
+1. **Accounts and credentials** — the machine registry records observed provider identities, remote resources, central credential routes, and approved consumers. Projects request friendly routes and capabilities through `.ai-dev/access.yaml`. The local broker has provider-specific diagnostics and direct Bitwarden-to-Vercel installation, with no arbitrary secret runner. The US-hosted `Riley Dev` organization, `Developer Access` project, read-only workstation machine account, protected token, and live project-access check are complete. Remaining validation is onboarding Half That's actual OpenAI and Resend keys and proving installation and rotation when that project reaches those integrations.
 
 ## Next
 
-1. **Accounts and credentials** — build the account model, project secret manifests, Bitwarden resolution, consumer graph, scoped Codex access, and rotation workflow on the installed non-secret registry without storing secret values in repositories.
-2. **Evidence-driven maintenance** — use friction from real project-owned `start` and `finish` sessions to justify narrowly scoped system changes.
+1. **Evidence-driven maintenance** — use friction from real project-owned `start`, `access`, and `finish` sessions to justify narrowly scoped system changes.
 
 ## Later
 
@@ -25,7 +24,7 @@ None. The v3 portfolio rollout and Riley-global runtime correction are complete.
 
 ## Blockers
 
-None.
+None for the broker capability. Provider account creation, billing, and initial application-key generation remain human actions when a consuming project reaches them.
 
 ## Open questions
 

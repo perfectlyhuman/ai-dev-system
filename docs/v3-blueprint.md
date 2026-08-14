@@ -132,9 +132,9 @@ C:\Users\riley\.ai-dev-system\
 
 - `RILEY.md` contains the working contract above and other durable personal preferences. Installation creates it only when absent and never overwrites it.
 - `projects.yaml` indexes installed projects and their local paths. The installer maintains it as JSON-compatible YAML so updates remain dependency-free and deterministic.
-- `registry.yaml` maps platforms, identities, organizations, and remote project IDs without containing secret values.
+- `registry.yaml` maps platforms, identities, organizations, remote project IDs, central credential routes, approved consumers, and non-secret credential-provider references without containing secret values.
 
-The global context and project index are part of the daily v3 runtime. The registry file now exists as the non-secret foundation; Bitwarden resolution, scoped access, consumer mapping, and rotation remain the next credential capability.
+The global context and project index are part of the daily v3 runtime. Each project may additionally request named credential routes and external capabilities in `.ai-dev/access.yaml`. The installed access doctor verifies relevant first-party CLI sessions and Bitwarden references without returning provider output or secret values.
 
 ### 2. Project contract
 
@@ -365,11 +365,17 @@ Codex should not stop merely to ask permission for:
 - Updating canonical documentation to match completed work.
 - Selecting the obvious next task from a settled roadmap.
 
-## Optional and future capabilities
+## Focused expansion capabilities
 
 ### Accounts and credentials
 
-Bitwarden Password Manager and Bitwarden Secrets Manager are the selected foundation. The machine-wide non-secret registry is installed; v3 will next add its account model, project secret manifests, scoped machine access, consumer mapping, Bitwarden resolution, and safe rotation workflows without storing secret values in repositories.
+Bitwarden Password Manager and Bitwarden Secrets Manager are the selected foundation. The machine-wide registry holds non-secret identity, organization, remote-resource, credential-route, and approved-consumer metadata. A repository-local `.ai-dev/access.yaml` requests friendly credential aliases, optional resources, and least required capabilities without containing provider authentication details.
+
+The installed `access` skill and doctor make that contract observable without emitting provider output or secret values. GitHub, Vercel, Supabase, Cloudflare, and Sentry prefer persistent first-party CLI authentication where practical. Application API keys such as OpenAI, Resend, and PostHog live centrally in Bitwarden and may pass only through allowlisted local broker adapters. The first adapter verifies project approval and Bitwarden project membership, then copies one key directly into a declared Vercel environment over standard input. There is no arbitrary secret-to-command runner and no raw-secret output command.
+
+The broker initially runs locally as Riley's Windows user and protects its machine token at rest with DPAPI. This is deliberately a simple accidental-disclosure guardrail, not a hard same-user security boundary. If evidence later warrants stronger isolation, the same adapter contract can move behind a separate OS identity or remote service without changing how projects request access.
+
+The US-hosted Secrets Manager organization, central project, read-only workstation machine account, DPAPI-protected token, and live project-access check are operational. Remaining evidence is application-key onboarding and a rotation workflow that updates Bitwarden before reinstalling and verifying every declared consumer.
 
 ### Marketing
 

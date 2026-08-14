@@ -34,7 +34,9 @@ test('installs, reruns idempotently, and protects drifted skills', () => {
     const configured = options(projectRoot, { previewBranch: 'preview' });
     const first = installProject(configured);
     assert.ok(first.created.includes('.ai-dev/project.yaml'));
+    assert.ok(first.created.includes('.ai-dev/access.yaml'));
     assert.ok(first.created.includes('.agents/skills/start'));
+    assert.ok(first.created.includes('.agents/skills/access'));
     assert.ok(first.global.created.includes('RILEY.md'));
     assert.ok(first.global.created.includes('projects.yaml'));
     assert.ok(first.global.created.includes('registry.yaml'));
@@ -49,7 +51,7 @@ test('installs, reruns idempotently, and protects drifted skills', () => {
       },
     });
 
-    for (const skill of ['kickoff', 'start', 'update-docs', 'finish']) {
+    for (const skill of ['kickoff', 'start', 'access', 'update-docs', 'finish']) {
       assert.ok(existsSync(join(projectRoot, '.agents', 'skills', skill, 'SKILL.md')));
       assert.ok(existsSync(join(projectRoot, '.agents', 'skills', skill, 'agents', 'openai.yaml')));
     }
@@ -74,6 +76,13 @@ test('installs, reruns idempotently, and protects drifted skills', () => {
     assert.match(config, /entity: "test"/);
     assert.match(config, /preview_branch: "preview"/);
     assert.match(config, /scopes: \[\]/);
+
+    const access = JSON.parse(readFileSync(join(projectRoot, '.ai-dev', 'access.yaml'), 'utf8'));
+    assert.deepEqual(access, {
+      schema_version: 1,
+      project: 'fixture-project',
+      requests: {},
+    });
 
     const second = installProject(configured);
     assert.equal(second.created.length, 0);
@@ -112,6 +121,7 @@ test('dry run reports writes without creating them', () => {
   try {
     const result = installProject(options(projectRoot, { dryRun: true }));
     assert.ok(result.created.includes('.ai-dev/project.yaml'));
+    assert.ok(result.created.includes('.ai-dev/access.yaml'));
     assert.ok(result.global.created.includes('RILEY.md'));
     assert.throws(() => readFileSync(join(projectRoot, '.ai-dev', 'project.yaml')));
     assert.equal(existsSync(join(projectRoot, '.test-global', 'RILEY.md')), false);

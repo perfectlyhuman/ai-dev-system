@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "check": "node --check installer/install.mjs",
-    "test": "node --test installer/install.test.mjs"
+    "test": "node --test installer/install.test.mjs installer/access.test.mjs"
   },
   "keywords": [
     "codex",

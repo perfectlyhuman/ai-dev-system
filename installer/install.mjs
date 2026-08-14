@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url';
 
 const installerPath = fileURLToPath(import.meta.url);
 const packageRoot = resolve(dirname(installerPath), '..');
-const skillNames = ['kickoff', 'start', 'update-docs', 'finish'];
+const skillNames = ['kickoff', 'start', 'access', 'update-docs', 'finish'];
 
 const allowed = {
   stage: new Set(['prototype', 'design-partner', 'live']),
@@ -378,41 +378,46 @@ function scaffoldProject(options, result) {
 
   if (configExists) {
     record(result, 'unchanged', options.projectRoot, configTarget);
-    return;
+  } else {
+    ensureFile(configTarget, renderProjectConfig(options), options, result);
+
+    const projectTemplate = readFileSync(join(packageRoot, 'templates', 'PROJECT.md'), 'utf8').replace(
+      '# Project Name',
+      `# ${options.name}`,
+    );
+    const roadmapTemplate = readFileSync(join(packageRoot, 'templates', 'ROADMAP.md'), 'utf8').replace(
+      '# Project Roadmap',
+      `# ${options.name} Roadmap`,
+    );
+
+    ensureFile(
+      join(options.projectRoot, 'documentation', 'PROJECT.md'),
+      projectTemplate,
+      options,
+      result,
+    );
+    ensureFile(
+      join(options.projectRoot, 'documentation', 'ROADMAP.md'),
+      roadmapTemplate,
+      options,
+      result,
+    );
+
+    for (const directory of [
+      'documentation/chapters',
+      'documentation/decisions',
+      'documentation/lessons',
+      'documentation/archive/roadmap',
+    ]) {
+      ensureDirectory(join(options.projectRoot, directory), options, result);
+    }
   }
 
-  ensureFile(configTarget, renderProjectConfig(options), options, result);
-
-  const projectTemplate = readFileSync(join(packageRoot, 'templates', 'PROJECT.md'), 'utf8').replace(
-    '# Project Name',
-    `# ${options.name}`,
+  const accessTemplate = readFileSync(join(packageRoot, 'templates', 'access.yaml'), 'utf8').replace(
+    '"project-name"',
+    yamlString(options.name),
   );
-  const roadmapTemplate = readFileSync(join(packageRoot, 'templates', 'ROADMAP.md'), 'utf8').replace(
-    '# Project Roadmap',
-    `# ${options.name} Roadmap`,
-  );
-
-  ensureFile(
-    join(options.projectRoot, 'documentation', 'PROJECT.md'),
-    projectTemplate,
-    options,
-    result,
-  );
-  ensureFile(
-    join(options.projectRoot, 'documentation', 'ROADMAP.md'),
-    roadmapTemplate,
-    options,
-    result,
-  );
-
-  for (const directory of [
-    'documentation/chapters',
-    'documentation/decisions',
-    'documentation/lessons',
-    'documentation/archive/roadmap',
-  ]) {
-    ensureDirectory(join(options.projectRoot, directory), options, result);
-  }
+  ensureFile(join(options.projectRoot, '.ai-dev', 'access.yaml'), accessTemplate, options, result);
 }
 
 export function installProject(inputOptions) {

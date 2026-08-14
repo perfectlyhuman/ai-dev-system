@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "project": "ai-dev-system",
+  "requests": {
+    "source": {
+      "credential": "github.perfectly-human",
+      "resource": "perfectlyhuman/ai-dev-system",
+      "capabilities": [
+        "repository:write"
+      ]
+    }
+  }
+}

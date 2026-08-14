@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfectlyhuman.dev/ai-dev-system/v3/registry.schema.json",
+  "title": "AI Dev System global access registry",
+  "description": "Machine-wide non-secret provider identities, central credential routes, approved consumers, and broker references.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "accounts",
+    "organizations",
+    "services",
+    "credentials",
+    "credential_providers"
+  ],
+  "properties": {
+    "notice": { "type": "string", "minLength": 1 },
+    "schema_version": { "const": 1 },
+    "accounts": { "$ref": "#/$defs/providerRecords" },
+    "organizations": { "$ref": "#/$defs/providerRecords" },
+    "services": { "$ref": "#/$defs/providerRecords" },
+    "credentials": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/credential" }
+    },
+    "credential_providers": {
+      "type": "object",
+      "additionalProperties": { "type": "object" }
+    }
+  },
+  "$defs": {
+    "providerRecords": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": {
+            "type": ["string", "boolean", "integer", "number", "null"]
+          }
+        }
+      }
+    },
+    "credential": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "account", "source", "consumers"],
+      "properties": {
+        "provider": {
+          "enum": [
+            "github",
+            "vercel",
+            "supabase",
+            "cloudflare",
+            "resend",
+            "sentry",
+            "posthog",
+            "openai"
+          ]
+        },
+        "account": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["planned", "active", "disabled"] },
+        "consumers": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "source": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind"],
+              "properties": { "kind": { "const": "cli" } }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind", "project", "environment", "secret_id"],
+              "properties": {
+                "kind": { "const": "bitwarden" },
+                "project": { "type": "string", "minLength": 1 },
+                "environment": { "type": "string", "pattern": "^[A-Z_][A-Z0-9_]*$" },
+                "secret_id": {
+                  "type": ["string", "null"],
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

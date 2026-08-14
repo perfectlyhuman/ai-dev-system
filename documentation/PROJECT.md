@@ -23,7 +23,7 @@ AI coding sessions are individually capable but discontinuous. Without durable p
 
 ## Current stage
 
-**Design partner.** Riley is the only direct user. The Codex-native system is the repository's sole root product, self-hosts its complete lifecycle, and is installed across Banks, Commodore, Chezmoi, Cosskit, and Rare Data. Those migrations proved the system against consulting client scopes, stakeholder projection, mobile and web delivery, data infrastructure, dirty-worktree preservation, and cross-repository task boundaries. Riley-global guidance and project discovery are now installed machine-wide rather than existing only as design intent and fragmented skill behavior.
+**Design partner.** Riley is the only direct user. The Codex-native system is the repository's sole root product, self-hosts its complete lifecycle, and is installed across Banks, Commodore, Chezmoi, Cosskit, and Rare Data. Those migrations proved the system against consulting client scopes, stakeholder projection, mobile and web delivery, data infrastructure, dirty-worktree preservation, and cross-repository task boundaries. Riley-global guidance and project discovery are installed machine-wide. The accounts-and-credentials expansion now has central non-secret credential routing, project capability requests, provider diagnostics, and a live allowlisted local broker backed by a DPAPI-protected Bitwarden machine token. Provider-key onboarding and rotation verification remain evidence-driven consumer work.
 
 ## Product principles
 
@@ -50,7 +50,7 @@ AI coding sessions are individually capable but discontinuous. Without durable p
 - Project-owned tasks whose `start`, recommendations, and `finish` stay anchored to the repository where the task was opened.
 - Private client scopes with their own roadmap and durable memory, plus optional client-visible shared work.
 - Complete v3 operation across Riley's active portfolio, with migrations owned by `ai-dev-system` and ordinary product sessions owned by each project.
-- Evidence-driven maintenance and the next focused expansion into Bitwarden-backed account and credential coordination.
+- Explicit project access requests, provider-specific readiness checks, and allowlisted Bitwarden-backed operations with consumer verification and rotation.
 
 ### Not now
 
@@ -88,6 +88,7 @@ Source skill packages live in `skills/`. The installer places project-scoped cop
 | How is v3 implemented? | [Architecture](chapters/architecture.md) |
 | Why are skills installed per repository? | [Repository-scoped skills decision](decisions/2026-08-11-repository-scoped-skills.md) |
 | Where do Riley's cross-project preferences live? | [Riley-global context decision](decisions/2026-08-13-riley-global-context.md) |
+| How do sessions discover and verify external access? | [Project access contracts decision](decisions/2026-08-13-project-access-contracts.md) |
 | How do private client scopes relate to shared work? | [Client scopes and shared work decision](decisions/2026-08-11-client-scopes-and-shared-work.md) |
 | What does the distributable package contain? | [Repository README](../README.md) |
 

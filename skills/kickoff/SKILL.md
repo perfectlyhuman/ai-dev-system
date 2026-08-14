@@ -11,6 +11,8 @@ Build enough shared understanding to start useful implementation without turning
 
 Inspect the repository before asking questions. Determine whether it is empty, a template, or an existing codebase. Read relevant code, package manifests, existing documentation, git state, and deployment configuration without exposing secret values.
 
+Identify the external capabilities the product actually needs, such as repository access, deployment, database administration, DNS, transactional email, error monitoring, or analytics. Record provider, non-secret account alias, remote resource, and least required capability in `.ai-dev/access.yaml`. Do not infer common services that the product does not use.
+
 Ask Riley only for product knowledge that cannot be discovered locally. Conduct this as a conversation, not a questionnaire. Combine related questions and make recommendations when evidence supports one direction.
 
 Clarify:
@@ -72,6 +74,8 @@ Use the scope tree as the private operating brain for the engagement, including 
 If Commodore enables Linear, treat the internal roadmap as canonical. Create or refresh only the selected non-technical stakeholder projection after the internal roadmap is coherent.
 
 Never write credentials or secret values to project files.
+
+For first-party CLI providers, declare CLI authentication. For API-only access, declare non-secret Bitwarden Secrets Manager project and secret references only after Riley has created them. A missing account or secret reference is an explicit setup action, not a reason to paste a credential into chat or an `.env` file.
 
 ## 6. Verify coherence
 

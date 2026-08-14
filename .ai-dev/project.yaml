@@ -25,7 +25,7 @@ verification:
   focused:
     - node --check installer/install.mjs
   required:
-    - node --test installer/install.test.mjs
+    - node --test installer/install.test.mjs installer/access.test.mjs
   deployment: []
 
 services:
