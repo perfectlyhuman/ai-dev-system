@@ -43,7 +43,17 @@ test('installs, reruns idempotently, and protects drifted skills', () => {
 
     const globalRoot = configured.globalRoot;
     assert.match(readFileSync(join(globalRoot, 'RILEY.md'), 'utf8'), /`go` means proceed/);
-    assert.match(readFileSync(join(globalRoot, 'registry.yaml'), 'utf8'), /Never store passwords/);
+    assert.match(readFileSync(join(globalRoot, 'RILEY.md'), 'utf8'), /One project owns each agent session/);
+    const registry = JSON.parse(readFileSync(join(globalRoot, 'registry.yaml'), 'utf8'));
+    assert.match(registry.notice, /Never store passwords/);
+    assert.deepEqual(registry.credential_providers, {
+      bitwarden: {
+        organizations: {},
+        projects: {},
+        machine_accounts: {},
+        defaults: {},
+      },
+    });
     assert.deepEqual(JSON.parse(readFileSync(join(globalRoot, 'projects.yaml'), 'utf8')), {
       schema_version: 1,
       projects: {
@@ -56,9 +66,18 @@ test('installs, reruns idempotently, and protects drifted skills', () => {
       assert.ok(existsSync(join(projectRoot, '.agents', 'skills', skill, 'agents', 'openai.yaml')));
     }
 
+    const kickoffMetadata = readFileSync(
+      join(projectRoot, '.agents', 'skills', 'kickoff', 'agents', 'openai.yaml'),
+      'utf8',
+    );
+    assert.match(kickoffMetadata, /Kickoff — AI Dev System/);
+    assert.match(kickoffMetadata, /do not create a presentation/);
+
     for (const document of ['PROJECT.md', 'ROADMAP.md']) {
       assert.ok(existsSync(join(projectRoot, 'documentation', document)));
     }
+    assert.ok(existsSync(join(projectRoot, 'AGENTS.md')));
+    assert.match(readFileSync(join(projectRoot, 'AGENTS.md'), 'utf8'), /fixture-project/);
 
     for (const directory of [
       'chapters',
@@ -125,6 +144,26 @@ test('dry run reports writes without creating them', () => {
     assert.ok(result.global.created.includes('RILEY.md'));
     assert.throws(() => readFileSync(join(projectRoot, '.ai-dev', 'project.yaml')));
     assert.equal(existsSync(join(projectRoot, '.test-global', 'RILEY.md')), false);
+  } finally {
+    rmSync(projectRoot, { recursive: true, force: true });
+  }
+});
+
+test('installs the Makerkit profile with declared access and deployment guidance', () => {
+  const projectRoot = mkdtempSync(join(tmpdir(), 'ai-dev-system-makerkit-'));
+
+  try {
+    const result = installProject(options(projectRoot, { profile: 'makerkit' }));
+    assert.ok(result.created.includes('.agents/skills/makerkit'));
+    assert.ok(result.created.includes('documentation/chapters/makerkit-platform.md'));
+
+    const access = JSON.parse(readFileSync(join(projectRoot, '.ai-dev', 'access.yaml'), 'utf8'));
+    assert.deepEqual(Object.keys(access.requests).sort(), ['github', 'supabase', 'vercel']);
+    assert.equal(access.requests.github.credential, 'github.perfectly-human');
+    assert.equal(access.project, 'fixture-project');
+
+    const config = readFileSync(join(projectRoot, '.ai-dev', 'project.yaml'), 'utf8');
+    assert.match(config, /stack: makerkit-next-supabase-turbo/);
   } finally {
     rmSync(projectRoot, { recursive: true, force: true });
   }

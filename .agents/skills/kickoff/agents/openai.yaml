@@ -1,4 +1,4 @@
 interface:
-  display_name: "AI Dev Kickoff"
-  short_description: "Turn an idea into a build-ready project"
-  default_prompt: "Use $kickoff to define this product and create its initial project system."
+  display_name: "Kickoff — AI Dev System"
+  short_description: "Interactive discovery that writes project docs"
+  default_prompt: "Use $kickoff to run an interactive product-discovery conversation and create the foundational documentation/ files; do not create a presentation."

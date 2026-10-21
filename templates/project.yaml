@@ -20,7 +20,7 @@ delivery:
   # preview_branch: preview
   integration: direct
   deployment: automatic
-  branch_prefix: codex/
+  branch_prefix: cursor/
 
 verification:
   focused: []

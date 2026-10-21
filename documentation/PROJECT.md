@@ -2,7 +2,7 @@
 
 ## What this is
 
-AI Dev System is Riley's operating system for building software with Codex. It connects product intent, an internal roadmap, durable project knowledge, implementation, verification, and delivery so a new session can move quickly without losing why the product exists or repeating settled work.
+AI Dev System is Riley's operating system for building software with Cursor Agent and compatible agents. It connects product intent, an internal roadmap, durable project knowledge, implementation, verification, and delivery so a new session can move quickly without losing why the product exists or repeating settled work.
 
 It is not an autonomous engineering organization or a heavyweight development methodology. It is a small layer around a capable coding agent that preserves direction and removes recurring coordination friction.
 
@@ -23,7 +23,7 @@ AI coding sessions are individually capable but discontinuous. Without durable p
 
 ## Current stage
 
-**Design partner.** Riley is the only direct user. The Codex-native system is the repository's sole root product, self-hosts its complete lifecycle, and is installed across Banks, Commodore, Chezmoi, Cosskit, and Rare Data. Those migrations proved the system against consulting client scopes, stakeholder projection, mobile and web delivery, data infrastructure, dirty-worktree preservation, and cross-repository task boundaries. Riley-global guidance and project discovery are installed machine-wide. The accounts-and-credentials expansion now has central non-secret credential routing, project capability requests, provider diagnostics, and a live allowlisted local broker backed by a DPAPI-protected Bitwarden machine token. Provider-key onboarding and rotation verification remain evidence-driven consumer work.
+**Design partner.** Riley is the only direct user. The system is the repository's sole root product, self-hosts its complete lifecycle, and is installed across Banks, Commodore, Chezmoi, Cosskit, and Rare Data. Those migrations proved the system against consulting client scopes, stakeholder projection, mobile and web delivery, data infrastructure, dirty-worktree preservation, and cross-repository task boundaries. Riley-global guidance and project discovery are installed machine-wide. The accounts-and-credentials expansion now has central non-secret credential routing, project capability requests, provider diagnostics, and a live allowlisted local broker backed by a DPAPI-protected Bitwarden machine token. Provider-key onboarding and rotation verification remain evidence-driven consumer work.
 
 ## Product principles
 
@@ -32,7 +32,7 @@ AI coding sessions are individually capable but discontinuous. Without durable p
 3. **Options earn attention:** present alternatives only when multiple live paths materially change the outcome.
 4. **Internal roadmap is canonical:** Linear may project or contribute stakeholder input, never replace technical product memory.
 5. **Durable why over session narrative:** preserve product rationale, material decisions, and expensive lessons; do not archive chat-like handoffs.
-6. **Autonomy matches real risk:** routine reversible work belongs to Codex; Riley handles consequential product judgment and real external risk.
+6. **Autonomy matches real risk:** routine reversible work belongs to the agent; Riley handles consequential product judgment and real external risk.
 7. **Verification over ceremony:** prove work with evidence, then ship according to standing project authorization.
 8. **Plain language first:** explain practical meaning and trade-offs before implementation detail.
 9. **`go` means proceed:** at real checkpoints, a specific `go` prompt authorizes the named next phase without another planning loop.
@@ -42,7 +42,7 @@ AI coding sessions are individually capable but discontinuous. Without durable p
 
 ### Now
 
-- A Codex-native `kickoff -> start -> work -> update-docs -> finish` lifecycle.
+- A `kickoff -> start -> work -> update-docs -> finish` lifecycle with installer-shipped `AGENTS.md` for Cursor.
 - An installed Riley-global working contract and local project index shared across project-owned tasks.
 - A small project contract at `.ai-dev/project.yaml`.
 - Canonical repository-local product, roadmap, chapter, decision, and lesson memory.
@@ -54,7 +54,6 @@ AI coding sessions are individually capable but discontinuous. Without durable p
 
 ### Not now
 
-- Superpowers, OMC, Gilfoyle, or other autonomous engineering orchestration.
 - Google Drive as part of the development system.
 - Generic framework-specific process packages.
 - A public product optimized for unknown developers.
@@ -76,7 +75,7 @@ Riley-global context (optional, local)
         code -> verify -> deliver
 ```
 
-Source skill packages live in `skills/`. The installer places project-scoped copies in `.agents/skills/`, the repository location Codex scans. The source package remains authoritative; installed copies are refreshed deliberately and checked for local drift.
+Source skill packages live in `skills/`. The installer places project-scoped copies in `.agents/skills/` for Cursor and other agents to discover. The source package remains authoritative; installed copies are refreshed deliberately and checked for local drift.
 
 ## Knowledge map
 

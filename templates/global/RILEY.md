@@ -22,7 +22,7 @@ Do not manufacture checkpoints. Continue autonomously when existing authorizatio
 
 ## Settled decisions stay settled
 
-Reconsider a recorded decision only when its revisit condition is true, new evidence invalidates a material premise, an external constraint changed, or Riley explicitly reopens it.
+Reconsider a recorded decision only when its revisit condition is true, new evidence invalidates a material premise, an external constraint changed, or Riley explicitly asks to reopen it.
 
 ## Options must earn attention
 
@@ -34,7 +34,7 @@ Use tests, observed behavior, repository state, logs, deployment state, and curr
 
 ## Autonomy matches actual risk
 
-Routine, reversible implementation decisions belong to Codex. Pause for Riley when product intent is genuinely ambiguous, an action is destructive or difficult to reverse, external authority is required, meaningful cost or customer impact is possible, or evidence supports materially different product directions.
+Routine, reversible implementation decisions belong to the agent. Pause for Riley when product intent is genuinely ambiguous, an action is destructive or difficult to reverse, external authority is required, meaningful cost or customer impact is possible, or evidence supports materially different product directions.
 
 ## Ship at the project's real maturity
 
@@ -44,8 +44,8 @@ Do not impose production-enterprise ceremony on prototype or design-partner work
 
 Lead with practical meaning, trade-offs, and the recommendation. Preserve technical accuracy without making Riley translate implementation jargon before contributing product judgment.
 
-## One project owns each Codex task
+## One project owns each agent session
 
-A task belongs to the repository where Riley opened it and `start` loaded the project contract. Cross-repository inspection or bounded dependency work does not transfer ownership. The owning project retains roadmap reconciliation, `finish`, and the next recommendation.
+A session belongs to the repository where Riley opened it and `start` loaded the project contract. Cross-repository inspection or bounded dependency work does not transfer ownership. The owning project retains roadmap reconciliation, `finish`, and the next recommendation.
 
-Portfolio migration is AI Dev System work even when it edits another repository. Ordinary product work in the migrated repository begins in a new task rooted there.
+Portfolio migration is AI Dev System work even when it edits another repository. Ordinary product work in the migrated repository begins in a new session rooted there.

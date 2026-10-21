@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "project": "project-name",
+  "requests": {
+    "sentry": {
+      "credential": "sentry.personal",
+      "capabilities": ["project:read", "project:write"]
+    },
+    "posthog": {
+      "credential": "posthog.personal",
+      "capabilities": ["project:read", "project:write"]
+    },
+    "resend": {
+      "credential": "resend.perfectly-human",
+      "capabilities": ["api:read", "api:write"]
+    }
+  }
+}

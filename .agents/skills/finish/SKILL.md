@@ -26,7 +26,7 @@ Inspect the working tree, staged changes, commits, current branch, upstream, and
 
 ## 2. Reconcile durable knowledge
 
-Run the `update-docs` workflow for everything not already reconciled during the session. This pass is mandatory; documentation edits are not mandatory when the durability test finds nothing worth recording.
+Run the full `update-docs` skill for everything not already reconciled during the session. Read `.agents/skills/update-docs/SKILL.md` and follow it through the durability test and roadmap reconciliation. This pass is mandatory on every `finish`, including when invoked as `/finish`; a separate `/update-docs` is optional mid-session but not a prerequisite. Documentation edits are not mandatory when the durability test finds nothing worth recording.
 
 Ensure the root roadmap and any active private scope roadmap match verified reality. Reconcile optional shared work only when the session changed a verified client-visible commitment, outcome, or status. Do not mirror private work into it or expose tact-sensitive context. Do not write or archive `HANDOFF.md`.
 

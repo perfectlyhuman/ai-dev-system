@@ -1,23 +1,26 @@
 {
   "name": "create-ai-dev",
   "version": "3.0.0",
-  "description": "Codex-native product memory, roadmap, and delivery system for fast AI-assisted development",
+  "description": "Cursor-native product memory, roadmap, and delivery system for fast AI-assisted development",
   "type": "module",
   "bin": {
     "create-ai-dev": "./installer/install.mjs"
   },
   "files": [
     "installer/install.mjs",
+    "installer/bootstrap-makerkit.mjs",
     "schema/",
     "skills/",
     "templates/",
+    "docs/makerkit-bootstrap.md",
     "README.md"
   ],
   "scripts": {
-    "check": "node --check installer/install.mjs",
-    "test": "node --test installer/install.test.mjs installer/access.test.mjs"
+    "check": "node --check installer/install.mjs && node --check installer/bootstrap-makerkit.mjs && node --check installer/lib/bootstrap-providers.mjs",
+    "test": "node --test installer/install.test.mjs installer/access.test.mjs installer/bootstrap-providers.test.mjs"
   },
   "keywords": [
+    "cursor",
     "codex",
     "openai",
     "ai-development",

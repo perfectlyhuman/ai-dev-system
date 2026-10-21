@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "project": "project-name",
+  "requests": {
+    "github": {
+      "credential": "github.perfectly-human",
+      "capabilities": ["repository:create", "repository:read", "repository:write"]
+    },
+    "vercel": {
+      "credential": "vercel.perfectly-human",
+      "capabilities": ["project:create", "project:read", "project:write", "environment:write", "deployment:create"]
+    },
+    "supabase": {
+      "credential": "supabase.perfectly-human",
+      "capabilities": ["project:create", "project:read", "project:write", "database:migrate", "auth:configure"]
+    }
+  }
+}

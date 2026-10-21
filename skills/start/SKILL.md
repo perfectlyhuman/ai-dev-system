@@ -11,13 +11,13 @@ Orient from durable evidence, not prior chat history or archived handoffs.
 
 Find and read `.ai-dev/project.yaml` from the repository root. Resolve all configured paths relative to that root unless a path is explicitly absolute.
 
-That repository is the owning project for the entire Codex task. Inspecting, editing, verifying, or delivering work in another repository does not transfer task ownership, and changing the shell working directory is never a project switch. Keep orientation, roadmap reconciliation, recommendations, and eventual `finish` anchored to the owning project.
+That repository is the owning project for the entire agent session. Inspecting, editing, verifying, or delivering work in another repository does not transfer session ownership, and changing the shell working directory is never a project switch. Keep orientation, roadmap reconciliation, recommendations, and eventual `finish` anchored to the owning project.
 
-AI Dev System portfolio migrations are a deliberate exception to where the edited files live, not to task ownership: a task owned by `ai-dev-system` may audit, install, verify, commit, and deliver v3 in another repository because adoption itself is system work. Once installation is complete, ordinary product work belongs in a new task rooted in that project. In every other case, if the next substantive phase belongs to another project, close this task and tell Riley to open a new task there.
+AI Dev System portfolio migrations are a deliberate exception to where the edited files live, not to session ownership: work rooted in `ai-dev-system` may audit, install, verify, commit, and deliver v3 in another repository because adoption itself is system work. Once installation is complete, ordinary product work belongs in a new session rooted in that project. In every other case, if the next substantive phase belongs to another project, close this session and tell Riley to open a new one there.
 
 If the file is missing, report that the project is not installed and recommend installing or running `kickoff`. Do not silently infer a conflicting project structure.
 
-Read Riley-global context from `C:\Users\riley\.ai-dev-system\RILEY.md`, `projects.yaml`, and the non-secret `registry.yaml`. Load `RILEY.md` as the cross-project working contract before project documentation. Use `projects.yaml` for project identity and path resolution, and consult `registry.yaml` only when account, organization, service, or remote-resource identity is relevant.
+Read Riley-global context from the machine-wide directory (default `~/.ai-dev-system/`; the installer may have used `--global-root`): `RILEY.md`, `projects.yaml`, and the non-secret `registry.yaml`. Load `RILEY.md` as the cross-project working contract before project documentation. Use `projects.yaml` for project identity and path resolution, and consult `registry.yaml` only when account, organization, service, or remote-resource identity is relevant.
 
 If `.ai-dev/access.yaml` exists, read its non-secret capability requirements. Run the installed access doctor's provider-limited check only when the current request, active roadmap work, external reconciliation, or likely delivery depends on that provider. Report a missing capability as a concrete access gap; do not enumerate unrelated services or ask Riley to locate raw tokens.
 

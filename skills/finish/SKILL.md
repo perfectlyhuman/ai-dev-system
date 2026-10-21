@@ -18,7 +18,7 @@ Read `.ai-dev/project.yaml`. Note:
 - main branch, optional preview branch, and integration strategy;
 - deployment verification commands or URLs.
 
-Finish the project that owns the current Codex task—the repository in which the task was opened and `start` established context. Changing the shell working directory or completing cross-repository work does not transfer ownership. Cross-repository changes need their own verification and delivery, but another repository's `finish` or roadmap never substitutes for closing the owning project. An `ai-dev-system` task may complete and deliver another repository's v3 migration as system-owned adoption work; do not begin that repository's ordinary product work in the migration task.
+Finish the project that owns the current agent session—the repository in which the session was opened and `start` established context. Changing the shell working directory or completing cross-repository work does not transfer ownership. Cross-repository changes need their own verification and delivery, but another repository's `finish` or roadmap never substitutes for closing the owning project. An `ai-dev-system` session may complete and deliver another repository's v3 migration as system-owned adoption work; do not begin that repository's ordinary product work in the migration session.
 
 The configured delivery mode is standing authorization for its routine actions. Do not ask Riley again before committing, pushing, integrating, or verifying delivery when those actions are in scope and checks pass.
 
@@ -26,7 +26,7 @@ Inspect the working tree, staged changes, commits, current branch, upstream, and
 
 ## 2. Reconcile durable knowledge
 
-Run the `update-docs` workflow for everything not already reconciled during the session. This pass is mandatory; documentation edits are not mandatory when the durability test finds nothing worth recording.
+Run the full `update-docs` skill for everything not already reconciled during the session. Read `.agents/skills/update-docs/SKILL.md` and follow it through the durability test and roadmap reconciliation. This pass is mandatory on every `finish`, including when invoked as `/finish`; a separate `/update-docs` is optional mid-session but not a prerequisite. Documentation edits are not mandatory when the durability test finds nothing worth recording.
 
 Ensure the root roadmap and any active private scope roadmap match verified reality. Reconcile optional shared work only when the session changed a verified client-visible commitment, outcome, or status. Do not mirror private work into it or expose tact-sensitive context. Do not write or archive `HANDOFF.md`.
 
@@ -99,4 +99,4 @@ Report concisely:
 
 A successful `finish` is terminal. Do not recommend a next action, offer `go`, or turn session closure into another continuation checkpoint. The roadmap preserves future work, and the next `start` will select from current evidence when Riley returns.
 
-If real leftovers or blockers remain, state them precisely under `Remaining`. If closing is impossible without a consequential decision, report that `finish` is blocked and ask only for the required decision. Otherwise end after the evidence report so Riley can close Codex immediately.
+If real leftovers or blockers remain, state them precisely under `Remaining`. If closing is impossible without a consequential decision, report that `finish` is blocked and ask only for the required decision. Otherwise end after the evidence report so Riley can close the session immediately.

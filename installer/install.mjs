@@ -17,6 +17,7 @@ import { fileURLToPath } from 'node:url';
 const installerPath = fileURLToPath(import.meta.url);
 const packageRoot = resolve(dirname(installerPath), '..');
 const skillNames = ['kickoff', 'start', 'access', 'update-docs', 'finish'];
+const profiles = new Set(['makerkit']);
 
 const allowed = {
   stage: new Set(['prototype', 'design-partner', 'live']),
@@ -42,6 +43,7 @@ Options:
   --preview-branch <name>     Optional continuously delivered pre-production branch
   --integration <value>       direct | pull-request
   --deployment <value>        none | automatic | manual
+  --profile <name>            Optional project profile: makerkit
   --global-root <path>        Machine-wide context root (default: ~/.ai-dev-system)
   --refresh-skills            Replace drifted installed skill copies
   --dry-run                   Report actions without writing
@@ -60,6 +62,7 @@ function parseArgs(argv) {
     mainBranch: 'main',
     integration: 'direct',
     deployment: 'none',
+    profile: undefined,
     refreshSkills: false,
     dryRun: false,
   };
@@ -75,6 +78,7 @@ function parseArgs(argv) {
     ['--preview-branch', 'previewBranch'],
     ['--integration', 'integration'],
     ['--deployment', 'deployment'],
+    ['--profile', 'profile'],
     ['--global-root', 'globalRoot'],
   ]);
 
@@ -151,6 +155,9 @@ function validateOptions(options) {
   assertOption(options.deliveryMode, allowed.deliveryMode, '--delivery-mode');
   assertOption(options.integration, allowed.integration, '--integration');
   assertOption(options.deployment, allowed.deployment, '--deployment');
+  if (options.profile && !profiles.has(options.profile)) {
+    throw new Error(`--profile must be one of: ${[...profiles].join(', ')}`);
+  }
 
   if (!existsSync(projectConfig) && (!options.description || !options.entity)) {
     throw new Error(
@@ -185,14 +192,18 @@ delivery:
   main_branch: ${yamlString(options.mainBranch)}
 ${options.previewBranch ? `  preview_branch: ${yamlString(options.previewBranch)}\n` : ''}  integration: ${options.integration}
   deployment: ${options.deployment}
-  branch_prefix: codex/
+  branch_prefix: cursor/
 
 verification:
   focused: []
   required: []
   deployment: []
 
-services: {}
+services:${options.profile === 'makerkit' ? `
+  stack: makerkit-next-supabase-turbo
+  hosting: vercel
+  database: supabase
+` : ' {}\n'}
 
 scopes: []
 
@@ -372,6 +383,17 @@ function installSkill(name, options, result) {
   }
 }
 
+function profileSkills(options) {
+  return options.profile === 'makerkit' ? ['makerkit'] : [];
+}
+
+function renderAccessConfig(options) {
+  const template = options.profile
+    ? join(packageRoot, 'templates', 'profiles', options.profile, 'access.yaml')
+    : join(packageRoot, 'templates', 'access.yaml');
+  return readFileSync(template, 'utf8').replace('"project-name"', yamlString(options.name));
+}
+
 function scaffoldProject(options, result) {
   const configTarget = join(options.projectRoot, '.ai-dev', 'project.yaml');
   const configExists = existsSync(configTarget);
@@ -413,11 +435,31 @@ function scaffoldProject(options, result) {
     }
   }
 
-  const accessTemplate = readFileSync(join(packageRoot, 'templates', 'access.yaml'), 'utf8').replace(
-    '"project-name"',
-    yamlString(options.name),
+  ensureFile(
+    join(options.projectRoot, '.ai-dev', 'access.yaml'),
+    renderAccessConfig(options),
+    options,
+    result,
   );
-  ensureFile(join(options.projectRoot, '.ai-dev', 'access.yaml'), accessTemplate, options, result);
+
+  if (options.profile === 'makerkit') {
+    const platformGuide = readFileSync(
+      join(packageRoot, 'templates', 'profiles', 'makerkit', 'PLATFORM.md'),
+      'utf8',
+    ).replaceAll('Project Name', options.name);
+    ensureFile(
+      join(options.projectRoot, 'documentation', 'chapters', 'makerkit-platform.md'),
+      platformGuide,
+      options,
+      result,
+    );
+  }
+
+  const agentsTemplate = readFileSync(join(packageRoot, 'templates', 'AGENTS.md'), 'utf8').replace(
+    '# Project Name',
+    `# ${options.name}`,
+  );
+  ensureFile(join(options.projectRoot, 'AGENTS.md'), agentsTemplate, options, result);
 }
 
 export function installProject(inputOptions) {
@@ -440,7 +482,9 @@ export function installProject(inputOptions) {
 
   installGlobalContext(options, result);
   scaffoldProject(options, result);
-  for (const skillName of skillNames) installSkill(skillName, options, result);
+  for (const skillName of [...skillNames, ...profileSkills(options)]) {
+    installSkill(skillName, options, result);
+  }
 
   return result;
 }
@@ -465,6 +509,10 @@ function printResult(result, dryRun) {
   }
 
   for (const warning of result.warnings) console.warn(`  warning ${warning}`);
+
+  console.log('Next: select "Kickoff — AI Dev System" ($kickoff) for a new or undocumented product,');
+  console.log('or use $start when the project already has trustworthy documentation.');
+  console.log('The kickoff skill is interactive and writes documentation/; it does not create a presentation.');
 }
 
 function main() {
