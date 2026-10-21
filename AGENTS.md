@@ -1,6 +1,6 @@
 # AI Dev System — agent working contract
 
-This repository uses **AI Dev System** with **Cursor Agent** (and the same skills in other agents that read `.agents/skills/`).
+This repository uses **AI Dev System**. It is agent-neutral: Codex and Cursor discover skills in `.agents/skills/`, and Claude Code discovers the identical copies in `.claude/skills/` and reads this file through `CLAUDE.md`.
 
 ## How we build
 
@@ -15,7 +15,7 @@ Spend extra care on **authentication, authorization, payments, destructive opera
 
 ## Session lifecycle
 
-Repository skills under `.agents/skills/`:
+Repository skills (`.agents/skills/`, mirrored to `.claude/skills/` by the installer — edit the ai-dev-system source, not the copies):
 
 | Skill | When |
 | --- | --- |

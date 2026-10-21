@@ -12,7 +12,7 @@ This is the canonical product and execution roadmap. Completed history belongs i
 
 1. **Accounts and credentials** — the machine registry records observed provider identities, remote resources, central credential routes, and approved consumers. Projects request friendly routes and capabilities through `.ai-dev/access.yaml`. The local broker has provider-specific diagnostics and direct Bitwarden-to-Vercel installation, with no arbitrary secret runner. The US-hosted `Riley Dev` organization, `Developer Access` project, read-only workstation machine account, protected token, and live project-access check are complete. Remaining validation is onboarding provider keys (OpenAI, Resend, PostHog, Sentry where used) and proving installation and rotation when projects reach those integrations.
 
-2. **Cursor packaging** — installer ships `AGENTS.md`, skills use portable `~/.ai-dev-system` paths, README and templates describe Cursor as the primary agent surface.
+2. **Agent-neutral packaging** — installer ships `AGENTS.md`, a `CLAUDE.md` import, and identical skills in `.agents/skills/` and `.claude/skills/`, so Codex, Cursor, and Claude Code share one lifecycle ([decision](decisions/2026-10-21-agent-neutral-skills.md)). Remaining: refresh the other portfolio projects (Banks, Chezmoi, Cosskit, Rare Data) with `--refresh-skills`; Commodore is done.
 
 ## Next
 

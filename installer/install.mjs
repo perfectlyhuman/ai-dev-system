@@ -18,6 +18,8 @@ const installerPath = fileURLToPath(import.meta.url);
 const packageRoot = resolve(dirname(installerPath), '..');
 const skillNames = ['kickoff', 'start', 'access', 'update-docs', 'finish'];
 const profiles = new Set(['makerkit']);
+// Codex and Cursor discover .agents/skills; Claude Code discovers .claude/skills.
+const skillRoots = [join('.agents', 'skills'), join('.claude', 'skills')];
 
 const allowed = {
   stage: new Set(['prototype', 'design-partner', 'live']),
@@ -45,12 +47,13 @@ Options:
   --deployment <value>        none | automatic | manual
   --profile <name>            Optional project profile: makerkit
   --global-root <path>        Machine-wide context root (default: ~/.ai-dev-system)
+  --claude-root <path>        Claude Code user directory (default: ~/.claude; skipped if absent)
   --refresh-skills            Replace drifted installed skill copies
   --dry-run                   Report actions without writing
   --help                      Show this help
 
 The installer never overwrites .ai-dev/project.yaml, canonical project
-documentation, or Riley-global guidance. It only replaces installed skills
+documentation, AGENTS.md, CLAUDE.md, or Riley-global guidance. It only replaces installed skills
 when --refresh-skills is set.`;
 }
 
@@ -80,6 +83,7 @@ function parseArgs(argv) {
     ['--deployment', 'deployment'],
     ['--profile', 'profile'],
     ['--global-root', 'globalRoot'],
+    ['--claude-root', 'claudeRoot'],
   ]);
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -140,6 +144,7 @@ function readConfiguredProjectName(projectConfig) {
 function validateOptions(options) {
   options.projectRoot = resolve(options.projectRoot);
   options.globalRoot = resolve(options.globalRoot || join(homedir(), '.ai-dev-system'));
+  options.claudeRoot = resolve(options.claudeRoot || join(homedir(), '.claude'));
 
   if (!existsSync(options.projectRoot) || !statSync(options.projectRoot).isDirectory()) {
     throw new Error(`Project root is not a directory: ${options.projectRoot}`);
@@ -192,7 +197,7 @@ delivery:
   main_branch: ${yamlString(options.mainBranch)}
 ${options.previewBranch ? `  preview_branch: ${yamlString(options.previewBranch)}\n` : ''}  integration: ${options.integration}
   deployment: ${options.deployment}
-  branch_prefix: cursor/
+  branch_prefix: agent/
 
 verification:
   focused: []
@@ -349,12 +354,17 @@ function installGlobalContext(options, result) {
 
 function installSkill(name, options, result) {
   const source = join(packageRoot, 'skills', name);
-  const target = join(options.projectRoot, '.agents', 'skills', name);
 
   if (!existsSync(source)) {
     throw new Error(`Missing source skill: ${source}`);
   }
 
+  for (const root of skillRoots) {
+    installSkillCopy(source, join(options.projectRoot, root, name), options, result);
+  }
+}
+
+function installSkillCopy(source, target, options, result) {
   if (!existsSync(target)) {
     record(result, 'created', options.projectRoot, target);
     if (!options.dryRun) {
@@ -380,6 +390,75 @@ function installSkill(name, options, result) {
   if (!options.dryRun) {
     rmSync(target, { recursive: true, force: true });
     cpSync(source, target, { recursive: true });
+  }
+}
+
+function readText(target) {
+  const text = readFileSync(target, 'utf8');
+  return { text, eol: text.includes('\r\n') ? '\r\n' : '\n' };
+}
+
+// Claude Code reads CLAUDE.md, not AGENTS.md; a one-line import keeps AGENTS.md the single contract.
+function linkClaudeContract(options, result) {
+  const target = join(options.projectRoot, 'CLAUDE.md');
+  if (existsSync(target) && !/^@AGENTS\.md\s*$/m.test(readFileSync(target, 'utf8'))) {
+    record(result, 'unchanged', options.projectRoot, target);
+    result.warnings.push('CLAUDE.md exists without an @AGENTS.md import; Claude Code will not load AGENTS.md.');
+    return;
+  }
+  ensureFile(target, '@AGENTS.md\n', options, result);
+}
+
+// A whole-directory `.claude/` ignore hides .claude/skills from Git; narrow it to keep local state ignored.
+function trackClaudeSkills(options, result) {
+  const target = join(options.projectRoot, '.gitignore');
+  if (!existsSync(target)) return;
+
+  const { text, eol } = readText(target);
+  const lines = text.split(/\r?\n/);
+  if (lines.some((line) => /^!\/?\.claude\/skills\/?$/.test(line.trim()))) return;
+
+  const index = lines.findIndex((line) => /^\/?\.claude(\/|\/\*)?$/.test(line.trim()));
+  if (index === -1) return;
+
+  const prefix = lines[index].trim().startsWith('/') ? '/' : '';
+  lines.splice(index, 1, `${prefix}.claude/*`, `!${prefix}.claude/skills/`);
+  record(result, 'refreshed', options.projectRoot, target);
+  if (!options.dryRun) writeFileSync(target, lines.join(eol), 'utf8');
+}
+
+// Load RILEY.md in every Claude Code session, as Codex and Cursor do through their global context.
+function linkClaudeGlobalContext(options, result) {
+  if (!existsSync(options.claudeRoot)) return;
+
+  const target = join(options.claudeRoot, 'CLAUDE.md');
+  const riley = join(options.globalRoot, 'RILEY.md');
+  const home = homedir();
+  const importPath = riley.startsWith(home)
+    ? `~/${relative(home, riley).replaceAll('\\', '/')}`
+    : riley.replaceAll('\\', '/');
+  const importLine = `@${importPath}`;
+
+  if (!existsSync(target)) {
+    result.global.created.push(target);
+    if (!options.dryRun) writeFileSync(target, `${importLine}\n`, 'utf8');
+    return;
+  }
+
+  const { text, eol } = readText(target);
+  if (text.split(/\r?\n/).some((line) => line.trim() === importLine)) {
+    result.global.unchanged.push(target);
+    return;
+  }
+
+  result.global.refreshed.push(target);
+  if (!options.dryRun) {
+    const separator = text.endsWith('\n') ? eol : `${eol}${eol}`;
+    writeFileSync(
+      target,
+      `${text}${separator}## AI Dev System${eol}${eol}${importLine}${eol}`,
+      'utf8',
+    );
   }
 }
 
@@ -460,6 +539,8 @@ function scaffoldProject(options, result) {
     `# ${options.name}`,
   );
   ensureFile(join(options.projectRoot, 'AGENTS.md'), agentsTemplate, options, result);
+  linkClaudeContract(options, result);
+  trackClaudeSkills(options, result);
 }
 
 export function installProject(inputOptions) {
@@ -481,6 +562,7 @@ export function installProject(inputOptions) {
   };
 
   installGlobalContext(options, result);
+  linkClaudeGlobalContext(options, result);
   scaffoldProject(options, result);
   for (const skillName of [...skillNames, ...profileSkills(options)]) {
     installSkill(skillName, options, result);
@@ -510,8 +592,8 @@ function printResult(result, dryRun) {
 
   for (const warning of result.warnings) console.warn(`  warning ${warning}`);
 
-  console.log('Next: select "Kickoff — AI Dev System" ($kickoff) for a new or undocumented product,');
-  console.log('or use $start when the project already has trustworthy documentation.');
+  console.log('Next: run kickoff (/kickoff in Cursor or Claude Code, $kickoff in Codex) for a new or');
+  console.log('undocumented product, or start when the project already has trustworthy documentation.');
   console.log('The kickoff skill is interactive and writes documentation/; it does not create a presentation.');
 }
 

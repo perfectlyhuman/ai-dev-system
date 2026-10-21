@@ -24,6 +24,8 @@ The configured delivery mode is standing authorization for its routine actions. 
 
 Inspect the working tree, staged changes, commits, current branch, upstream, and recent roadmap work. Separate session-related changes from unrelated pre-existing work. Never discard, overwrite, or silently include unrelated work.
 
+If local `main` and remote `main` each contain unique commits, do not silently treat either as the integration base. Preserve the local lineage under an explicit recovery branch, keep dirty files attached to their existing checkout, and reconcile the intended work in a clean branch from the canonical remote.
+
 ## 2. Reconcile durable knowledge
 
 Run the full `update-docs` skill for everything not already reconciled during the session. Read `.agents/skills/update-docs/SKILL.md` and follow it through the durability test and roadmap reconciliation. This pass is mandatory on every `finish`, including when invoked as `/finish`; a separate `/update-docs` is optional mid-session but not a prerequisite. Documentation edits are not mandatory when the durability test finds nothing worth recording.
@@ -54,6 +56,8 @@ If there is no meaningful file change, do not manufacture an empty commit. Conti
 
 If unrelated changes prevent a safe commit, preserve them and surface the exact conflict. Do not use destructive cleanup commands.
 
+For work governed by a repository decision, verify that the commit contains that decision as well as the implementation it authorizes. Do not integrate an executable or paid preflight whose governing decision is absent from the branch.
+
 ## 5. Execute the delivery mode
 
 ### `commit`
@@ -77,6 +81,8 @@ Create the commit and move it through the repository's configured integration pa
 - Respect branch protection and required checks.
 - Merge or promote when checks pass and standing configuration authorizes it.
 - Verify the resulting main-branch commit and deployment state.
+
+After integration, independently resolve the delivered remote main commit and verify that it contains the session commit and the governing files. A successful feature-branch push alone is not proof that `main` received the work.
 
 Do not claim shipped when only a local commit or branch push succeeded. State the furthest verified delivery state precisely.
 

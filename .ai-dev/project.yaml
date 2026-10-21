@@ -1,7 +1,7 @@
 # AI Dev System v3 project contract. Never put secret values in this file.
 schema_version: 3
 name: "ai-dev-system"
-description: "Riley's Codex-native operating system for moving from product idea to fast, durable daily execution."
+description: "Riley's agent-neutral operating system for moving from product idea to fast, durable daily execution."
 entity: "perfectly-human"
 stage: design-partner
 

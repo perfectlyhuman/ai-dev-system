@@ -23,9 +23,47 @@ If `.ai-dev/access.yaml` exists, read its non-secret capability requirements. Ru
 
 The installer creates all three files without overwriting personal guidance. If `RILEY.md` is missing, report global-context installation drift but continue from repository-local evidence. Do not narrate successful reads, empty registries, or missing data that the current task does not need.
 
-## 2. Restore only relevant knowledge
+## 2. Resolve canonical context before reading project documentation
 
-Read the configured `PROJECT.md` and the active sections of `ROADMAP.md` first. Identify:
+Never assume the current checkout contains the canonical documentation. A session may open on a stale,
+dirty, detached, recovery, or long-lived feature checkout while the delivered product truth has moved
+forward on the configured main branch.
+
+Run the bundled resolver from the repository root (from a POSIX shell, wrap it as
+`powershell -NoProfile -File <script> -RepositoryRoot .`; use `pwsh` where Windows PowerShell is absent):
+
+```powershell
+& .agents/skills/start/scripts/resolve-canonical-context.ps1 -RepositoryRoot .
+```
+
+The resolver may fetch only the configured `origin/<main_branch>` remote-tracking ref. This is
+read-only reconnaissance with respect to the worktree and remote service; it must not pull, merge,
+switch, reset, clean, or edit files. If fetch is unavailable, use the best local main ref and report
+that the remote could not be refreshed. If PowerShell is unavailable, perform the same resolution with
+equivalent read-only `git` commands.
+
+Use the resolver's exact `canonical_ref` and `canonical_sha` as the delivered documentation baseline:
+
+- read configured canonical files with `git show <canonical_sha>:<path>` rather than assuming the
+  same-named working-tree files are current;
+- always report the exact canonical ref and abbreviated SHA used for orientation;
+- treat working-tree documentation changes and current-branch-only commits as unfinished local
+  evidence, not delivered canonical truth;
+- if local `main` and remote `main` each contain unique commits, inspect the relevant documentation
+  and decisions on both lineages and make reconciliation the next action before consequential work;
+- if the current branch or dirty work contains a governing decision relevant to the next action that
+  is absent from delivered main, surface it explicitly and reconcile the lineages before proceeding;
+  and
+- if unrelated dirty work occupies the current checkout, preserve it and recommend a clean worktree
+  from the canonical SHA for the new roadmap action instead of treating stale checkout docs as truth.
+
+This reference-resolution step is mandatory even when the checkout appears clean. It prevents a
+fresh session from silently reviving superseded methods or missing delivered decisions.
+
+## 3. Restore only relevant knowledge
+
+Read the configured `PROJECT.md` and the active sections of `ROADMAP.md` first from the resolved
+canonical SHA. Identify:
 
 - the product and present stage;
 - current focus and desired outcome;
@@ -34,7 +72,10 @@ Read the configured `PROJECT.md` and the active sections of `ROADMAP.md` first. 
 - blockers and unresolved product questions; and
 - decisions whose revisit conditions may now be true.
 
-Read only the chapters, decisions, and lessons relevant to the current focus or repository changes. Do not load the entire documentation tree by default.
+Read only the chapters, decisions, and lessons relevant to the current focus or repository changes.
+Resolve canonical relative links against files at the canonical SHA. Then inspect relevant
+working-tree or branch-only documentation deltas as secondary evidence. Do not load the entire
+documentation tree by default.
 
 Treat recorded decisions as settled. Reopen one only when its revisit condition is met, new evidence invalidates a premise, an external constraint changed, or Riley explicitly asks.
 
@@ -48,9 +89,9 @@ Keep the three work layers distinct:
 
 Link related records with stable identifiers when useful. Do not mirror descriptions across layers, infer a client commitment from implementation work, or expose private scope text through the shared surface.
 
-## 3. Inspect repository and remote state
+## 4. Inspect remaining repository and remote state
 
-Gather evidence appropriate to the repository:
+Continue from the resolver evidence and gather the remaining context appropriate to the repository:
 
 - current branch and upstream;
 - working-tree status, including untracked files;
@@ -60,11 +101,15 @@ Gather evidence appropriate to the repository:
 - deployment or CI state when the project contract provides a safe way to inspect it.
 - readiness of declared external capabilities that the current work actually needs.
 
-Preserve unrelated dirty work. Do not mutate files, pull, switch branches, or run destructive commands during a standalone `start`.
+Preserve unrelated dirty work. Apart from the bounded remote-tracking fetch above, do not mutate
+files or refs, pull, switch branches, create worktrees, or run destructive commands during a
+standalone `start`.
+
+Before preparing any paid or hash-bound preflight, verify that its governing decisions exist in the chosen base and agree with the proposed method. A preflight derived from code while its governing decision exists only on another lineage is invalid even when the code and tests pass locally.
 
 Run a read-only verification command only when canonical documentation explicitly records that check as pending and it is safe and useful. Configured focused or required commands describe later work and `finish`; their presence alone does not make them pending during `start`. Inspect diffs enough to understand unfinished work, but do not turn a standalone `start` into implementation review or a test run merely because the tree is dirty.
 
-## 4. Reconcile optional external signals
+## 5. Reconcile optional external signals
 
 For an active scope with `shared_work`, inspect that surface using available authenticated tooling. A Supabase surface is canonical only for the configured account's client-visible work. Query only relevant rows and never expose credentials. If access is unavailable, report that exact signal gap without pretending the private roadmap represents the current shared view.
 
@@ -76,13 +121,13 @@ Inspect optional intake only when configured. Distinguish new input from accepte
 
 If no enabled integration, scope, or intake source yields meaningful input, omit external signals entirely. Do not list unconfigured systems or evidence that was not required and was not inspected.
 
-## 5. Determine the next action
+## 6. Determine the next action
 
 Choose the action with the strongest combination of product value, dependency readiness, learning value, urgency, and ability to finish. Prefer completing coherent in-progress work over starting more work unless evidence supports changing direction.
 
 Do not manufacture multiple options. Present alternatives only if two or more live paths materially differ and Riley's judgment is required. Otherwise recommend one action.
 
-## 6. Report briefly
+## 7. Report briefly
 
 Use this shape, omitting empty sections:
 
@@ -91,6 +136,7 @@ Use this shape, omitting empty sections:
 
 **Current focus:** {outcome}
 **Scope:** {active private scope and shared-work state, when applicable}
+**Canonical docs:** {resolved main ref and abbreviated commit SHA}
 **Repository:** {branch, clean/dirty, meaningful delta}
 **External signals:** {only meaningful configured input}
 **Needs attention:** {real contradiction, blocker, or pending verification}

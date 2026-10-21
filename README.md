@@ -1,6 +1,6 @@
 # AI Dev System
 
-AI Dev System is Riley's operating system for building products with **Cursor Agent** (and other agents that read `.agents/skills/`) without losing product intent, technical rationale, roadmap direction, or hard-won lessons between sessions.
+AI Dev System is Riley's operating system for building products with any coding agent — **Codex**, **Cursor**, or **Claude Code** without losing product intent, technical rationale, roadmap direction, or hard-won lessons between sessions.
 
 It adds a small durable layer around ordinary coding:
 
@@ -20,7 +20,7 @@ Ordinary implementation stays natural language. The system provides lifecycle sk
 | `update-docs` | Meaningful decisions, progress, or reusable lessons have accumulated |
 | `finish` | Closing a substantive session — **includes `update-docs`**, verification, commit, and configured delivery |
 
-In Cursor, invoke with `/start`, `/finish`, and so on, or let the agent match skill descriptions.
+Invoke with `/start`, `/finish`, and so on in Cursor and Claude Code (`$start` in Codex), or let the agent match skill descriptions.
 
 ## What gets installed
 
@@ -32,15 +32,17 @@ The first installation on a machine also creates Riley-global context:
 ~/.ai-dev-system/registry.yaml  Non-secret account and service metadata
 ```
 
-`RILEY.md` is personal durable guidance and is never overwritten by later installs.
+`RILEY.md` is personal durable guidance and is never overwritten by later installs. When `~/.claude/` exists, the installer appends one `@~/.ai-dev-system/RILEY.md` import to `~/.claude/CLAUDE.md` so Claude Code loads it every session.
 
 Each project receives:
 
 ```text
-AGENTS.md                     Always-on Cursor/agent contract (created if absent)
+AGENTS.md                     Always-on agent contract (created if absent)
+CLAUDE.md                     `@AGENTS.md` import so Claude Code loads the same contract
 .ai-dev/project.yaml          Project-specific paths and standing authorization
 .ai-dev/access.yaml           Non-secret external capability and credential references
-.agents/skills/               Repository-scoped lifecycle skills
+.agents/skills/               Repository-scoped lifecycle skills (Codex, Cursor)
+.claude/skills/               Identical copies for Claude Code; a `.claude/` gitignore is narrowed so these are tracked
 documentation/PROJECT.md      Product intent and project orientation
 documentation/ROADMAP.md      Canonical current and upcoming work
 documentation/chapters/       Deeper product and technical context
@@ -94,6 +96,7 @@ Useful options:
 --integration direct|pull-request
 --deployment none|automatic|manual
 --global-root <path>
+--claude-root <path>
 --refresh-skills
 ```
 

@@ -1,7 +1,7 @@
 {
   "name": "create-ai-dev",
   "version": "3.0.0",
-  "description": "Cursor-native product memory, roadmap, and delivery system for fast AI-assisted development",
+  "description": "Agent-neutral (Codex, Cursor, Claude Code) product memory, roadmap, and delivery system for fast AI-assisted development",
   "type": "module",
   "bin": {
     "create-ai-dev": "./installer/install.mjs"
@@ -21,6 +21,7 @@
   },
   "keywords": [
     "cursor",
+    "claude-code",
     "codex",
     "openai",
     "ai-development",

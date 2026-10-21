@@ -13,6 +13,7 @@ function options(projectRoot, overrides = {}) {
   return {
     projectRoot,
     globalRoot: join(projectRoot, '.test-global'),
+    claudeRoot: join(projectRoot, '.test-claude'),
     name: 'fixture-project',
     description: 'A fixture used to verify the AI Dev System installer.',
     entity: 'test',
@@ -63,6 +64,7 @@ test('installs, reruns idempotently, and protects drifted skills', () => {
 
     for (const skill of ['kickoff', 'start', 'access', 'update-docs', 'finish']) {
       assert.ok(existsSync(join(projectRoot, '.agents', 'skills', skill, 'SKILL.md')));
+      assert.ok(existsSync(join(projectRoot, '.claude', 'skills', skill, 'SKILL.md')));
       assert.ok(existsSync(join(projectRoot, '.agents', 'skills', skill, 'agents', 'openai.yaml')));
     }
 
@@ -88,7 +90,9 @@ test('installs, reruns idempotently, and protects drifted skills', () => {
       assert.ok(existsSync(join(projectRoot, 'documentation', directory)));
     }
 
-    assert.equal(existsSync(join(projectRoot, '.claude')), false);
+    assert.ok(existsSync(join(projectRoot, '.agents', 'skills', 'start', 'scripts', 'resolve-canonical-context.ps1')));
+    assert.equal(readFileSync(join(projectRoot, 'CLAUDE.md'), 'utf8'), '@AGENTS.md\n');
+    assert.equal(existsSync(configured.claudeRoot), false);
 
     const config = readFileSync(join(projectRoot, '.ai-dev', 'project.yaml'), 'utf8');
     assert.match(config, /name: "fixture-project"/);
@@ -128,6 +132,7 @@ test('installs, reruns idempotently, and protects drifted skills', () => {
 
     const refreshed = installProject({ ...configured, refreshSkills: true });
     assert.ok(refreshed.refreshed.includes('.agents/skills/start'));
+    assert.ok(refreshed.unchanged.includes('.claude/skills/start'));
     assert.doesNotMatch(readFileSync(installedStart, 'utf8'), /local drift/);
   } finally {
     rmSync(projectRoot, { recursive: true, force: true });
@@ -233,4 +238,46 @@ test('project schema partitions private client scopes from shared work', () => {
   assert.ok(scopeDocumentation.required.includes('roadmap_archive'));
   assert.equal(sharedWork.properties.audience.const, 'client');
   assert.equal(sharedWork.properties.provider.const, 'supabase');
+});
+
+test('wires Claude Code: gitignore exception, CLAUDE.md import, and global RILEY.md import', () => {
+  const projectRoot = mkdtempSync(join(tmpdir(), 'ai-dev-system-claude-'));
+  const ignored = 'node_modules/\r\n.claude/*\r\n!.claude/skills/\r\n.env\r\n';
+
+  try {
+    const configured = options(projectRoot);
+    mkdirSync(configured.claudeRoot, { recursive: true });
+    writeFileSync(join(configured.claudeRoot, 'CLAUDE.md'), '# Global\r\n\r\nExisting guidance.\r\n');
+    writeFileSync(join(projectRoot, '.gitignore'), 'node_modules/\r\n.claude/\r\n.env\r\n');
+
+    const first = installProject(configured);
+    assert.ok(first.refreshed.includes('.gitignore'));
+    assert.equal(readFileSync(join(projectRoot, '.gitignore'), 'utf8'), ignored);
+
+    const globalClaude = readFileSync(join(configured.claudeRoot, 'CLAUDE.md'), 'utf8');
+    assert.match(
+      globalClaude,
+      /^# Global\r\n\r\nExisting guidance\.\r\n\r\n## AI Dev System\r\n\r\n@\S*\.test-global\/RILEY\.md\r\n$/,
+    );
+
+    const second = installProject(configured);
+    assert.equal(second.refreshed.length, 0);
+    assert.equal(readFileSync(join(configured.claudeRoot, 'CLAUDE.md'), 'utf8'), globalClaude);
+    assert.equal(readFileSync(join(projectRoot, '.gitignore'), 'utf8'), ignored);
+  } finally {
+    rmSync(projectRoot, { recursive: true, force: true });
+  }
+});
+
+test('keeps an existing CLAUDE.md and warns when it does not import AGENTS.md', () => {
+  const projectRoot = mkdtempSync(join(tmpdir(), 'ai-dev-system-claude-md-'));
+
+  try {
+    writeFileSync(join(projectRoot, 'CLAUDE.md'), '# Custom\n');
+    const result = installProject(options(projectRoot));
+    assert.equal(readFileSync(join(projectRoot, 'CLAUDE.md'), 'utf8'), '# Custom\n');
+    assert.ok(result.warnings.some((warning) => /@AGENTS\.md/.test(warning)));
+  } finally {
+    rmSync(projectRoot, { recursive: true, force: true });
+  }
 });
