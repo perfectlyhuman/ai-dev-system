@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Dev Start"
+  short_description: "Open a project session with clear direction"
+  default_prompt: "Use $start to orient this project and recommend the highest-value next action."

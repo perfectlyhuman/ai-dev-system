@@ -1,0 +1,4 @@
+interface:
+  display_name: "Access — AI Dev System"
+  short_description: "Check and resolve project account access"
+  default_prompt: "Use $access to inspect this project's declared service access, resolve missing CLI or Bitwarden setup safely, and never expose secret values."

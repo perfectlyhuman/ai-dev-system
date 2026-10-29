@@ -9,7 +9,7 @@ Make external access predictable without placing secret values in repositories, 
 
 ## 1. Read the access contract
 
-Find `.ai-dev/access.yaml` at the owning project root. It is JSON-compatible YAML so the dependency-free runtime can parse it deterministically. Each request names a friendly credential route, optional remote resource, and required capabilities. Resolve the route through the JSON-compatible `C:\Users\riley\.ai-dev-system\registry.yaml`; that global file contains provider, account, consumer, CLI, and non-secret Bitwarden references.
+Find `.ai-dev/access.yaml` at the owning project root. It is JSON-compatible YAML so the dependency-free runtime can parse it deterministically. Each request names a friendly credential route, optional remote resource, and required capabilities. Resolve routes through the JSON-compatible `registry.yaml` in the machine-wide context directory (default `~/.ai-dev-system/`). That global file contains provider, account, consumer, CLI, and non-secret Bitwarden references.
 
 Treat the manifest as a request contract, not proof that access works. A global credential route must list the requesting project as an approved consumer. Consult only relevant non-secret identity and service metadata. Never put secret values in either file.
 
