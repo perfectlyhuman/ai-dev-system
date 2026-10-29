@@ -139,6 +139,26 @@ test('installs, reruns idempotently, and protects drifted skills', () => {
   }
 });
 
+test('treats a line-ending-only difference as an unchanged skill copy', () => {
+  const projectRoot = mkdtempSync(join(tmpdir(), 'ai-dev-system-eol-'));
+
+  try {
+    const configured = options(projectRoot);
+    installProject(configured);
+
+    // A Windows autocrlf checkout rewrites line endings without changing content.
+    const installedFinish = join(projectRoot, '.claude', 'skills', 'finish', 'SKILL.md');
+    const lfContent = readFileSync(installedFinish, 'utf8').replaceAll('\r\n', '\n');
+    writeFileSync(installedFinish, lfContent.replaceAll('\n', '\r\n'));
+
+    const rerun = installProject(configured);
+    assert.ok(rerun.unchanged.includes('.claude/skills/finish'));
+    assert.deepEqual(rerun.refreshed, []);
+  } finally {
+    rmSync(projectRoot, { recursive: true, force: true });
+  }
+});
+
 test('dry run reports writes without creating them', () => {
   const projectRoot = mkdtempSync(join(tmpdir(), 'ai-dev-system-dry-'));
 

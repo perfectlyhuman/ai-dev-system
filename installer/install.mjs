@@ -241,6 +241,14 @@ function listTree(root) {
   return output;
 }
 
+// A skill copy is text. Comparing raw bytes would report drift for a CRLF checkout against an LF
+// source, which is how Windows with autocrlf produces a false "installed skill has drifted" refusal
+// on a copy that is content-identical. Compare normalized text, and fall back to bytes for binaries.
+function comparableContent(buffer) {
+  if (buffer.includes(0)) return buffer;
+  return Buffer.from(buffer.toString('utf8').replaceAll('\r\n', '\n'), 'utf8');
+}
+
 function treesEqual(left, right) {
   const leftTree = listTree(left);
   const rightTree = listTree(right);
@@ -251,7 +259,8 @@ function treesEqual(left, right) {
     return (
       entry.path === other.path &&
       entry.type === other.type &&
-      (entry.type === 'directory' || entry.content.equals(other.content))
+      (entry.type === 'directory' ||
+        comparableContent(entry.content).equals(comparableContent(other.content)))
     );
   });
 }
