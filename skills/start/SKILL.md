@@ -115,7 +115,7 @@ For an active scope with `shared_work`, inspect that surface using available aut
 
 Compare the private scope roadmap and shared work against recent client decisions, deliverables, and implementation evidence. Surface drift in either direction without treating differences as automatic errors: private work may intentionally have no shared counterpart. Client work can require a product build, but the private objective, client-visible outcome, and product implementation remain linked records rather than duplicated descriptions.
 
-When the project enables Linear, inspect changes relevant to the current roadmap. Treat comments, reprioritization, and status changes as stakeholder input. Surface meaningful differences without treating Linear as canonical or copying technical details into it.
+When the project declares a stakeholder projection (`integrations.trello` or `integrations.linear`), inspect changes relevant to the current roadmap. Treat comments, reprioritization, and status changes as stakeholder input. Surface meaningful differences without treating the board as canonical or copying technical details into it.
 
 Inspect optional intake only when configured. Distinguish new input from accepted roadmap work.
 

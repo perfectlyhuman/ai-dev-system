@@ -34,6 +34,7 @@ Prefer these access paths:
 - GitHub, Vercel, and Supabase: installed first-party CLI with persistent authentication.
 - Cloudflare and Sentry: first-party CLI when available, with narrowly scoped tokens supplied from Bitwarden when non-interactive access is required.
 - Resend, PostHog, and OpenAI: narrowly scoped Bitwarden-backed application credentials installed directly into the declared runtime by the broker.
+- Trello: a stakeholder-projection board needs only its non-secret board identity in the project contract. Declare a credential route only when a tool needs authenticated API access; there is no first-party CLI check, so the doctor reports that gap instead of guessing.
 
 Install missing tooling only when the current project declares the provider. Authentication that opens a browser, creates an account, enables billing, grants organization access, or mints a machine token requires Riley. Give one exact action and continue with all work that does not depend on it.
 

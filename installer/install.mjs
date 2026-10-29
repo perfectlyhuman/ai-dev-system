@@ -213,6 +213,7 @@ services:${options.profile === 'makerkit' ? `
 scopes: []
 
 integrations:
+  trello: false
   linear: false
   intake: false
 `;

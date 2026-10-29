@@ -60,5 +60,12 @@ services: {}
 scopes: []
 
 integrations:
+  # Optional non-secret stakeholder projection. The internal ROADMAP.md stays canonical.
+  #   trello:
+  #     board: "shortLink, id, or URL"
+  #     workspace: "workspace name"
+  #     projection: stakeholder
+  #     governance: documentation/decisions/<board governance>.md
+  trello: false
   linear: false
   intake: false

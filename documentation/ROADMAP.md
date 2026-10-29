@@ -24,7 +24,7 @@ This is the canonical product and execution roadmap. Completed history belongs i
 
 ## Later
 
-- **Commodore Linear adapter** — project selected roadmap outcomes into a non-technical stakeholder view and reconcile external input back into the repository.
+- **Stakeholder projection adapter** — automate the reconciliation that `start`, `update-docs`, and `finish` currently describe for a declared Trello board, once real use shows which parts are mechanical ([decision](decisions/2026-10-29-trello-stakeholder-projection.md)).
 - **Marketing capabilities** — expand from kickoff research into positioning, launch, content, experiments, and measurement when an active project supplies concrete requirements.
 - **Broader distribution** — decide whether to package v3 as a plugin or public installer only after it works across Riley's portfolio.
 

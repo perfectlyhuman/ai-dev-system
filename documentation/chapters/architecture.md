@@ -13,7 +13,7 @@ The system has four layers:
 3. Repository-local canonical memory in `documentation/`.
 4. Five focused lifecycle skills for `kickoff`, `start`, `access`, `update-docs`, and `finish`.
 
-Code and external systems are evidence, not additional competing memory layers. Git records implementation history. Linear is an optional Commodore stakeholder projection. Deployment platforms report delivery reality.
+Code and external systems are evidence, not additional competing memory layers. Git records implementation history. A declared stakeholder projection — a Trello board by default, Linear where a project already uses it — carries a non-technical view of direction. Deployment platforms report delivery reality.
 
 Each agent session has one owning project: the repository where the session was opened and its project contract was loaded. Cross-repository work can supply evidence or complete a bounded dependency, but changing working directories never transfers ownership. The owning project still receives the roadmap reconciliation, `finish`, and next recommendation; substantive work in another product begins in a new session rooted there. Delegated work — subagents, parallel agents, or a workflow fan-out — inherits the owning project's contract and never claims ownership itself.
 

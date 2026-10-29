@@ -70,9 +70,9 @@ When `shared_work` is configured, reconcile it only when verified evidence chang
 
 ## 5. Refresh optional projections
 
-If Linear is enabled, update its selected non-technical projection only after the internal roadmap is correct. Include outcome, status, timing, and stakeholder-relevant context. Keep technical specifications and architectural reasoning in the repository.
+If the project declares a stakeholder projection — `integrations.trello` or `integrations.linear` — refresh only the selected non-technical view, and only after the internal roadmap is correct. Follow that board's governance record when one is declared: it defines the lists, labels, intake rules, and wording constraints for that surface. Include outcome, status, timing, and stakeholder-relevant context. Keep technical specifications and architectural reasoning in the repository.
 
-If Linear contains new input that changes direction, reconcile that input into the internal roadmap deliberately before projecting it back.
+If the projection contains new input that changes direction, reconcile that input into the internal roadmap deliberately before projecting it back.
 
 ## 6. Verify and report
 

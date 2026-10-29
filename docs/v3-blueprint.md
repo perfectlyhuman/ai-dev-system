@@ -161,6 +161,7 @@ delivery:
   main_branch: main
 
 integrations:
+  trello: false
   linear: false
 ```
 
@@ -288,7 +289,7 @@ It should:
 2. Read `PROJECT.md`, the active portion of `ROADMAP.md`, and only the chapters relevant to current work; for active client work, load the private scope roadmap and inspect optional shared work separately.
 3. Inspect git status, recent commits, the current branch, and configured remote state.
 4. Run pending verification that is explicitly recorded in the roadmap or project docs and safe to automate.
-5. For Commodore, surface relevant Linear changes as external input without treating Linear as canonical.
+5. Surface changes on a declared stakeholder projection as external input, without treating the board as canonical.
 6. Report current state briefly.
 7. Recommend the highest-value next action and why.
 
@@ -305,7 +306,7 @@ It should:
 3. Update only affected documents.
 4. Remove or correct stale information rather than layering contradictions on top.
 5. Archive completed roadmap items when appropriate.
-6. Reconcile optional client shared work or the Commodore Linear projection only after the relevant internal roadmap is current and only with audience-appropriate information.
+6. Reconcile optional client shared work or the declared stakeholder projection only after the relevant internal roadmap is current and only with audience-appropriate information.
 7. Report what changed and what intentionally did not require documentation.
 
 It should not demand a decision record, lesson, chapter update, or user preview for every change. Documentation is valuable only when its signal remains high.
@@ -328,20 +329,22 @@ It should:
 
 `finish` does not write or archive session handoffs. Work-in-progress belongs in the roadmap; durable context belongs in project documentation; implementation history belongs in git.
 
-## Roadmap and Linear contract
+## Roadmap and stakeholder projection contract
 
 The internal `ROADMAP.md` is canonical in every project.
 
-Linear is an optional stakeholder interface currently used only by Commodore. Its purpose is to communicate a useful non-technical view of direction and progress to Riley's cofounders.
+A project may declare exactly one optional stakeholder projection in `integrations`: `trello`, which is the default, or `linear` for projects that already run on it. Its purpose is to communicate a useful non-technical view of direction and progress to people who should not read the repository.
 
 The relationship is asymmetric:
 
 ```text
-internal roadmap -> selected non-technical projection -> Linear
-Linear comments/changes -> input to reconcile -> internal roadmap decision
+internal roadmap -> selected non-technical projection -> Trello or Linear board
+board comments/changes -> input to reconcile -> internal roadmap decision
 ```
 
-Technical specifications, architectural reasoning, dependencies, and implementation detail must remain inside the repository. A Linear change does not silently override the internal roadmap. V3 surfaces the difference, determines whether it represents new stakeholder input, updates the internal roadmap when warranted, and then refreshes the projection.
+Technical specifications, architectural reasoning, dependencies, and implementation detail must remain inside the repository. A board change does not silently override the internal roadmap. V3 surfaces the difference, determines whether it represents new stakeholder input, updates the internal roadmap when warranted, and then refreshes the projection.
+
+Board shape is project-specific, so each declared board points at a governance decision record through `integrations.<provider>.governance`. That record owns the lists, labels, intake rules, and wording constraints for the surface; the skill text stays generic.
 
 Google Drive is not part of v3.
 
@@ -381,9 +384,9 @@ The US-hosted Secrets Manager organization, central project, read-only workstati
 
 V3 should eventually support research, positioning, launch planning, content, experiments, measurement, and other founder-led marketing work. The immediate implementation only preserves space for marketing chapters and includes market/positioning work in kickoff.
 
-### Linear
+### Stakeholder projection
 
-Commodore-only at first. It is an optional adapter, not a core dependency.
+Trello by default, Linear where a project already runs on it. Optional per project, never a core dependency, and exactly one per project. Board shape lives in that project's governance decision, not in the skill text.
 
 ### Autonomous agents
 

@@ -105,6 +105,29 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "trello": {
+          "oneOf": [
+            { "const": false },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["board", "projection"],
+              "properties": {
+                "board": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Board short link, id, or URL. Never an API key or token."
+                },
+                "workspace": { "type": "string", "minLength": 1 },
+                "projection": { "const": "stakeholder" },
+                "governance": {
+                  "$ref": "#/$defs/repositoryPath",
+                  "description": "Repository decision record that defines list, label, and intake rules for this board."
+                }
+              }
+            }
+          ]
+        },
         "linear": {
           "oneOf": [
             { "const": false },

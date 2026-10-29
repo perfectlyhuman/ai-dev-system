@@ -16,7 +16,7 @@ Ordinary implementation stays natural language. The system provides lifecycle sk
 |---|---|
 | `kickoff` | A new idea or undocumented product needs discovery and canonical `documentation/` |
 | `start` | Beginning every product or coding session |
-| `access` | GitHub, Vercel, Supabase, Cloudflare, Resend, Sentry, PostHog, OpenAI, Bitwarden — without exposing secrets |
+| `access` | GitHub, Vercel, Supabase, Cloudflare, Resend, Sentry, PostHog, OpenAI, Trello, Bitwarden — without exposing secrets |
 | `update-docs` | Meaningful decisions, progress, or reusable lessons have accumulated |
 | `finish` | Closing a substantive session — **includes `update-docs`**, verification, commit, and configured delivery |
 
@@ -51,7 +51,7 @@ documentation/lessons/        Expensive mistakes worth preventing
 documentation/archive/        Completed roadmap history
 ```
 
-The internal `ROADMAP.md` is canonical. External systems such as Linear are optional adapters, never competing sources of truth.
+The internal `ROADMAP.md` is canonical. External systems such as a Trello board or Linear are optional adapters, never competing sources of truth.
 
 Run `node .agents/skills/access/scripts/access.mjs doctor` from an installed project to check access readiness without returning secrets. For application keys, `access.mjs install <request> --to <vercel-request> --environment <name>` copies one approved secret from Bitwarden into Vercel when routes exist in `registry.yaml`.
 

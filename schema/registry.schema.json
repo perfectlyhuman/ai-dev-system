@@ -55,7 +55,8 @@
             "resend",
             "sentry",
             "posthog",
-            "openai"
+            "openai",
+            "trello"
           ]
         },
         "account": { "type": "string", "minLength": 1 },
