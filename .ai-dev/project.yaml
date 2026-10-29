@@ -19,7 +19,7 @@ delivery:
   main_branch: "master"
   integration: direct
   deployment: none
-  branch_prefix: codex/
+  branch_prefix: agent/
 
 verification:
   focused:

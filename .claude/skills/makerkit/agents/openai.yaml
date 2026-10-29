@@ -1,0 +1,4 @@
+interface:
+  display_name: "Makerkit — AI Dev System"
+  short_description: "Configure the Makerkit, Vercel, and Supabase foundation"
+  default_prompt: "Use $makerkit to configure this project's Makerkit, Vercel, Supabase, and deployment contract without exposing secrets."

@@ -56,6 +56,12 @@ Record only material decisions. Explain them in plain language first, then inclu
 
 Create `.ai-dev/project.yaml` using the installed v3 schema and create the canonical documentation paths it declares.
 
+Set `stage` from who actually depends on the product, not from ambition: `prototype` while it is
+unshipped and Riley is the only user, `design-partner` once one real person depends on part of it,
+`live` once customers do. `stage` decides how much delivery ceremony every later `finish` spends, so
+recording a higher stage early buys no safety and costs speed. Choose it deliberately and mention the
+choice in the handoff.
+
 At minimum, write:
 
 - `PROJECT.md`: product definition, user, value, principles, stage, architecture summary, and document routing;

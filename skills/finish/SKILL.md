@@ -26,6 +26,29 @@ Inspect the working tree, staged changes, commits, current branch, upstream, and
 
 If local `main` and remote `main` each contain unique commits, do not silently treat either as the integration base. Preserve the local lineage under an explicit recovery branch, keep dirty files attached to their existing checkout, and reconcile the intended work in a clean branch from the canonical remote.
 
+### Calibrate ceremony to stage
+
+`stage` is the project's answer to "who can be hurt if this goes wrong," and it decides how much
+process the delivery earns. Read it as permission, not metadata:
+
+- **`prototype`** — unshipped, and Riley is the only user. Move fast and ship recklessly: commit
+  straight to the main branch, no working branch, no preview, no pull request, deploy and find out
+  by using it. Skip roadmap and documentation ceremony whenever the durability test finds nothing
+  durable. Do not manufacture process that a first user would never notice.
+- **`design-partner`** — one real person depends on part of it. Protect the surface that person
+  touches — their data, their flows, their credentials — and stay fast everywhere else. Verify the
+  path they reach; do not spend ceremony on the path they cannot.
+- **`live`** — customers depend on it. Evidence proportional to blast radius, and use the configured
+  preview, integration, and deployment checks instead of delivering straight to production.
+
+Four things stay guarded at every stage, because Git can undo a bad commit but not a dropped database:
+no force-push over history that matters, no destructive migration, no credential rotation, and no
+deleting data or files outside the session's scope.
+
+If the recorded stage no longer matches what Riley is actually doing — a prototype that now has
+users, or a live project still being prototyped — deliver under the recorded stage and say so plainly
+once in the report. Reclassifying a project is Riley's decision, not a delivery prerequisite.
+
 ## 2. Reconcile durable knowledge
 
 Run the full `update-docs` skill for everything not already reconciled during the session. Read `.agents/skills/update-docs/SKILL.md` and follow it through the durability test and roadmap reconciliation. This pass is mandatory on every `finish`, including when invoked as `/finish`; a separate `/update-docs` is optional mid-session but not a prerequisite. Documentation edits are not mandatory when the durability test finds nothing worth recording.
@@ -46,7 +69,9 @@ Use the project's actual tooling. Do not add a generic testing framework or dema
 
 If a check fails, diagnose and fix safe in-scope causes, then rerun it. Stop only when resolution requires a consequential product choice, destructive external action, missing authority, unexpected material cost, customer/security exposure, or a genuinely external blocker.
 
-For `live` projects, apply stronger evidence proportional to user impact. Do not confuse stronger verification with repeated permission requests.
+Calibrate verification to stage. For `live` projects, apply stronger evidence proportional to user
+impact; for `prototype` projects, evidence that the changed behavior demonstrably works is enough.
+Do not confuse stronger verification with repeated permission requests.
 
 ## 4. Commit the coherent unit
 
@@ -59,6 +84,13 @@ If unrelated changes prevent a safe commit, preserve them and surface the exact 
 For work governed by a repository decision, verify that the commit contains that decision as well as the implementation it authorizes. Do not integrate an executable or paid preflight whose governing decision is absent from the branch.
 
 ## 5. Execute the delivery mode
+
+`delivery.mode` is standing authorization; `stage` decides how much evidence is required before using
+it. The two are meant to agree, so check them against each other rather than obeying either alone. If
+the project is `live` and delivery reaches production directly with no preview branch and no
+deployment check configured, finish the work and call that combination out once in the report — it
+has no recovery point between a bad commit and a bad production. Correcting it is Riley's call, not a
+prerequisite for closing the session.
 
 ### `commit`
 

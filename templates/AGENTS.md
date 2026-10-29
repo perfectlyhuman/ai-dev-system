@@ -1,6 +1,6 @@
 # Project Name — agent working contract
 
-This repository uses **AI Dev System**. It is agent-neutral: Codex and Cursor discover skills in `.agents/skills/`, and Claude Code discovers the identical copies in `.claude/skills/` and reads this file through `CLAUDE.md`.
+This repository uses **AI Dev System**. It is agent-neutral: Codex, Cursor, and DeepSeek Harness discover skills in `.agents/skills/`, and Claude Code discovers the identical copies in `.claude/skills/` and reads this file through `CLAUDE.md`.
 
 ## How we build
 
@@ -27,6 +27,8 @@ Repository skills (`.agents/skills/`, mirrored to `.claude/skills/` by the insta
 
 Ordinary feature work does **not** require a lifecycle skill — implement directly unless you need orientation or closure.
 
+Delegated work — subagents, parallel agents, workflow fan-out — inherits this contract from the owning project. It can contribute evidence and changes, but it never owns the session, never closes a different repository, and the owning session's `finish` reconciles what it produced.
+
 Do not create handoff files. Canonical `documentation/`, Git, deployments, and configured integrations are the memory system.
 
 ## Canonical memory
@@ -36,6 +38,11 @@ Do not create handoff files. Canonical `documentation/`, Git, deployments, and c
 - Depth: `documentation/chapters/`, `documentation/decisions/`, `documentation/lessons/`
 
 Read `.ai-dev/project.yaml` for stage, delivery authorization, and paths.
+
+`stage` governs how much ceremony delivery earns, so read it before deciding what `finish` should
+insist on. `prototype` means ship fast and directly; `live` means evidence before production. Either
+way, the irreversible actions stay guarded: no force-push over real history, no destructive
+migration, no credential rotation, no deleting data outside the session's scope.
 
 ## Global preferences
 

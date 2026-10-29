@@ -136,6 +136,7 @@ Use this shape, omitting empty sections:
 
 **Current focus:** {outcome}
 **Scope:** {active private scope and shared-work state, when applicable}
+**Mode:** {stage and delivery mode in plain words, for example "prototype — straight to main, no preview"}
 **Canonical docs:** {resolved main ref and abbreviated commit SHA}
 **Repository:** {branch, clean/dirty, meaningful delta}
 **External signals:** {only meaningful configured input}
@@ -146,6 +147,8 @@ Use this shape, omitting empty sections:
 ```
 
 Apply the same signal filter to intermediate commentary. Do not narrate routine file checks, expected absences, disabled integrations, or other non-events.
+
+State the mode once in that line, in words rather than field names, so Riley can see when a project has outgrown the delivery ceremony it is configured for. If the recorded `stage` visibly contradicts the work in front of you, report the contradiction under **Needs attention** and leave the change to Riley; do not silently reclassify the project or narrow the session's own evidence to match a stale label.
 
 If Riley invoked `start` by itself, remain read-only and end with:
 
