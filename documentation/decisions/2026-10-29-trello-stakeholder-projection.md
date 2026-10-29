@@ -43,7 +43,11 @@ it into shared instructions.
 - Commodore can declare its board in `.ai-dev/project.yaml` instead of describing it only in
   `AGENTS.md`, and `start`/`update-docs` now look for `integrations.trello` as well as
   `integrations.linear`.
-- New projects default to `trello: false`; declaring a projection remains optional.
+- New projects default to `trello: false`. A projection is declared only when someone non-technical
+  needs to read and comment on direction — a founder, a client, a collaborator who should not read the
+  repository. Commodore is the reference shape: cofounders need a roadmap they can discuss in ordinary
+  language. A project whose only reader is Riley declares none, because a second non-technical copy of
+  the roadmap is upkeep that buys nothing.
 - A project with two boards must pick one declared projection; the other is out of the contract.
 - Linear guidance in `docs/v3-blueprint.md` is now provider-neutral, so it does not need rewriting
   when a board host changes again.
@@ -51,4 +55,5 @@ it into shared instructions.
 ## Revisit when
 
 A project needs two simultaneous stakeholder surfaces, a board host exposes an API the doctor can
-verify without a token, or Trello stops being the practical default.
+verify without a token, Trello stops being the practical default, or a board is created for a project
+that has no non-technical reader.

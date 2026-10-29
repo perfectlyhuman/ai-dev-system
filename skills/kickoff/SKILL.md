@@ -77,7 +77,7 @@ If the product delivers consulting, custom development, or other client-scoped w
 
 Use the scope tree as the private operating brain for the engagement, including technical work, hypotheses, risks, unresolved questions, and socially or politically sensitive context. When a client-facing application owns shared initiatives, projects, or tasks, configure it separately as `shared_work`. Store only deliberately client-appropriate commitments and outcomes there. Link the private roadmap, shared work, and root product builds when related; do not mirror their descriptions or automatically expose private context.
 
-If the product needs a stakeholder view of direction and progress, declare one projection in `integrations` — `trello` (default) or `linear` — and record that board's list, label, and intake rules in a decision under `documentation/decisions/`, linked from `integrations.<provider>.governance`. The internal roadmap stays canonical; create or refresh the projection only after it is coherent.
+Declare a stakeholder projection only when someone non-technical needs to read and comment on direction and progress — a founder, a client, a collaborator who should not read the repository. A project with no such audience declares none: a second non-technical copy of the roadmap costs upkeep and buys nothing. When one is needed, declare it in `integrations` — `trello` (default) or `linear` — and record that board's list, label, and intake rules in a decision under `documentation/decisions/`, linked from `integrations.<provider>.governance`. The internal roadmap stays canonical; create or refresh the projection only after it is coherent.
 
 Never write credentials or secret values to project files.
 

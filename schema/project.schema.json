@@ -106,6 +106,7 @@
       "additionalProperties": false,
       "properties": {
         "trello": {
+          "description": "Optional stakeholder projection. Declare one only when a non-technical collaborator needs to read and comment on direction and progress. The internal ROADMAP.md stays canonical either way.",
           "oneOf": [
             { "const": false },
             {

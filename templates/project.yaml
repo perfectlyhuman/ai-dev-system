@@ -60,7 +60,8 @@ services: {}
 scopes: []
 
 integrations:
-  # Optional non-secret stakeholder projection. The internal ROADMAP.md stays canonical.
+  # Optional non-secret stakeholder projection. Declare one only when someone non-technical needs to
+  # read and comment on direction; the internal ROADMAP.md stays canonical either way.
   #   trello:
   #     board: "shortLink, id, or URL"
   #     workspace: "workspace name"

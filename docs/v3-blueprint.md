@@ -335,6 +335,8 @@ The internal `ROADMAP.md` is canonical in every project.
 
 A project may declare exactly one optional stakeholder projection in `integrations`: `trello`, which is the default, or `linear` for projects that already run on it. Its purpose is to communicate a useful non-technical view of direction and progress to people who should not read the repository.
 
+It exists for collaboration, not reporting: declare one only when a non-technical collaborator needs to read the roadmap, comment on it, and see their input reconciled back. A project whose only reader is Riley declares none, because a second non-technical copy of the roadmap is upkeep that buys nothing.
+
 The relationship is asymmetric:
 
 ```text
