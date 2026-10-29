@@ -3,6 +3,10 @@ schema_version: 3
 name: project-name
 description: One sentence describing the product and its user.
 entity: perfectly-human
+# Who can be hurt if this goes wrong. It decides how much ceremony every finish spends.
+#   prototype       unshipped, Riley is the only user: straight to main, no preview, learn by using it
+#   design-partner  one real person depends on part of it: guard their surface, stay fast elsewhere
+#   live            customers depend on it: preview, integration, and deployment evidence
 stage: prototype
 
 documentation:
@@ -20,7 +24,7 @@ delivery:
   # preview_branch: preview
   integration: direct
   deployment: automatic
-  branch_prefix: cursor/
+  branch_prefix: agent/
 
 verification:
   focused: []

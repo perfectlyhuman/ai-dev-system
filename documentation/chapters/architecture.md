@@ -2,7 +2,7 @@
 
 ## Purpose
 
-V3 supplies the smallest durable layer Codex needs to work coherently across sessions and projects. It owns project orientation, roadmap direction, knowledge reconciliation, and session closure; Codex retains responsibility for ordinary reasoning and implementation.
+V3 supplies the smallest durable layer an agent needs to work coherently across sessions and projects. It owns project orientation, roadmap direction, knowledge reconciliation, and session closure; the agent retains responsibility for ordinary reasoning and implementation.
 
 ## Mental model
 
@@ -11,11 +11,11 @@ The system has four layers:
 1. Installed Riley-global context for stable working preferences and project locations, plus non-secret account, organization, and service aliases.
 2. `.ai-dev/project.yaml` for facts that vary by project, alongside `.ai-dev/access.yaml` for required external capabilities and non-secret authentication references.
 3. Repository-local canonical memory in `documentation/`.
-4. Four focused Codex skills for `kickoff`, `start`, `update-docs`, and `finish`.
+4. Five focused lifecycle skills for `kickoff`, `start`, `access`, `update-docs`, and `finish`.
 
 Code and external systems are evidence, not additional competing memory layers. Git records implementation history. Linear is an optional Commodore stakeholder projection. Deployment platforms report delivery reality.
 
-Each Codex task has one owning project: the repository where the task was opened and its project contract was loaded. Cross-repository work can supply evidence or complete a bounded dependency, but changing working directories never transfers ownership. The owning project still receives the roadmap reconciliation, `finish`, and next recommendation; substantive work in another product begins in a new task rooted there.
+Each agent session has one owning project: the repository where the session was opened and its project contract was loaded. Cross-repository work can supply evidence or complete a bounded dependency, but changing working directories never transfers ownership. The owning project still receives the roadmap reconciliation, `finish`, and next recommendation; substantive work in another product begins in a new session rooted there. Delegated work — subagents, parallel agents, or a workflow fan-out — inherits the owning project's contract and never claims ownership itself.
 
 For consulting products, each client scope adds a private project-memory tree and internal roadmap under the repository's documentation. An optional Supabase shared-work surface is client-facing collaboration, not a competing copy of that private roadmap. The root roadmap owns reusable product builds, the scope roadmap owns internal engagement execution, and shared work owns only client-visible commitments and outcomes.
 
@@ -35,6 +35,8 @@ finish -> reconcile -> verify -> commit -> deliver
 
 `start` does not read a generated session handoff. It reconstructs current state from the project contract, canonical documents, git, and configured external signals. `finish` updates those same durable sources and completes delivery according to standing authorization.
 
+Delivery ceremony is calibrated to the project's recorded `stage` rather than applied uniformly. A `prototype` that only Riley uses commits straight to the main branch with no working branch, preview, or pull request, because no one else can be hurt by a bad commit and `git revert` is a sufficient recovery point. `design-partner` guards the surface a real user reaches and stays fast elsewhere. `live` requires evidence between a bad commit and a bad production. The irreversible actions — force-push over real history, destructive migrations, credential rotation, deleting data outside the session's scope — stay guarded at every stage, because Git cannot undo them.
+
 The installer bootstraps `C:\Users\riley\.ai-dev-system\` without replacing personal guidance. `RILEY.md` is the runtime authority for cross-project working preferences, `projects.yaml` is an installer-maintained local path index, and `registry.yaml` is a non-secret, JSON-compatible metadata surface the dependency-free access runtime can resolve. Project-owned documentation can override a global preference only for a concrete recorded reason.
 
 The access runtime turns external-service readiness into observed state. A project requests friendly credential routes and capabilities in JSON-compatible `.ai-dev/access.yaml`; the global registry resolves them to provider identities, approved consumers, and either persistent CLI authentication or non-secret Bitwarden references. The doctor discards provider output and reports only ready, planned, missing, blocked, or invalid state. Persistent CLIs handle ordinary provider operations. Bitwarden-backed values pass only through allowlisted broker adapters; the first adapter installs an approved application key directly into a declared Vercel project over standard input. The runtime exposes neither arbitrary secret injection nor raw-secret output.
@@ -48,7 +50,7 @@ The broker runs locally as Riley's Windows user. Its Bitwarden machine token is 
 | Authoritative design | `docs/v3-blueprint.md` | Product and behavior contract. |
 | Migration decisions | `docs/v3-migration-map.md` | Keep, adapt, remove, and cutover sequence. |
 | Skill sources | `skills/` | Distributable lifecycle skill packages. |
-| Installed skills | `.agents/skills/` | Repository-scoped copies Codex discovers. |
+| Installed skills | `.agents/skills/` | Repository-scoped copies Codex, Cursor, and DeepSeek Harness discover; `.claude/skills/` mirrors them for Claude Code. |
 | Installer | `installer/install.mjs` | Safe scaffold and skill synchronization. |
 | Installer tests | `installer/install.test.mjs` | Idempotency, drift protection, refresh, and dry-run behavior. |
 | Project schema | `schema/project.schema.json` | Machine-readable project contract. |
@@ -80,6 +82,7 @@ Validate `.ai-dev/project.yaml` against `schema/project.schema.json` after contr
 ## Related decisions and lessons
 
 - [Install lifecycle skills per repository](../decisions/2026-08-11-repository-scoped-skills.md)
+- [Let `stage` decide delivery ceremony](../decisions/2026-10-29-stage-calibrated-delivery.md)
 - [Install Riley-global context without overwriting personal guidance](../decisions/2026-08-13-riley-global-context.md)
 - [Declare and verify project access without storing secrets](../decisions/2026-08-13-project-access-contracts.md)
 - [Partition private client scopes from shared work](../decisions/2026-08-11-client-scopes-and-shared-work.md)

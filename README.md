@@ -1,6 +1,6 @@
 # AI Dev System
 
-AI Dev System is Riley's operating system for building products with any coding agent — **Codex**, **Cursor**, or **Claude Code** without losing product intent, technical rationale, roadmap direction, or hard-won lessons between sessions.
+AI Dev System is Riley's operating system for building products with any coding agent — **Codex**, **Cursor**, **Claude Code**, or **DeepSeek Harness** — without losing product intent, technical rationale, roadmap direction, or hard-won lessons between sessions.
 
 It adds a small durable layer around ordinary coding:
 
@@ -41,7 +41,7 @@ AGENTS.md                     Always-on agent contract (created if absent)
 CLAUDE.md                     `@AGENTS.md` import so Claude Code loads the same contract
 .ai-dev/project.yaml          Project-specific paths and standing authorization
 .ai-dev/access.yaml           Non-secret external capability and credential references
-.agents/skills/               Repository-scoped lifecycle skills (Codex, Cursor)
+.agents/skills/               Repository-scoped lifecycle skills (Codex, Cursor, DeepSeek Harness)
 .claude/skills/               Identical copies for Claude Code; a `.claude/` gitignore is narrowed so these are tracked
 documentation/PROJECT.md      Product intent and project orientation
 documentation/ROADMAP.md      Canonical current and upcoming work
