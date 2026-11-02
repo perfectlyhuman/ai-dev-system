@@ -1,6 +1,6 @@
 ---
 name: kickoff
-description: "Run a conversational, iterative product-discovery process that turns a new idea or undocumented product into a build-ready AI Dev System project and foundational repository documentation. Use for Day 1 product discovery, market research, product definition, initial architecture, canonical documentation, roadmap creation, and .ai-dev/project.yaml setup. This skill writes documentation/ project memory; it does not create a kickoff presentation or other artifact. Do not use for ordinary feature planning or for projects whose product foundation is already trustworthy."
+description: 'Run a conversational, iterative product-discovery process that turns a new idea or undocumented product into a build-ready AI Dev System project and foundational repository documentation. Use for Day 1 product discovery, market research, product definition, initial architecture, canonical documentation, roadmap creation, and .ai-dev/project.yaml setup. This skill writes documentation/ project memory; it does not create a kickoff presentation or other artifact. Do not use for ordinary feature planning or for projects whose product foundation is already trustworthy.'
 ---
 
 # Kick off an AI Dev System project

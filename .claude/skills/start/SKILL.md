@@ -1,6 +1,6 @@
 ---
 name: start
-description: "Open an AI Dev System work session by restoring project context, inspecting canonical documentation and repository state, reconciling relevant external signals, and recommending the highest-value next action. Use at the beginning of every coding or product-work session in a project with .ai-dev/project.yaml."
+description: 'Open an AI Dev System work session by restoring project context, inspecting canonical documentation and repository state, reconciling relevant external signals, and recommending the highest-value next action. Use at the beginning of every coding or product-work session in a project with .ai-dev/project.yaml.'
 ---
 
 # Start an AI Dev System session

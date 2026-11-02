@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
+import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { isAbsolute, join, resolve } from 'node:path';
-import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const scriptPath = fileURLToPath(import.meta.url);
@@ -13,7 +13,10 @@ const vercelEnvironments = new Set(['development', 'preview', 'production']);
 const cliChecks = {
   github: { command: 'gh', args: ['auth', 'status'] },
   vercel: { command: 'vercel', args: ['whoami'] },
-  supabase: { command: 'supabase', args: ['projects', 'list', '--output', 'json'] },
+  supabase: {
+    command: 'supabase',
+    args: ['projects', 'list', '--output', 'json'],
+  },
   cloudflare: { command: 'wrangler', args: ['whoami'] },
   sentry: { command: 'sentry-cli', args: ['info'] },
 };
@@ -51,7 +54,8 @@ function parseArgs(argv) {
     environments: [],
     json: false,
   };
-  if (options.command === '--help' || options.command === '-h') return { ...options, help: true };
+  if (options.command === '--help' || options.command === '-h')
+    return { ...options, help: true };
   let index = 1;
 
   if (options.command === 'install' || options.command === 'store-token') {
@@ -69,7 +73,8 @@ function parseArgs(argv) {
       continue;
     }
     if (argument === '--json') {
-      if (options.command !== 'doctor') throw new Error('--json is only available for doctor');
+      if (options.command !== 'doctor')
+        throw new Error('--json is only available for doctor');
       options.json = true;
       continue;
     }
@@ -81,14 +86,17 @@ function parseArgs(argv) {
       argument === '--environment'
     ) {
       const value = argv[index + 1];
-      if (!value || value.startsWith('--')) throw new Error(`${argument} requires a value`);
+      if (!value || value.startsWith('--'))
+        throw new Error(`${argument} requires a value`);
       if (argument === '--project') options.projectRoot = value;
       else if (argument === '--global-root') options.globalRoot = value;
       else if (argument === '--provider') {
-        if (options.command !== 'doctor') throw new Error('--provider is only available for doctor');
+        if (options.command !== 'doctor')
+          throw new Error('--provider is only available for doctor');
         options.provider = value;
       } else if (argument === '--to') {
-        if (options.command !== 'install') throw new Error('--to is only available for install');
+        if (options.command !== 'install')
+          throw new Error('--to is only available for install');
         options.destinationName = value;
       } else {
         if (options.command !== 'install') {
@@ -109,13 +117,16 @@ function readJsonCompatible(path, _label) {
   try {
     return JSON.parse(readFileSync(path, 'utf8'));
   } catch {
-    throw new Error(`${path} must remain JSON-compatible YAML so the access broker can read it.`);
+    throw new Error(
+      `${path} must remain JSON-compatible YAML so the access broker can read it.`,
+    );
   }
 }
 
 export function readAccessManifest(projectRoot) {
   const manifestPath = join(resolve(projectRoot), '.ai-dev', 'access.yaml');
-  if (!existsSync(manifestPath)) throw new Error(`Missing access manifest: ${manifestPath}`);
+  if (!existsSync(manifestPath))
+    throw new Error(`Missing access manifest: ${manifestPath}`);
   const manifest = readJsonCompatible(manifestPath, 'access manifest');
   if (
     manifest?.schema_version !== 1 ||
@@ -132,7 +143,8 @@ export function readAccessManifest(projectRoot) {
 
 export function readRegistry(globalRoot = defaultGlobalRoot) {
   const registryPath = join(resolve(globalRoot), 'registry.yaml');
-  if (!existsSync(registryPath)) throw new Error(`Missing account registry: ${registryPath}`);
+  if (!existsSync(registryPath))
+    throw new Error(`Missing account registry: ${registryPath}`);
   const registry = readJsonCompatible(registryPath, 'account registry');
   if (
     registry?.schema_version !== 1 ||
@@ -142,7 +154,9 @@ export function readRegistry(globalRoot = defaultGlobalRoot) {
     !registry.credentials ||
     !registry.credential_providers
   ) {
-    throw new Error(`${registryPath} does not match registry schema version 1.`);
+    throw new Error(
+      `${registryPath} does not match registry schema version 1.`,
+    );
   }
   return registry;
 }
@@ -170,19 +184,26 @@ function spawnPortable(command, args, options) {
     return { found: true, result: spawnSync(executable, args, options) };
   }
 
-  const payload = Buffer.from(JSON.stringify({ command: executable, arguments: args })).toString(
-    'base64',
-  );
-  const environment = { ...(options.env || process.env), AI_DEV_EXECUTION: payload };
+  const payload = Buffer.from(
+    JSON.stringify({ command: executable, arguments: args }),
+  ).toString('base64');
+  const environment = {
+    ...(options.env || process.env),
+    AI_DEV_EXECUTION: payload,
+  };
   const script =
     '$spec = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:AI_DEV_EXECUTION)) | ConvertFrom-Json; ' +
     '$env:AI_DEV_EXECUTION = $null; & $spec.command @($spec.arguments); exit $LASTEXITCODE';
   return {
     found: true,
-    result: spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', script], {
-      ...options,
-      env: environment,
-    }),
+    result: spawnSync(
+      'powershell.exe',
+      ['-NoProfile', '-NonInteractive', '-Command', script],
+      {
+        ...options,
+        env: environment,
+      },
+    ),
   };
 }
 
@@ -193,19 +214,28 @@ function defaultRunner(command, args, environment = process.env) {
     timeout: 20_000,
     windowsHide: true,
   });
-  if (!found || result.error?.code === 'ENOENT' || result.status === 127 || result.status === 9009) {
+  if (
+    !found ||
+    result.error?.code === 'ENOENT' ||
+    result.status === 127 ||
+    result.status === 9009
+  ) {
     return { found: false, ok: false };
   }
   return { found: true, ok: !result.error && result.status === 0 };
 }
 
 function defaultSecretResolver(secretId, accessToken) {
-  const { found, result } = spawnPortable('bws', ['secret', 'get', secretId, '--output', 'json'], {
-    encoding: 'utf8',
-    env: { ...process.env, BWS_ACCESS_TOKEN: accessToken },
-    timeout: 20_000,
-    windowsHide: true,
-  });
+  const { found, result } = spawnPortable(
+    'bws',
+    ['secret', 'get', secretId, '--output', 'json'],
+    {
+      encoding: 'utf8',
+      env: { ...process.env, BWS_ACCESS_TOKEN: accessToken },
+      timeout: 20_000,
+      windowsHide: true,
+    },
+  );
   if (!found) throw new Error('bws is not installed.');
   if (result.error || result.status !== 0) {
     throw new Error('Bitwarden could not resolve the declared secret.');
@@ -217,17 +247,27 @@ function defaultSecretResolver(secretId, accessToken) {
   } catch {
     throw new Error('Bitwarden returned an unreadable secret response.');
   }
-  if (typeof secret?.value !== 'string' || typeof secret?.projectId !== 'string') {
+  if (
+    typeof secret?.value !== 'string' ||
+    typeof secret?.projectId !== 'string'
+  ) {
     throw new Error('Bitwarden returned an incomplete secret response.');
   }
   return secret;
 }
 
 function resolveMachineAccount(registry, alias, globalRoot) {
-  const machineAccount = registry.credential_providers?.bitwarden?.machine_accounts?.[alias];
-  if (!machineAccount) throw new Error(`Bitwarden machine account is not registered: ${alias}`);
-  if (typeof machineAccount.token_file !== 'string' || !machineAccount.token_file) {
-    throw new Error(`Bitwarden machine account has no protected token file: ${alias}`);
+  const machineAccount =
+    registry.credential_providers?.bitwarden?.machine_accounts?.[alias];
+  if (!machineAccount)
+    throw new Error(`Bitwarden machine account is not registered: ${alias}`);
+  if (
+    typeof machineAccount.token_file !== 'string' ||
+    !machineAccount.token_file
+  ) {
+    throw new Error(
+      `Bitwarden machine account has no protected token file: ${alias}`,
+    );
   }
   const tokenFile = isAbsolute(machineAccount.token_file)
     ? machineAccount.token_file
@@ -237,10 +277,13 @@ function resolveMachineAccount(registry, alias, globalRoot) {
 
 function defaultMachineTokenResolver(alias, registry, globalRoot) {
   if (process.platform !== 'win32') {
-    throw new Error('Protected Bitwarden token resolution is currently configured for Windows.');
+    throw new Error(
+      'Protected Bitwarden token resolution is currently configured for Windows.',
+    );
   }
   const { tokenFile } = resolveMachineAccount(registry, alias, globalRoot);
-  if (!existsSync(tokenFile)) throw new Error(`Protected Bitwarden token is not stored: ${alias}`);
+  if (!existsSync(tokenFile))
+    throw new Error(`Protected Bitwarden token is not stored: ${alias}`);
 
   const script =
     'Add-Type -AssemblyName System.Security; ' +
@@ -249,24 +292,38 @@ function defaultMachineTokenResolver(alias, registry, globalRoot) {
     '$plain = [Security.Cryptography.ProtectedData]::Unprotect($cipher, $null, [Security.Cryptography.DataProtectionScope]::CurrentUser); ' +
     '[Console]::Out.Write([Text.Encoding]::UTF8.GetString($plain)); ' +
     '[Array]::Clear($plain, 0, $plain.Length)';
-  const result = spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', script], {
-    encoding: 'utf8',
-    env: { ...process.env, AI_DEV_TOKEN_FILE: tokenFile },
-    timeout: 10_000,
-    windowsHide: true,
-  });
+  const result = spawnSync(
+    'powershell.exe',
+    ['-NoProfile', '-NonInteractive', '-Command', script],
+    {
+      encoding: 'utf8',
+      env: { ...process.env, AI_DEV_TOKEN_FILE: tokenFile },
+      timeout: 10_000,
+      windowsHide: true,
+    },
+  );
   if (result.error || result.status !== 0 || !result.stdout) {
     throw new Error(`Protected Bitwarden token could not be read: ${alias}`);
   }
   return result.stdout;
 }
 
-export function storeMachineToken({ alias, globalRoot = defaultGlobalRoot, registry }) {
+export function storeMachineToken({
+  alias,
+  globalRoot = defaultGlobalRoot,
+  registry,
+}) {
   const effectiveRegistry = registry || readRegistry(globalRoot);
   if (process.platform !== 'win32') {
-    throw new Error('Protected Bitwarden token storage is currently configured for Windows.');
+    throw new Error(
+      'Protected Bitwarden token storage is currently configured for Windows.',
+    );
   }
-  const { tokenFile } = resolveMachineAccount(effectiveRegistry, alias, globalRoot);
+  const { tokenFile } = resolveMachineAccount(
+    effectiveRegistry,
+    alias,
+    globalRoot,
+  );
   const script =
     'Add-Type -AssemblyName System.Security; ' +
     '$tokenFile = $env:AI_DEV_TOKEN_FILE; $env:AI_DEV_TOKEN_FILE = $null; ' +
@@ -280,11 +337,15 @@ export function storeMachineToken({ alias, globalRoot = defaultGlobalRoot, regis
     '[IO.File]::WriteAllBytes($tokenFile, $cipher); ' +
     '[Array]::Clear($plain, 0, $plain.Length) ' +
     '} finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($pointer) }';
-  const result = spawnSync('powershell.exe', ['-NoProfile', '-Command', script], {
-    env: { ...process.env, AI_DEV_TOKEN_FILE: tokenFile },
-    stdio: 'inherit',
-    windowsHide: false,
-  });
+  const result = spawnSync(
+    'powershell.exe',
+    ['-NoProfile', '-Command', script],
+    {
+      env: { ...process.env, AI_DEV_TOKEN_FILE: tokenFile },
+      stdio: 'inherit',
+      windowsHide: false,
+    },
+  );
   if (result.error || result.status !== 0) {
     throw new Error(`Bitwarden machine token was not stored: ${alias}`);
   }
@@ -304,29 +365,35 @@ function resolveRequest(name, manifest, registry) {
     throw new Error(`Access request has no credential alias: ${name}`);
   }
   const credential = registry.credentials[request.credential];
-  if (!credential) throw new Error(`Credential alias is not registered: ${request.credential}`);
+  if (!credential)
+    throw new Error(
+      `Credential alias is not registered: ${request.credential}`,
+    );
   return { request, credential };
 }
 
 function registeredIdentityExists(credential, registry) {
   return Boolean(
     registry.accounts[credential.provider]?.[credential.account] ||
-      registry.organizations[credential.provider]?.[credential.account],
+    registry.organizations[credential.provider]?.[credential.account],
   );
 }
 
 function resolveBitwardenRoute(credential, registry) {
   const source = credential.source;
-  if (source?.kind !== 'bitwarden') throw new Error('Credential is not backed by Bitwarden.');
+  if (source?.kind !== 'bitwarden')
+    throw new Error('Credential is not backed by Bitwarden.');
   const bitwarden = registry.credential_providers?.bitwarden;
   const project = bitwarden?.projects?.[source.project];
   const machineAlias = bitwarden?.defaults?.machine_account;
   const machineAccount = bitwarden?.machine_accounts?.[machineAlias];
-  if (!project?.id) throw new Error(`Bitwarden project is not ready: ${source.project}`);
+  if (!project?.id)
+    throw new Error(`Bitwarden project is not ready: ${source.project}`);
   if (!machineAlias || !machineAccount) {
     throw new Error('The default Bitwarden machine account is not configured.');
   }
-  if (!source.secret_id) throw new Error('The Bitwarden secret reference is not configured.');
+  if (!source.secret_id)
+    throw new Error('The Bitwarden secret reference is not configured.');
   return { source, projectId: project.id, machineAlias };
 }
 
@@ -341,7 +408,12 @@ function inspectCli(name, credential, runner) {
   }
   const result = runner(check.command, check.args);
   if (!result.found) {
-    return { name, provider: credential.provider, status: 'missing', detail: `${check.command} is not installed.` };
+    return {
+      name,
+      provider: credential.provider,
+      status: 'missing',
+      detail: `${check.command} is not installed.`,
+    };
   }
   if (!result.ok) {
     return {
@@ -359,7 +431,14 @@ function inspectCli(name, credential, runner) {
   };
 }
 
-function inspectBitwarden(name, credential, runner, registry, globalRoot, machineTokenResolver) {
+function inspectBitwarden(
+  name,
+  credential,
+  runner,
+  registry,
+  globalRoot,
+  machineTokenResolver,
+) {
   let route;
   try {
     route = resolveBitwardenRoute(credential, registry);
@@ -374,7 +453,11 @@ function inspectBitwarden(name, credential, runner, registry, globalRoot, machin
 
   let accessToken;
   try {
-    accessToken = machineTokenResolver(route.machineAlias, registry, globalRoot);
+    accessToken = machineTokenResolver(
+      route.machineAlias,
+      registry,
+      globalRoot,
+    );
   } catch {
     return {
       name,
@@ -385,9 +468,18 @@ function inspectBitwarden(name, credential, runner, registry, globalRoot, machin
   }
 
   const environment = { ...process.env, BWS_ACCESS_TOKEN: accessToken };
-  const project = runner('bws', ['project', 'get', route.projectId, '--output', 'none'], environment);
+  const project = runner(
+    'bws',
+    ['project', 'get', route.projectId, '--output', 'none'],
+    environment,
+  );
   if (!project.found) {
-    return { name, provider: credential.provider, status: 'missing', detail: 'bws is not installed.' };
+    return {
+      name,
+      provider: credential.provider,
+      status: 'missing',
+      detail: 'bws is not installed.',
+    };
   }
   if (!project.ok) {
     return {
@@ -397,7 +489,11 @@ function inspectBitwarden(name, credential, runner, registry, globalRoot, machin
       detail: 'The declared Bitwarden project is not accessible.',
     };
   }
-  const secret = runner('bws', ['secret', 'get', route.source.secret_id, '--output', 'none'], environment);
+  const secret = runner(
+    'bws',
+    ['secret', 'get', route.source.secret_id, '--output', 'none'],
+    environment,
+  );
   if (!secret.ok) {
     return {
       name,
@@ -435,7 +531,13 @@ export function inspectAccess({
     const requestProvider = credential?.provider;
     if (provider && requestProvider !== provider) continue;
     if (!credential) {
-      results.push(invalidResult(name, null, `Credential alias is not registered: ${request.credential}`));
+      results.push(
+        invalidResult(
+          name,
+          null,
+          `Credential alias is not registered: ${request.credential}`,
+        ),
+      );
       continue;
     }
     if (!registeredIdentityExists(credential, effectiveRegistry)) {
@@ -448,13 +550,26 @@ export function inspectAccess({
       );
       continue;
     }
-    if (!Array.isArray(request.capabilities) || request.capabilities.length === 0) {
-      results.push(invalidResult(name, credential.provider, 'Request must declare capabilities.'));
+    if (
+      !Array.isArray(request.capabilities) ||
+      request.capabilities.length === 0
+    ) {
+      results.push(
+        invalidResult(
+          name,
+          credential.provider,
+          'Request must declare capabilities.',
+        ),
+      );
       continue;
     }
     if (!credential.consumers?.includes(manifest.project)) {
       results.push(
-        invalidResult(name, credential.provider, `Credential is not approved for ${manifest.project}.`),
+        invalidResult(
+          name,
+          credential.provider,
+          `Credential is not approved for ${manifest.project}.`,
+        ),
       );
       continue;
     }
@@ -481,7 +596,13 @@ export function inspectAccess({
         ),
       );
     } else {
-      results.push(invalidResult(name, credential.provider, 'Credential source is unsupported.'));
+      results.push(
+        invalidResult(
+          name,
+          credential.provider,
+          'Credential source is unsupported.',
+        ),
+      );
     }
   }
 
@@ -489,12 +610,19 @@ export function inspectAccess({
     schema_version: 1,
     project: manifest.project,
     provider: provider || null,
-    status: results.every((result) => result.status === 'ready') ? 'ready' : 'needs-attention',
+    status: results.every((result) => result.status === 'ready')
+      ? 'ready'
+      : 'needs-attention',
     results,
   };
 }
 
-function defaultVercelInstaller({ environmentName, targetEnvironment, value, projectRoot }) {
+function defaultVercelInstaller({
+  environmentName,
+  targetEnvironment,
+  value,
+  projectRoot,
+}) {
   const { found, result } = spawnPortable(
     'vercel',
     [
@@ -534,21 +662,31 @@ export function installSecret({
 }) {
   const manifest = readAccessManifest(projectRoot);
   const effectiveRegistry = registry || readRegistry(globalRoot);
-  const { credential } = resolveRequest(requestName, manifest, effectiveRegistry);
-  const { request: destination, credential: destinationCredential } = resolveRequest(
-    destinationName,
+  const { credential } = resolveRequest(
+    requestName,
     manifest,
     effectiveRegistry,
   );
+  const { request: destination, credential: destinationCredential } =
+    resolveRequest(destinationName, manifest, effectiveRegistry);
 
   if (!credential.consumers?.includes(manifest.project)) {
-    throw new Error(`Credential is not approved for ${manifest.project}: ${requestName}`);
+    throw new Error(
+      `Credential is not approved for ${manifest.project}: ${requestName}`,
+    );
   }
-  if (destinationCredential.provider !== 'vercel' || destinationCredential.source?.kind !== 'cli') {
-    throw new Error('The install destination must use a declared Vercel CLI credential.');
+  if (
+    destinationCredential.provider !== 'vercel' ||
+    destinationCredential.source?.kind !== 'cli'
+  ) {
+    throw new Error(
+      'The install destination must use a declared Vercel CLI credential.',
+    );
   }
   if (!destination.capabilities?.includes('environment:write')) {
-    throw new Error(`Destination request does not allow environment writes: ${destinationName}`);
+    throw new Error(
+      `Destination request does not allow environment writes: ${destinationName}`,
+    );
   }
   if (!Array.isArray(environments) || environments.length === 0) {
     throw new Error('Install requires at least one --environment.');
@@ -560,10 +698,16 @@ export function installSecret({
   }
 
   const route = resolveBitwardenRoute(credential, effectiveRegistry);
-  const accessToken = machineTokenResolver(route.machineAlias, effectiveRegistry, globalRoot);
+  const accessToken = machineTokenResolver(
+    route.machineAlias,
+    effectiveRegistry,
+    globalRoot,
+  );
   const secret = secretResolver(route.source.secret_id, accessToken);
   if (secret.projectId !== route.projectId) {
-    throw new Error('The declared secret does not belong to the registered Bitwarden project.');
+    throw new Error(
+      'The declared secret does not belong to the registered Bitwarden project.',
+    );
   }
 
   for (const targetEnvironment of [...new Set(environments)]) {
@@ -585,11 +729,17 @@ export function installSecret({
 function printHuman(report) {
   console.log(`Access for ${report.project}`);
   if (report.results.length === 0) {
-    console.log(report.provider ? `  no declared ${report.provider} request` : '  no requests declared');
+    console.log(
+      report.provider
+        ? `  no declared ${report.provider} request`
+        : '  no requests declared',
+    );
     return;
   }
   for (const result of report.results) {
-    console.log(`  ${result.status.padEnd(15)} ${result.name} (${result.provider}) - ${result.detail}`);
+    console.log(
+      `  ${result.status.padEnd(15)} ${result.name} (${result.provider}) - ${result.detail}`,
+    );
   }
 }
 
@@ -601,11 +751,15 @@ function main() {
       return;
     }
     if (options.command === 'store-token') {
-      storeMachineToken({ alias: options.name, globalRoot: resolve(options.globalRoot) });
+      storeMachineToken({
+        alias: options.name,
+        globalRoot: resolve(options.globalRoot),
+      });
       return;
     }
     if (options.command === 'install') {
-      if (!options.destinationName) throw new Error('install requires --to <request>');
+      if (!options.destinationName)
+        throw new Error('install requires --to <request>');
       const result = installSecret({
         projectRoot: resolve(options.projectRoot),
         globalRoot: resolve(options.globalRoot),
@@ -618,7 +772,8 @@ function main() {
       );
       return;
     }
-    if (options.command !== 'doctor') throw new Error(`Unknown command: ${options.command}`);
+    if (options.command !== 'doctor')
+      throw new Error(`Unknown command: ${options.command}`);
     const report = inspectAccess({
       projectRoot: resolve(options.projectRoot),
       globalRoot: resolve(options.globalRoot),

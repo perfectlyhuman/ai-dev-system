@@ -1,6 +1,6 @@
 ---
 name: finish
-description: "Close an AI Dev System work session completely by reconciling documentation, verifying the actual work, resolving safe failures, committing relevant changes, and delivering them according to .ai-dev/project.yaml. Use at the end of every substantive session; it includes the necessary update-docs pass, so a separate update-docs invocation is not required first."
+description: 'Close an AI Dev System work session completely by reconciling documentation, verifying the actual work, resolving safe failures, committing relevant changes, and delivering them according to .ai-dev/project.yaml. Use at the end of every substantive session; it includes the necessary update-docs pass, so a separate update-docs invocation is not required first.'
 ---
 
 # Finish an AI Dev System session
