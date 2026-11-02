@@ -105,7 +105,7 @@ function parseArgs(argv) {
   return options;
 }
 
-function readJsonCompatible(path, label) {
+function readJsonCompatible(path, _label) {
   try {
     return JSON.parse(readFileSync(path, 'utf8'));
   } catch {
